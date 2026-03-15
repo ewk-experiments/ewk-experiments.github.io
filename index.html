@@ -7,71 +7,76 @@
 <meta name="description" content="ewk labs is an experimental AI studio based in Seattle. We build niche, interesting products at the intersection of AI and design.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --blue-400: #00AAFF;
-  --blue-500: #0088FF;
-  --blue-600: #0066FF;
-  --blue-700: #0044DD;
-  --blue-glow: rgba(0, 102, 255, 0.4);
-  --blue-glow-soft: rgba(0, 136, 255, 0.15);
-  --dark-950: #08090c;
-  --dark-900: #0d0f14;
-  --dark-800: #13161d;
-  --dark-700: #1a1e28;
-  --dark-600: #232836;
-  --dark-500: #3a4050;
-  --dark-400: #555d70;
-  --dark-300: #7a8394;
-  --dark-200: #a0a8b8;
-  --dark-100: #c8cdd8;
-  --dark-50: #e8ebf0;
-  --light-50: #f8f9fc;
-  --light-100: #f0f2f7;
-  --light-200: #e4e7ef;
+  --accent: #6C47FF;
+  --accent-light: #8B6FFF;
+  --accent-wash: rgba(108, 71, 255, 0.08);
+  --accent-wash-strong: rgba(108, 71, 255, 0.15);
+  --accent-glow: rgba(108, 71, 255, 0.35);
+  --surface: #FFFFFF;
+  --surface-raised: rgba(255, 255, 255, 0.65);
+  --surface-glass: rgba(255, 255, 255, 0.45);
+  --surface-glass-strong: rgba(255, 255, 255, 0.72);
+  --bg: #F4F2F7;
+  --bg-deep: #EBE8F0;
+  --text-primary: #1A1625;
+  --text-secondary: #5E566B;
+  --text-tertiary: #8D849A;
+  --border-glass: rgba(255, 255, 255, 0.6);
+  --border-subtle: rgba(108, 71, 255, 0.1);
+  --shadow-sm: 0 1px 3px rgba(108, 71, 255, 0.04), 0 1px 2px rgba(0,0,0,0.03);
+  --shadow-md: 0 4px 16px rgba(108, 71, 255, 0.06), 0 2px 6px rgba(0,0,0,0.04);
+  --shadow-lg: 0 12px 40px rgba(108, 71, 255, 0.1), 0 4px 12px rgba(0,0,0,0.04);
+  --shadow-xl: 0 24px 64px rgba(108, 71, 255, 0.14), 0 8px 20px rgba(0,0,0,0.06);
+  --shadow-glow: 0 0 60px rgba(108, 71, 255, 0.15), 0 0 120px rgba(108, 71, 255, 0.05);
   --font-serif: 'Instrument Serif', Georgia, serif;
   --font-sans: 'Inter', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 html { scroll-behavior: smooth; }
 
 body {
   font-family: var(--font-sans);
-  color: var(--dark-100);
-  background: var(--dark-950);
+  color: var(--text-primary);
+  background: var(--bg);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Progress bar */
+/* ─── PROGRESS BAR ─── */
 #progress {
   position: fixed;
   left: 0;
   top: 0;
   width: 3px;
   height: 0%;
-  background: linear-gradient(180deg, var(--blue-400), var(--blue-600));
+  background: linear-gradient(180deg, var(--accent-light), var(--accent));
   z-index: 1000;
   transition: height 0.1s linear;
-  box-shadow: 0 0 12px var(--blue-glow);
+  box-shadow: 0 0 16px var(--accent-glow);
+  border-radius: 0 2px 2px 0;
 }
 
-/* Reveal animation */
+/* ─── REVEAL SYSTEM ─── */
 .reveal {
   opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(32px);
+  transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
 }
 .reveal.visible { opacity: 1; transform: translateY(0); }
-.reveal-delay-1 { transition-delay: 0.1s; }
-.reveal-delay-2 { transition-delay: 0.2s; }
-.reveal-delay-3 { transition-delay: 0.3s; }
-.reveal-delay-4 { transition-delay: 0.4s; }
-.reveal-delay-5 { transition-delay: 0.5s; }
+.reveal-delay-1 { transition-delay: 0.08s; }
+.reveal-delay-2 { transition-delay: 0.16s; }
+.reveal-delay-3 { transition-delay: 0.24s; }
+.reveal-delay-4 { transition-delay: 0.32s; }
+.reveal-delay-5 { transition-delay: 0.4s; }
 
 /* ─── HERO ─── */
 #hero {
@@ -81,9 +86,9 @@ body {
   justify-content: center;
   align-items: center;
   text-align: center;
-  background: var(--dark-950);
   position: relative;
   overflow: hidden;
+  background: var(--surface);
 }
 
 #hero-canvas {
@@ -94,93 +99,97 @@ body {
   pointer-events: none;
 }
 
-/* CSS fallback for when WebGL fails */
 .hero-css-fallback {
   position: absolute;
   inset: 0;
   pointer-events: none;
   overflow: hidden;
 }
+
 .hero-css-fallback .orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(60px);
-  opacity: 0;
-  animation: css-orb-float 8s ease-in-out infinite;
-}
-.hero-css-fallback .orb:nth-child(1) {
-  width: 300px; height: 300px;
-  background: radial-gradient(circle, rgba(0,102,255,0.3), transparent 70%);
-  top: 20%; left: 15%;
-  animation-delay: 0s;
-}
-.hero-css-fallback .orb:nth-child(2) {
-  width: 250px; height: 250px;
-  background: radial-gradient(circle, rgba(0,170,255,0.25), transparent 70%);
-  top: 40%; right: 10%;
-  animation-delay: -2s;
-}
-.hero-css-fallback .orb:nth-child(3) {
-  width: 200px; height: 200px;
-  background: radial-gradient(circle, rgba(0,68,221,0.3), transparent 70%);
-  bottom: 20%; left: 40%;
-  animation-delay: -4s;
-}
-.hero-css-fallback .orb:nth-child(4) {
-  width: 180px; height: 180px;
-  background: radial-gradient(circle, rgba(0,136,255,0.2), transparent 70%);
-  top: 60%; left: 5%;
-  animation-delay: -6s;
-}
-@keyframes css-orb-float {
-  0%, 100% { opacity: 0.4; transform: translateY(0) scale(1); }
-  50% { opacity: 0.8; transform: translateY(-30px) scale(1.1); }
+  filter: blur(80px);
+  animation: orb-drift 12s ease-in-out infinite;
 }
 
-.hero-content {
-  position: relative;
-  z-index: 2;
+.hero-css-fallback .orb:nth-child(1) {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(108,71,255,0.18), transparent 70%);
+  top: 10%; left: 10%;
 }
+.hero-css-fallback .orb:nth-child(2) {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(139,111,255,0.14), transparent 70%);
+  top: 30%; right: 5%;
+  animation-delay: -3s;
+}
+.hero-css-fallback .orb:nth-child(3) {
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(108,71,255,0.12), transparent 70%);
+  bottom: 10%; left: 30%;
+  animation-delay: -6s;
+}
+.hero-css-fallback .orb:nth-child(4) {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(139,111,255,0.1), transparent 70%);
+  top: 50%; left: 60%;
+  animation-delay: -9s;
+}
+
+@keyframes orb-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.7; }
+  33% { transform: translate(30px, -20px) scale(1.05); opacity: 1; }
+  66% { transform: translate(-20px, 15px) scale(0.95); opacity: 0.8; }
+}
+
+.hero-content { position: relative; z-index: 2; }
 
 .hero-title {
   font-family: var(--font-serif);
-  font-size: clamp(4rem, 12vw, 10rem);
+  font-size: clamp(4.5rem, 13vw, 11rem);
   font-weight: 400;
-  line-height: 0.9;
-  letter-spacing: -0.03em;
-  color: #fff;
+  line-height: 0.88;
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
   margin-bottom: 1.5rem;
-  text-shadow: 0 0 80px rgba(0, 102, 255, 0.3), 0 2px 4px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+.hero-title-gradient {
+  background: linear-gradient(135deg, var(--text-primary) 40%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .hero-subtitle {
   font-family: var(--font-mono);
-  font-size: clamp(0.75rem, 1.5vw, 1rem);
+  font-size: clamp(0.7rem, 1.2vw, 0.9rem);
   font-weight: 400;
-  color: var(--dark-300);
-  letter-spacing: 0.15em;
+  color: var(--text-tertiary);
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
-/* ─── SECTION TITLES ─── */
+/* ─── SECTION CHROME ─── */
 .section-label {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--blue-500);
-  margin-bottom: 1rem;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
 }
 
 .section-title {
   font-family: var(--font-serif);
   font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 400;
-  color: #fff;
+  color: var(--text-primary);
   line-height: 1.1;
-  letter-spacing: -0.02em;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  letter-spacing: -0.025em;
 }
 
 /* ─── PROJECTS ─── */
@@ -199,98 +208,164 @@ body {
 
 /* ─── GLASS CARD ─── */
 .project-card {
-  background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
-  border-radius: 20px;
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(40px) saturate(1.8);
+  -webkit-backdrop-filter: blur(40px) saturate(1.8);
+  border-radius: 24px;
   overflow: hidden;
   text-decoration: none;
   color: inherit;
   display: block;
   position: relative;
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow:
-    0 1px 0 rgba(255,255,255,0.06) inset,
-    0 4px 24px rgba(0,0,0,0.3),
-    0 1px 3px rgba(0,0,0,0.2);
-  border: 1px solid rgba(255,255,255,0.08);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  transition: transform 0.6s var(--ease-out), box-shadow 0.6s var(--ease-out);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 var(--border-glass);
+  border: 1px solid rgba(255,255,255,0.5);
 }
 
 .project-card::before {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 20px;
-  background: radial-gradient(ellipse at 30% 0%, rgba(0,136,255,0.08) 0%, transparent 60%);
+  border-radius: 24px;
+  background: radial-gradient(ellipse at 30% 0%, var(--accent-wash) 0%, transparent 60%);
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.5s;
+  transition: opacity 0.6s;
+}
+
+.project-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: var(--shadow-xl), var(--shadow-glow), inset 0 1px 0 var(--border-glass);
 }
 
 .project-card:hover::before { opacity: 1; }
 
-.project-card:hover {
-  transform: translateY(-8px);
-  box-shadow:
-    0 1px 0 rgba(255,255,255,0.08) inset,
-    0 16px 48px rgba(0,102,255,0.15),
-    0 4px 12px rgba(0,0,0,0.3);
-}
-
+/* ─── PROJECT VISUALS ─── */
 .project-visual {
   aspect-ratio: 4/3;
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  overflow: hidden;
 }
 
-.project-visual svg {
-  width: 70%;
-  height: 70%;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
-}
-
-.project-card:hover .project-visual svg {
-  transform: scale(1.08);
+.project-visual canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .project-info {
   padding: 1.75rem 2rem 2rem;
+  position: relative;
 }
 
 .project-name {
   font-family: var(--font-serif);
   font-size: 1.5rem;
   margin-bottom: 0.25rem;
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  color: var(--text-primary);
 }
 
 .project-type {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--blue-400);
+  color: var(--accent);
   margin-bottom: 0.75rem;
 }
 
 .project-desc {
   font-size: 0.9rem;
-  line-height: 1.6;
-  color: var(--dark-300);
+  line-height: 1.65;
+  color: var(--text-secondary);
 }
 
-/* Individual project visual backgrounds */
-.vis-futureself { background: linear-gradient(135deg, #0a1628 0%, #0d2040 100%); }
-.vis-system0 { background: linear-gradient(135deg, #080c18 0%, #0a1628 100%); }
-.vis-causalme { background: linear-gradient(135deg, #0d1530 0%, #0a1e40 100%); }
-.vis-snake { background: linear-gradient(135deg, #0a1a12 0%, #0d2818 100%); }
-.vis-timer { background: linear-gradient(135deg, #1a0d0d 0%, #2a1212 100%); }
-.vis-mood { background: linear-gradient(135deg, #0d0a1a 0%, #140e28 100%); }
+/* Visual backgrounds */
+.vis-futureself { background: linear-gradient(135deg, #F0ECFA 0%, #E8E0F8 50%, #F5F2FC 100%); }
+.vis-system0 { background: linear-gradient(135deg, #ECE8FA 0%, #E0D8F5 50%, #F0ECFC 100%); }
+.vis-causalme { background: linear-gradient(135deg, #EDE8FC 0%, #E2DAF8 50%, #F2EEFC 100%); }
+.vis-snake { background: linear-gradient(135deg, #E8F5EC 0%, #DCF0E2 50%, #F0F8F2 100%); }
+.vis-timer { background: linear-gradient(135deg, #FAE8E8 0%, #F5DCDC 50%, #FCF0F0 100%); }
+.vis-mood { background: linear-gradient(135deg, #EDE8FC 0%, #E8E0FA 50%, #F5F2FC 100%); }
+
+/* ─── FIELD STUDIES ─── */
+#field-studies {
+  padding: 8rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.studies-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-top: 4rem;
+}
+
+.study-card {
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(40px) saturate(1.8);
+  -webkit-backdrop-filter: blur(40px) saturate(1.8);
+  border-radius: 24px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  position: relative;
+  transition: transform 0.6s var(--ease-out), box-shadow 0.6s var(--ease-out);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 var(--border-glass);
+  border: 1px solid rgba(255,255,255,0.5);
+}
+
+.study-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: var(--shadow-xl), var(--shadow-glow), inset 0 1px 0 var(--border-glass);
+}
+
+.study-visual {
+  aspect-ratio: 5/4;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #F0ECFA 0%, #E8E0F8 100%);
+}
+
+.study-visual canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.study-info {
+  padding: 1.5rem 1.75rem 1.75rem;
+}
+
+.study-number {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
+}
+
+.study-name {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+}
+
+.study-desc {
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
 
 /* ─── PHILOSOPHY ─── */
 #philosophy {
@@ -298,92 +373,103 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 70vh;
-  background: var(--dark-900);
+  min-height: 60vh;
   position: relative;
+  background: var(--surface);
+  overflow: hidden;
 }
 
 #philosophy::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 50% 50%, rgba(0,102,255,0.06) 0%, transparent 70%);
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(108,71,255,0.07), transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  filter: blur(60px);
   pointer-events: none;
 }
 
 .philosophy-text {
   font-family: var(--font-serif);
   font-size: clamp(1.75rem, 3.5vw, 3rem);
-  line-height: 1.35;
-  max-width: 900px;
+  line-height: 1.4;
+  max-width: 820px;
   text-align: center;
-  color: var(--dark-200);
+  color: var(--text-secondary);
   letter-spacing: -0.01em;
   position: relative;
+}
+
+.philosophy-text em {
+  color: var(--text-primary);
+  font-style: italic;
 }
 
 /* ─── STORE CTA ─── */
 #store {
   padding: 8rem 2rem;
   text-align: center;
-  background: var(--dark-950);
+  background: var(--bg);
 }
 
 .store-inner {
   max-width: 600px;
   margin: 0 auto;
+  padding: 4rem;
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(40px) saturate(1.8);
+  -webkit-backdrop-filter: blur(40px) saturate(1.8);
+  border-radius: 32px;
+  border: 1px solid rgba(255,255,255,0.5);
+  box-shadow: var(--shadow-xl), inset 0 1px 0 var(--border-glass);
 }
 
 .store-desc {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   line-height: 1.7;
-  color: var(--dark-300);
+  color: var(--text-secondary);
   margin: 1.5rem 0 2.5rem;
 }
 
-/* ─── GLOWING BUTTON ─── */
+/* ─── BUTTON ─── */
 .btn {
   display: inline-block;
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 500;
-  padding: 0.9rem 2.5rem;
+  padding: 0.85rem 2.4rem;
   border-radius: 100px;
   text-decoration: none;
   position: relative;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.4s var(--ease-out);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-500) 100%);
+  background: var(--accent);
   color: white;
   box-shadow:
-    0 0 20px rgba(0,102,255,0.3),
-    0 0 60px rgba(0,102,255,0.1),
-    0 1px 0 rgba(255,255,255,0.15) inset,
-    0 4px 12px rgba(0,0,0,0.3);
-  border: 1px solid rgba(255,255,255,0.1);
+    0 4px 16px rgba(108,71,255,0.35),
+    0 1px 3px rgba(0,0,0,0.1),
+    inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 0 30px rgba(0,102,255,0.5),
-    0 0 80px rgba(0,102,255,0.2),
-    0 1px 0 rgba(255,255,255,0.2) inset,
-    0 8px 24px rgba(0,0,0,0.3);
+    0 8px 32px rgba(108,71,255,0.4),
+    0 2px 8px rgba(0,0,0,0.1),
+    inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
 /* ─── ABOUT ─── */
 #about {
   padding: 8rem 2rem;
-  background: var(--dark-900);
+  background: var(--surface);
 }
 
-.about-inner {
-  max-width: 1000px;
-  margin: 0 auto;
-}
+.about-inner { max-width: 1000px; margin: 0 auto; }
 
 .about-grid {
   display: grid;
@@ -393,83 +479,65 @@ body {
 }
 
 .about-card {
-  padding: 3rem;
-  border-radius: 20px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
-  border: 1px solid rgba(255,255,255,0.08);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow:
-    0 1px 0 rgba(255,255,255,0.05) inset,
-    0 4px 24px rgba(0,0,0,0.3);
+  padding: 2.5rem;
+  border-radius: 24px;
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(40px) saturate(1.8);
+  -webkit-backdrop-filter: blur(40px) saturate(1.8);
+  border: 1px solid rgba(255,255,255,0.5);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 var(--border-glass);
   position: relative;
   overflow: hidden;
+  transition: transform 0.6s var(--ease-out), box-shadow 0.6s var(--ease-out);
 }
 
-.about-card::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(ellipse at 30% 20%, rgba(0,102,255,0.04) 0%, transparent 50%);
-  pointer-events: none;
+.about-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl), inset 0 1px 0 var(--border-glass);
 }
 
 .about-initial {
-  width: 56px;
-  height: 56px;
+  width: 52px; height: 52px;
   border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-serif);
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   color: white;
   margin-bottom: 1.5rem;
-  position: relative;
-}
-
-.about-initial-e {
-  background: linear-gradient(135deg, var(--blue-600), var(--blue-700));
-  box-shadow: 0 4px 16px rgba(0,102,255,0.3), 0 1px 0 rgba(255,255,255,0.15) inset;
-}
-
-.about-initial-k {
-  background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
-  box-shadow: 0 4px 16px rgba(0,136,255,0.3), 0 1px 0 rgba(255,255,255,0.15) inset;
+  background: var(--accent);
+  box-shadow: 0 4px 16px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
 .about-name {
   font-family: var(--font-serif);
-  font-size: 1.75rem;
+  font-size: 1.6rem;
   margin-bottom: 0.25rem;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .about-role {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--blue-400);
+  color: var(--accent);
   margin-bottom: 1rem;
 }
 
 .about-bio {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   line-height: 1.7;
-  color: var(--dark-300);
-  position: relative;
+  color: var(--text-secondary);
 }
 
 /* ─── FOOTER ─── */
 footer {
   padding: 4rem 2rem;
   text-align: center;
-  background: var(--dark-950);
-  border-top: 1px solid rgba(255,255,255,0.05);
+  background: var(--bg);
+  border-top: 1px solid rgba(108,71,255,0.06);
 }
 
 .footer-links {
@@ -480,69 +548,37 @@ footer {
 }
 
 .footer-links a {
-  color: var(--dark-300);
+  color: var(--text-tertiary);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 500;
   transition: color 0.3s;
 }
 
-.footer-links a:hover { color: var(--blue-400); }
+.footer-links a:hover { color: var(--accent); }
 
 .footer-copy {
-  font-size: 0.8rem;
-  color: var(--dark-500);
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  opacity: 0.6;
 }
+
+/* ─── ALTERNATING SECTIONS ─── */
+#projects-ai, #projects-apps, #field-studies { background: var(--bg); }
 
 /* ─── RESPONSIVE ─── */
 @media (max-width: 768px) {
-  .about-grid { grid-template-columns: 1fr; }
+  .about-grid, .studies-grid { grid-template-columns: 1fr; }
   .projects-grid { grid-template-columns: 1fr; }
-  #projects-ai, #projects-apps, #store, #about { padding: 5rem 1.5rem; }
+  #projects-ai, #projects-apps, #field-studies, #store, #about { padding: 5rem 1.5rem; }
   #philosophy { padding: 6rem 1.5rem; }
   .about-card { padding: 2rem; }
+  .store-inner { padding: 2.5rem; }
 }
 
-/* ─── SVG ANIMATIONS ─── */
-@keyframes float1 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-@keyframes float2 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-@keyframes float3 { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-6px) rotate(3deg); } }
-@keyframes pulse-ring { 0%, 100% { stroke-dashoffset: 220; } 50% { stroke-dashoffset: 100; } }
-@keyframes wave-shift { 0% { transform: translateX(0); } 100% { transform: translateX(-20px); } }
-@keyframes orbit { 0% { transform: rotate(0deg) translateX(24px) rotate(0deg); } 100% { transform: rotate(360deg) translateX(24px) rotate(-360deg); } }
-@keyframes orbit-sm { 0% { transform: rotate(0deg) translateX(16px) rotate(0deg); } 100% { transform: rotate(360deg) translateX(16px) rotate(-360deg); } }
-@keyframes snake-move { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(6px); } }
-@keyframes shimmer { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-@keyframes shimmer2 { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
-@keyframes pulse-glow { 0%, 100% { r: 3; opacity: 0.6; } 50% { r: 5; opacity: 1; } }
-@keyframes pulse-expand { 0% { r: 20; opacity: 0.3; } 100% { r: 45; opacity: 0; } }
-@keyframes pulse-expand2 { 0% { r: 20; opacity: 0.2; } 100% { r: 50; opacity: 0; } }
-@keyframes data-flow { 0% { stroke-dashoffset: 20; } 100% { stroke-dashoffset: 0; } }
-@keyframes data-flow-rev { 0% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 20; } }
-@keyframes sweep-hand { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-@keyframes sparkle { 0%, 100% { opacity: 0; transform: scale(0.5); } 50% { opacity: 1; transform: scale(1); } }
-@keyframes wave-morph1 { 0%, 100% { d: path("M0,80 Q25,60 50,80 Q75,100 100,80 Q125,60 150,80 Q175,100 200,80 Q225,60 250,80"); } 50% { d: path("M0,80 Q25,70 50,75 Q75,90 100,85 Q125,70 150,75 Q175,95 200,80 Q225,65 250,80"); } }
-
-.anim-float1 { animation: float1 4s ease-in-out infinite; }
-.anim-float2 { animation: float2 5s ease-in-out infinite 0.5s; }
-.anim-float3 { animation: float3 6s ease-in-out infinite 1s; }
-.anim-pulse-ring { animation: pulse-ring 3s ease-in-out infinite; }
-.anim-wave { animation: wave-shift 2s linear infinite; }
-.anim-orbit { animation: orbit 8s linear infinite; }
-.anim-orbit-sm { animation: orbit-sm 6s linear infinite reverse; }
-.anim-snake { animation: snake-move 1.5s ease-in-out infinite; }
-.anim-shimmer { animation: shimmer 3s ease-in-out infinite; }
-.anim-shimmer2 { animation: shimmer2 4s ease-in-out infinite 1s; }
-.anim-pulse-expand { animation: pulse-expand 2.5s ease-out infinite; }
-.anim-pulse-expand2 { animation: pulse-expand2 2.5s ease-out infinite 1.25s; }
-.anim-data-flow { animation: data-flow 1s linear infinite; }
-.anim-data-flow-rev { animation: data-flow-rev 1s linear infinite; }
-.anim-sweep { animation: sweep-hand 10s linear infinite; transform-origin: 100px 75px; }
-.anim-sparkle1 { animation: sparkle 3s ease-in-out infinite; }
-.anim-sparkle2 { animation: sparkle 3s ease-in-out infinite 0.5s; }
-.anim-sparkle3 { animation: sparkle 3s ease-in-out infinite 1s; }
-.anim-sparkle4 { animation: sparkle 3s ease-in-out infinite 1.5s; }
-.anim-sparkle5 { animation: sparkle 3s ease-in-out infinite 2s; }
+@media (max-width: 480px) {
+  .hero-title { letter-spacing: -0.03em; }
+}
 </style>
 </head>
 <body>
@@ -559,7 +595,7 @@ footer {
     <div class="orb"></div>
   </div>
   <div class="hero-content">
-    <h1 class="hero-title reveal">ewk labs</h1>
+    <h1 class="hero-title reveal"><span class="hero-title-gradient">ewk labs</span></h1>
     <p class="hero-subtitle reveal reveal-delay-1">Experimental AI &middot; Seattle</p>
   </div>
 </section>
@@ -570,64 +606,9 @@ footer {
   <h2 class="section-title reveal reveal-delay-1">AI Experiments</h2>
   <div class="projects-grid">
 
-    <!-- FutureSelf: Two overlapping translucent silhouettes with data streams -->
     <a href="/futureself/" class="project-card reveal reveal-delay-2">
       <div class="project-visual vis-futureself">
-        <svg viewBox="0 0 200 150" fill="none">
-          <defs>
-            <radialGradient id="fs-bg" cx="50%" cy="45%" r="55%"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.12"/><stop offset="100%" stop-color="transparent"/></radialGradient>
-            <linearGradient id="fs-g1" x1="0" y1="0" x2="0.5" y2="1"><stop offset="0%" stop-color="#00CCFF" stop-opacity="0.6"/><stop offset="40%" stop-color="#0066FF" stop-opacity="0.3"/><stop offset="100%" stop-color="#0044DD" stop-opacity="0.15"/></linearGradient>
-            <linearGradient id="fs-g2" x1="1" y1="0" x2="0.5" y2="1"><stop offset="0%" stop-color="#00DDFF" stop-opacity="0.4"/><stop offset="50%" stop-color="#0088FF" stop-opacity="0.2"/><stop offset="100%" stop-color="#0055DD" stop-opacity="0.1"/></linearGradient>
-            <linearGradient id="fs-stream" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.8"/><stop offset="50%" stop-color="#0066FF" stop-opacity="0.4"/><stop offset="100%" stop-color="#00CCFF" stop-opacity="0.8"/></linearGradient>
-            <radialGradient id="fs-core1" cx="50%" cy="40%" r="50%"><stop offset="0%" stop-color="#00CCFF" stop-opacity="0.8"/><stop offset="100%" stop-color="#0044DD" stop-opacity="0.1"/></radialGradient>
-            <radialGradient id="fs-core2" cx="50%" cy="40%" r="50%"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.6"/><stop offset="100%" stop-color="#0055DD" stop-opacity="0.05"/></radialGradient>
-            <filter id="fs-blur"><feGaussianBlur stdDeviation="8"/></filter>
-            <filter id="fs-blur-sm"><feGaussianBlur stdDeviation="3"/></filter>
-            <filter id="fs-glow"><feGaussianBlur stdDeviation="2"/></filter>
-          </defs>
-          <!-- Background glow -->
-          <ellipse cx="100" cy="80" rx="70" ry="30" fill="url(#fs-bg)" filter="url(#fs-blur)"/>
-          <!-- Present silhouette (left) -->
-          <g class="anim-float1">
-            <ellipse cx="75" cy="48" rx="16" ry="18" fill="url(#fs-g1)"/>
-            <ellipse cx="75" cy="48" rx="16" ry="18" stroke="rgba(0,170,255,0.25)" stroke-width="0.8" fill="none"/>
-            <ellipse cx="75" cy="82" rx="22" ry="28" fill="url(#fs-g1)"/>
-            <ellipse cx="75" cy="82" rx="22" ry="28" stroke="rgba(0,170,255,0.2)" stroke-width="0.8" fill="none"/>
-            <!-- Inner glow core -->
-            <circle cx="75" cy="65" r="8" fill="url(#fs-core1)" filter="url(#fs-glow)"/>
-            <!-- Highlight -->
-            <ellipse cx="68" cy="42" rx="8" ry="5" fill="rgba(255,255,255,0.08)" transform="rotate(-15 68 42)"/>
-            <!-- Eye detail -->
-            <circle cx="72" cy="46" r="1.5" fill="rgba(0,200,255,0.7)"/>
-            <circle cx="79" cy="46" r="1.5" fill="rgba(0,200,255,0.7)"/>
-          </g>
-          <!-- Future silhouette (right, ghostly) -->
-          <g class="anim-float2" opacity="0.6">
-            <ellipse cx="125" cy="48" rx="16" ry="18" fill="url(#fs-g2)"/>
-            <ellipse cx="125" cy="48" rx="16" ry="18" stroke="rgba(0,200,255,0.15)" stroke-width="0.8" fill="none"/>
-            <ellipse cx="125" cy="82" rx="22" ry="28" fill="url(#fs-g2)"/>
-            <ellipse cx="125" cy="82" rx="22" ry="28" stroke="rgba(0,200,255,0.12)" stroke-width="0.8" fill="none"/>
-            <circle cx="125" cy="65" r="8" fill="url(#fs-core2)" filter="url(#fs-glow)"/>
-            <ellipse cx="118" cy="42" rx="7" ry="4" fill="rgba(255,255,255,0.05)" transform="rotate(-15 118 42)"/>
-            <circle cx="122" cy="46" r="1.5" fill="rgba(0,200,255,0.4)"/>
-            <circle cx="129" cy="46" r="1.5" fill="rgba(0,200,255,0.4)"/>
-          </g>
-          <!-- Ghost outline duplicates (depth) -->
-          <ellipse cx="127" cy="49" rx="18" ry="20" stroke="rgba(0,170,255,0.06)" stroke-width="1.5" fill="none" class="anim-float2" filter="url(#fs-blur-sm)"/>
-          <ellipse cx="127" cy="83" rx="24" ry="30" stroke="rgba(0,170,255,0.04)" stroke-width="1.5" fill="none" class="anim-float2" filter="url(#fs-blur-sm)"/>
-          <!-- Data streams connecting them -->
-          <path d="M90,55 C95,50 105,50 110,55" stroke="url(#fs-stream)" stroke-width="1.2" fill="none" stroke-dasharray="4 3" class="anim-data-flow"/>
-          <path d="M88,65 C95,58 105,58 112,65" stroke="url(#fs-stream)" stroke-width="1" fill="none" stroke-dasharray="3 4" class="anim-data-flow" opacity="0.7"/>
-          <path d="M90,75 C96,68 104,68 110,75" stroke="url(#fs-stream)" stroke-width="0.8" fill="none" stroke-dasharray="3 3" class="anim-data-flow" opacity="0.5"/>
-          <path d="M92,85 C97,78 103,78 108,85" stroke="url(#fs-stream)" stroke-width="0.6" fill="none" stroke-dasharray="2 3" class="anim-data-flow" opacity="0.4"/>
-          <!-- Floating data particles along streams -->
-          <circle cx="98" cy="52" r="1.5" fill="#00CCFF" class="anim-shimmer"/>
-          <circle cx="102" cy="62" r="1.2" fill="#00AAFF" class="anim-shimmer2"/>
-          <circle cx="100" cy="72" r="1" fill="#0088FF" class="anim-shimmer"/>
-          <circle cx="99" cy="82" r="0.8" fill="#0066FF" class="anim-shimmer2"/>
-          <!-- Bottom reflection -->
-          <ellipse cx="100" cy="118" rx="50" ry="5" fill="rgba(0,102,255,0.08)" filter="url(#fs-blur)"/>
-        </svg>
+        <canvas data-anim="futureself"></canvas>
       </div>
       <div class="project-info">
         <h3 class="project-name">FutureSelf</h3>
@@ -636,86 +617,9 @@ footer {
       </div>
     </a>
 
-    <!-- System 0: Brain neural network with pulsing nodes -->
     <a href="/system0/" class="project-card reveal reveal-delay-3">
       <div class="project-visual vis-system0">
-        <svg viewBox="0 0 200 150" fill="none">
-          <defs>
-            <radialGradient id="s0-bg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#0066FF" stop-opacity="0.15"/><stop offset="70%" stop-color="#0044DD" stop-opacity="0.05"/><stop offset="100%" stop-color="transparent"/></radialGradient>
-            <radialGradient id="s0-shell" cx="50%" cy="45%" r="50%"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.06"/><stop offset="80%" stop-color="#0044DD" stop-opacity="0.02"/><stop offset="100%" stop-color="transparent"/></radialGradient>
-            <linearGradient id="s0-node" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00CCFF"/><stop offset="100%" stop-color="#0055DD"/></linearGradient>
-            <linearGradient id="s0-node2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0088FF"/><stop offset="100%" stop-color="#0044DD"/></linearGradient>
-            <filter id="s0-glow"><feGaussianBlur stdDeviation="4"/></filter>
-            <filter id="s0-glow-sm"><feGaussianBlur stdDeviation="2"/></filter>
-            <filter id="s0-blur"><feGaussianBlur stdDeviation="6"/></filter>
-          </defs>
-          <!-- Outer translucent brain shell -->
-          <ellipse cx="100" cy="72" rx="55" ry="48" fill="url(#s0-shell)"/>
-          <ellipse cx="100" cy="72" rx="55" ry="48" stroke="rgba(0,136,255,0.08)" stroke-width="1" fill="none"/>
-          <ellipse cx="100" cy="72" rx="48" ry="42" stroke="rgba(0,136,255,0.05)" stroke-width="0.5" fill="none"/>
-          <!-- Background radial -->
-          <circle cx="100" cy="72" r="40" fill="url(#s0-bg)" filter="url(#s0-blur)"/>
-          <!-- Pulse waves radiating from center -->
-          <circle cx="100" cy="72" r="20" stroke="rgba(0,170,255,0.15)" stroke-width="0.8" fill="none" class="anim-pulse-expand"/>
-          <circle cx="100" cy="72" r="20" stroke="rgba(0,136,255,0.1)" stroke-width="0.6" fill="none" class="anim-pulse-expand2"/>
-          <!-- Neural connections (deep layer, faint) -->
-          <line x1="100" y1="38" x2="62" y2="62" stroke="rgba(0,136,255,0.12)" stroke-width="0.5"/>
-          <line x1="100" y1="38" x2="138" y2="62" stroke="rgba(0,136,255,0.12)" stroke-width="0.5"/>
-          <line x1="62" y1="62" x2="55" y2="95" stroke="rgba(0,102,255,0.08)" stroke-width="0.5"/>
-          <line x1="138" y1="62" x2="145" y2="95" stroke="rgba(0,102,255,0.08)" stroke-width="0.5"/>
-          <!-- Neural connections (main) -->
-          <line x1="100" y1="42" x2="60" y2="68" stroke="rgba(0,170,255,0.35)" stroke-width="1.2"/>
-          <line x1="100" y1="42" x2="140" y2="68" stroke="rgba(0,170,255,0.35)" stroke-width="1.2"/>
-          <line x1="60" y1="68" x2="75" y2="100" stroke="rgba(0,136,255,0.25)" stroke-width="1"/>
-          <line x1="140" y1="68" x2="125" y2="100" stroke="rgba(0,136,255,0.25)" stroke-width="1"/>
-          <line x1="60" y1="68" x2="140" y2="68" stroke="rgba(0,102,255,0.1)" stroke-width="0.8" stroke-dasharray="4 4"/>
-          <line x1="75" y1="100" x2="125" y2="100" stroke="rgba(0,102,255,0.1)" stroke-width="0.8" stroke-dasharray="4 4"/>
-          <line x1="100" y1="42" x2="100" y2="72" stroke="rgba(0,170,255,0.2)" stroke-width="0.8"/>
-          <line x1="100" y1="72" x2="75" y2="100" stroke="rgba(0,136,255,0.2)" stroke-width="0.8"/>
-          <line x1="100" y1="72" x2="125" y2="100" stroke="rgba(0,136,255,0.2)" stroke-width="0.8"/>
-          <line x1="100" y1="72" x2="60" y2="68" stroke="rgba(0,136,255,0.15)" stroke-width="0.8"/>
-          <line x1="100" y1="72" x2="140" y2="68" stroke="rgba(0,136,255,0.15)" stroke-width="0.8"/>
-          <!-- Data flow particles along connections -->
-          <line x1="100" y1="42" x2="60" y2="68" stroke="rgba(0,220,255,0.5)" stroke-width="2" stroke-dasharray="2 18" class="anim-data-flow"/>
-          <line x1="100" y1="42" x2="140" y2="68" stroke="rgba(0,220,255,0.5)" stroke-width="2" stroke-dasharray="2 18" class="anim-data-flow-rev"/>
-          <!-- Primary nodes -->
-          <g>
-            <circle cx="100" cy="42" r="8" fill="url(#s0-node)"/>
-            <circle cx="100" cy="42" r="8" stroke="rgba(255,255,255,0.2)" stroke-width="0.5" fill="none"/>
-            <circle cx="100" cy="42" r="13" fill="#00AAFF" opacity="0.12" filter="url(#s0-glow)"/>
-            <ellipse cx="96" cy="39" rx="4" ry="2" fill="rgba(255,255,255,0.12)"/>
-          </g>
-          <g>
-            <circle cx="60" cy="68" r="7" fill="url(#s0-node2)"/>
-            <circle cx="60" cy="68" r="7" stroke="rgba(255,255,255,0.15)" stroke-width="0.5" fill="none"/>
-            <circle cx="60" cy="68" r="11" fill="#0088FF" opacity="0.1" filter="url(#s0-glow)"/>
-          </g>
-          <g>
-            <circle cx="140" cy="68" r="7" fill="url(#s0-node2)"/>
-            <circle cx="140" cy="68" r="7" stroke="rgba(255,255,255,0.15)" stroke-width="0.5" fill="none"/>
-            <circle cx="140" cy="68" r="11" fill="#0088FF" opacity="0.1" filter="url(#s0-glow)"/>
-          </g>
-          <!-- Secondary nodes -->
-          <circle cx="75" cy="100" r="5.5" fill="#0066FF" opacity="0.7"/>
-          <circle cx="75" cy="100" r="5.5" stroke="rgba(255,255,255,0.1)" stroke-width="0.5" fill="none"/>
-          <circle cx="125" cy="100" r="5.5" fill="#0066FF" opacity="0.7"/>
-          <circle cx="125" cy="100" r="5.5" stroke="rgba(255,255,255,0.1)" stroke-width="0.5" fill="none"/>
-          <!-- Center hub node -->
-          <circle cx="100" cy="72" r="4" fill="#00CCFF" opacity="0.8" class="anim-shimmer"/>
-          <circle cx="100" cy="72" r="7" fill="#00AAFF" opacity="0.15" filter="url(#s0-glow-sm)" class="anim-shimmer"/>
-          <!-- Orbiting particles -->
-          <circle cx="100" cy="72" r="2.5" fill="#00DDFF" class="anim-orbit"/>
-          <circle cx="100" cy="72" r="1.8" fill="#0088FF" class="anim-orbit-sm"/>
-          <!-- Tertiary (depth) nodes -->
-          <circle cx="45" cy="88" r="3" fill="#0055DD" opacity="0.35"/>
-          <circle cx="155" cy="88" r="3" fill="#0055DD" opacity="0.35"/>
-          <circle cx="100" cy="115" r="3" fill="#0044DD" opacity="0.25"/>
-          <!-- Faint connections to tertiary -->
-          <line x1="60" y1="68" x2="45" y2="88" stroke="rgba(0,85,221,0.1)" stroke-width="0.5"/>
-          <line x1="140" y1="68" x2="155" y2="88" stroke="rgba(0,85,221,0.1)" stroke-width="0.5"/>
-          <line x1="75" y1="100" x2="100" y2="115" stroke="rgba(0,68,221,0.08)" stroke-width="0.5"/>
-          <line x1="125" y1="100" x2="100" y2="115" stroke="rgba(0,68,221,0.08)" stroke-width="0.5"/>
-        </svg>
+        <canvas data-anim="system0"></canvas>
       </div>
       <div class="project-info">
         <h3 class="project-name">System 0</h3>
@@ -724,76 +628,9 @@ footer {
       </div>
     </a>
 
-    <!-- CausalMe: Complex multi-layered directed graph with flowing particles -->
     <a href="/causalme/" class="project-card reveal reveal-delay-4">
       <div class="project-visual vis-causalme">
-        <svg viewBox="0 0 200 150" fill="none">
-          <defs>
-            <marker id="cm-arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="#00AAFF" opacity="0.8"/></marker>
-            <marker id="cm-arr2" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5" fill="#0066FF" opacity="0.5"/></marker>
-            <linearGradient id="cm-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00CCFF" stop-opacity="0.8"/><stop offset="100%" stop-color="#0055DD" stop-opacity="0.4"/></linearGradient>
-            <linearGradient id="cm-g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0088FF" stop-opacity="0.7"/><stop offset="100%" stop-color="#0044DD" stop-opacity="0.3"/></linearGradient>
-            <linearGradient id="cm-g3" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#0066FF" stop-opacity="0.5"/><stop offset="100%" stop-color="#0044DD" stop-opacity="0.2"/></linearGradient>
-            <radialGradient id="cm-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.2"/><stop offset="100%" stop-color="transparent"/></radialGradient>
-            <filter id="cm-sh"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0066FF" flood-opacity="0.3"/></filter>
-            <filter id="cm-glo"><feGaussianBlur stdDeviation="3"/></filter>
-          </defs>
-          <!-- Background glow -->
-          <circle cx="100" cy="75" r="55" fill="url(#cm-glow)"/>
-          <!-- Deep background nodes (layer 3, faintest) -->
-          <circle cx="30" cy="75" r="5" fill="#0044DD" opacity="0.15"/>
-          <circle cx="170" cy="75" r="5" fill="#0044DD" opacity="0.15"/>
-          <circle cx="100" cy="130" r="4" fill="#0044DD" opacity="0.12"/>
-          <!-- Mid-layer nodes (layer 2) -->
-          <circle cx="50" cy="118" r="8" fill="url(#cm-g3)"/>
-          <circle cx="50" cy="118" r="8" stroke="rgba(255,255,255,0.08)" stroke-width="0.5" fill="none"/>
-          <circle cx="150" cy="118" r="8" fill="url(#cm-g3)"/>
-          <circle cx="150" cy="118" r="8" stroke="rgba(255,255,255,0.08)" stroke-width="0.5" fill="none"/>
-          <circle cx="35" cy="55" r="6" fill="rgba(0,85,221,0.35)"/>
-          <circle cx="165" cy="55" r="6" fill="rgba(0,85,221,0.35)"/>
-          <!-- Primary nodes (layer 1) -->
-          <g class="anim-float1">
-            <circle cx="60" cy="38" r="14" fill="url(#cm-g1)" filter="url(#cm-sh)"/>
-            <circle cx="60" cy="38" r="14" stroke="rgba(255,255,255,0.15)" stroke-width="0.5" fill="none"/>
-            <ellipse cx="55" cy="33" rx="6" ry="3" fill="rgba(255,255,255,0.1)"/>
-            <circle cx="60" cy="38" r="4" fill="rgba(0,200,255,0.4)" class="anim-shimmer"/>
-          </g>
-          <g>
-            <circle cx="140" cy="38" r="14" fill="url(#cm-g2)"/>
-            <circle cx="140" cy="38" r="14" stroke="rgba(255,255,255,0.12)" stroke-width="0.5" fill="none"/>
-            <ellipse cx="135" cy="33" rx="5" ry="2.5" fill="rgba(255,255,255,0.07)"/>
-          </g>
-          <g class="anim-float2">
-            <circle cx="100" cy="78" r="16" fill="url(#cm-g1)" filter="url(#cm-sh)"/>
-            <circle cx="100" cy="78" r="16" stroke="rgba(255,255,255,0.15)" stroke-width="0.5" fill="none"/>
-            <ellipse cx="94" cy="72" rx="7" ry="3" fill="rgba(255,255,255,0.08)"/>
-            <circle cx="100" cy="78" r="5" fill="#00AAFF" opacity="0.4" class="anim-shimmer"/>
-            <circle cx="100" cy="78" r="9" fill="#00AAFF" opacity="0.08" filter="url(#cm-glo)"/>
-          </g>
-          <!-- Primary edges with flow animation -->
-          <line x1="72" y1="46" x2="88" y2="66" stroke="rgba(0,170,255,0.5)" stroke-width="1.5" marker-end="url(#cm-arr)"/>
-          <line x1="72" y1="46" x2="88" y2="66" stroke="rgba(0,220,255,0.6)" stroke-width="2" stroke-dasharray="3 17" class="anim-data-flow"/>
-          <line x1="128" y1="46" x2="112" y2="66" stroke="rgba(0,170,255,0.5)" stroke-width="1.5" marker-end="url(#cm-arr)"/>
-          <line x1="128" y1="46" x2="112" y2="66" stroke="rgba(0,220,255,0.6)" stroke-width="2" stroke-dasharray="3 17" class="anim-data-flow-rev"/>
-          <!-- Secondary edges -->
-          <line x1="90" y1="90" x2="60" y2="112" stroke="rgba(0,136,255,0.35)" stroke-width="1.2" marker-end="url(#cm-arr2)"/>
-          <line x1="110" y1="90" x2="140" y2="112" stroke="rgba(0,136,255,0.35)" stroke-width="1.2" marker-end="url(#cm-arr2)"/>
-          <!-- Cross connections -->
-          <line x1="60" y1="38" x2="140" y2="38" stroke="rgba(0,102,255,0.1)" stroke-width="0.8" stroke-dasharray="4 4"/>
-          <line x1="50" y1="118" x2="150" y2="118" stroke="rgba(0,85,221,0.08)" stroke-width="0.6" stroke-dasharray="3 4"/>
-          <!-- Connections to depth nodes -->
-          <line x1="60" y1="38" x2="35" y2="55" stroke="rgba(0,85,221,0.15)" stroke-width="0.6" marker-end="url(#cm-arr2)"/>
-          <line x1="140" y1="38" x2="165" y2="55" stroke="rgba(0,85,221,0.15)" stroke-width="0.6" marker-end="url(#cm-arr2)"/>
-          <line x1="50" y1="118" x2="30" y2="75" stroke="rgba(0,68,221,0.08)" stroke-width="0.5"/>
-          <line x1="150" y1="118" x2="170" y2="75" stroke="rgba(0,68,221,0.08)" stroke-width="0.5"/>
-          <line x1="50" y1="118" x2="100" y2="130" stroke="rgba(0,68,221,0.06)" stroke-width="0.5"/>
-          <line x1="150" y1="118" x2="100" y2="130" stroke="rgba(0,68,221,0.06)" stroke-width="0.5"/>
-          <!-- Flow particles -->
-          <circle cx="80" cy="56" r="1.8" fill="#00DDFF" class="anim-shimmer"/>
-          <circle cx="120" cy="56" r="1.8" fill="#00BBFF" class="anim-shimmer2"/>
-          <circle cx="75" cy="100" r="1.3" fill="#0088FF" class="anim-shimmer"/>
-          <circle cx="125" cy="100" r="1.3" fill="#0088FF" class="anim-shimmer2"/>
-        </svg>
+        <canvas data-anim="causalme"></canvas>
       </div>
       <div class="project-info">
         <h3 class="project-name">CausalMe</h3>
@@ -811,80 +648,9 @@ footer {
   <h2 class="section-title reveal reveal-delay-1">Apps</h2>
   <div class="projects-grid">
 
-    <!-- Snake Game: Isometric 3D board with glossy spheres -->
     <a href="apps/snake-game/" class="project-card reveal reveal-delay-2">
       <div class="project-visual vis-snake">
-        <svg viewBox="0 0 200 150" fill="none">
-          <defs>
-            <linearGradient id="sn-board" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0a2015" stop-opacity="0.8"/><stop offset="100%" stop-color="#061a0e" stop-opacity="0.4"/></linearGradient>
-            <radialGradient id="sn-sphere" cx="35%" cy="30%" r="60%"><stop offset="0%" stop-color="#86efac"/><stop offset="40%" stop-color="#4ade80"/><stop offset="100%" stop-color="#166534"/></radialGradient>
-            <radialGradient id="sn-sphere2" cx="35%" cy="30%" r="60%"><stop offset="0%" stop-color="#bbf7d0"/><stop offset="40%" stop-color="#6ee7b7"/><stop offset="100%" stop-color="#15803d"/></radialGradient>
-            <radialGradient id="sn-sphere3" cx="35%" cy="30%" r="60%"><stop offset="0%" stop-color="#d1fae5" stop-opacity="0.8"/><stop offset="40%" stop-color="#a7f3d0" stop-opacity="0.6"/><stop offset="100%" stop-color="#22c55e" stop-opacity="0.3"/></radialGradient>
-            <radialGradient id="sn-apple" cx="35%" cy="25%" r="55%"><stop offset="0%" stop-color="#fca5a5"/><stop offset="40%" stop-color="#f87171"/><stop offset="100%" stop-color="#991b1b"/></radialGradient>
-            <radialGradient id="sn-apple-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#f87171" stop-opacity="0.5"/><stop offset="100%" stop-color="transparent"/></radialGradient>
-            <filter id="sn-gl"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#4ade80" flood-opacity="0.4"/></filter>
-            <filter id="sn-agl"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#f87171" flood-opacity="0.5"/></filter>
-            <filter id="sn-blur"><feGaussianBlur stdDeviation="1"/></filter>
-          </defs>
-          <!-- Isometric grid board -->
-          <g opacity="0.2">
-            <line x1="30" y1="110" x2="80" y2="85" stroke="#4ade80" stroke-width="0.4"/>
-            <line x1="50" y1="120" x2="100" y2="95" stroke="#4ade80" stroke-width="0.4"/>
-            <line x1="70" y1="130" x2="120" y2="105" stroke="#4ade80" stroke-width="0.3"/>
-            <line x1="90" y1="140" x2="140" y2="115" stroke="#4ade80" stroke-width="0.2"/>
-            <line x1="30" y1="110" x2="80" y2="135" stroke="#4ade80" stroke-width="0.4"/>
-            <line x1="55" y1="97" x2="105" y2="122" stroke="#4ade80" stroke-width="0.4"/>
-            <line x1="80" y1="85" x2="130" y2="110" stroke="#4ade80" stroke-width="0.3"/>
-            <line x1="105" y1="72" x2="155" y2="97" stroke="#4ade80" stroke-width="0.2"/>
-          </g>
-          <!-- Board shadow -->
-          <ellipse cx="100" cy="125" rx="60" ry="8" fill="rgba(74,222,128,0.06)" filter="url(#sn-blur)"/>
-          <!-- Snake body: connected glossy spheres -->
-          <g class="anim-snake" filter="url(#sn-gl)">
-            <!-- Tail (faintest) -->
-            <circle cx="148" cy="68" r="7" fill="url(#sn-sphere3)" opacity="0.4"/>
-            <ellipse cx="145" cy="65" rx="3" ry="1.5" fill="rgba(255,255,255,0.15)" opacity="0.4"/>
-            <!-- Body segments -->
-            <circle cx="132" cy="68" r="8" fill="url(#sn-sphere3)" opacity="0.55"/>
-            <ellipse cx="129" cy="64" rx="3.5" ry="1.8" fill="rgba(255,255,255,0.15)" opacity="0.55"/>
-            <circle cx="114" cy="68" r="9" fill="url(#sn-sphere2)" opacity="0.7"/>
-            <ellipse cx="110" cy="63" rx="4" ry="2" fill="rgba(255,255,255,0.18)" opacity="0.7"/>
-            <circle cx="95" cy="66" r="10" fill="url(#sn-sphere2)" opacity="0.85"/>
-            <ellipse cx="91" cy="61" rx="4.5" ry="2" fill="rgba(255,255,255,0.2)" opacity="0.85"/>
-            <circle cx="74" cy="64" r="11" fill="url(#sn-sphere)"/>
-            <ellipse cx="70" cy="58" rx="5" ry="2.5" fill="rgba(255,255,255,0.25)"/>
-            <!-- Head (biggest, brightest) -->
-            <circle cx="54" cy="62" r="12" fill="url(#sn-sphere)"/>
-            <ellipse cx="49" cy="55" rx="5.5" ry="2.5" fill="rgba(255,255,255,0.3)"/>
-            <!-- Connection shadows between spheres -->
-            <rect x="60" y="62" width="8" height="4" rx="2" fill="rgba(74,222,128,0.3)"/>
-            <rect x="80" y="63" width="8" height="3.5" rx="1.75" fill="rgba(74,222,128,0.25)"/>
-            <rect x="100" y="65" width="7" height="3" rx="1.5" fill="rgba(74,222,128,0.2)"/>
-            <rect x="120" y="66" width="6" height="2.5" rx="1.25" fill="rgba(74,222,128,0.15)"/>
-            <rect x="137" y="67" width="5" height="2" rx="1" fill="rgba(74,222,128,0.1)"/>
-          </g>
-          <!-- Eyes -->
-          <circle cx="49" cy="59" r="2.5" fill="#f0fdf4"/>
-          <circle cx="49" cy="59" r="1.2" fill="#166534"/>
-          <circle cx="57" cy="58" r="2.5" fill="#f0fdf4"/>
-          <circle cx="57" cy="58" r="1.2" fill="#166534"/>
-          <!-- Tongue -->
-          <line x1="44" y1="63" x2="39" y2="61" stroke="#f87171" stroke-width="1" stroke-linecap="round"/>
-          <line x1="39" y1="61" x2="37" y2="59" stroke="#f87171" stroke-width="0.8" stroke-linecap="round"/>
-          <line x1="39" y1="61" x2="37" y2="63" stroke="#f87171" stroke-width="0.8" stroke-linecap="round"/>
-          <!-- Apple -->
-          <g filter="url(#sn-agl)">
-            <circle cx="155" cy="42" r="8" fill="url(#sn-apple-glow)"/>
-            <circle cx="155" cy="45" r="7" fill="url(#sn-apple)"/>
-            <ellipse cx="152" cy="41" rx="3" ry="1.5" fill="rgba(255,255,255,0.25)"/>
-            <path d="M155,38 Q157,32 160,34" stroke="#22c55e" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-            <ellipse cx="158" cy="33" rx="3" ry="1.5" fill="#22c55e" opacity="0.6" transform="rotate(30 158 33)"/>
-          </g>
-          <!-- Score dots -->
-          <circle cx="32" cy="32" r="2" fill="#4ade80" opacity="0.5" class="anim-shimmer"/>
-          <circle cx="40" cy="32" r="2" fill="#4ade80" opacity="0.4" class="anim-shimmer2"/>
-          <circle cx="48" cy="32" r="2" fill="#4ade80" opacity="0.3"/>
-        </svg>
+        <canvas data-anim="snake"></canvas>
       </div>
       <div class="project-info">
         <h3 class="project-name">Snake Game</h3>
@@ -893,72 +659,9 @@ footer {
       </div>
     </a>
 
-    <!-- Focus Timer: Multi-ring detailed timer -->
     <a href="apps/focus-timer/" class="project-card reveal reveal-delay-3">
       <div class="project-visual vis-timer">
-        <svg viewBox="0 0 200 150" fill="none">
-          <defs>
-            <linearGradient id="tm-ring1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fca5a5"/><stop offset="100%" stop-color="#f87171"/></linearGradient>
-            <linearGradient id="tm-ring2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f87171" stop-opacity="0.5"/><stop offset="100%" stop-color="#ef4444" stop-opacity="0.3"/></linearGradient>
-            <radialGradient id="tm-frost" cx="50%" cy="45%" r="50%"><stop offset="0%" stop-color="rgba(255,255,255,0.08)"/><stop offset="100%" stop-color="rgba(255,255,255,0.01)"/></radialGradient>
-            <radialGradient id="tm-center-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#f87171" stop-opacity="0.15"/><stop offset="100%" stop-color="transparent"/></radialGradient>
-            <filter id="tm-gl"><feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#f87171" flood-opacity="0.4"/></filter>
-            <filter id="tm-gl-sm"><feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#f87171" flood-opacity="0.3"/></filter>
-            <filter id="tm-blur"><feGaussianBlur stdDeviation="4"/></filter>
-          </defs>
-          <!-- Outer glow ring -->
-          <circle cx="100" cy="75" r="52" stroke="rgba(248,113,113,0.06)" stroke-width="8" fill="none"/>
-          <!-- Background glow -->
-          <circle cx="100" cy="75" r="30" fill="url(#tm-center-glow)" filter="url(#tm-blur)"/>
-          <!-- Tick marks (outer ring, 60 ticks) -->
-          <g opacity="0.3">
-            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(0 100 75)"/>
-            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(30 100 75)"/>
-            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(60 100 75)"/>
-            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(90 100 75)"/>
-            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(120 100 75)"/>
-            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(150 100 75)"/>
-            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(180 100 75)"/>
-            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(210 100 75)"/>
-            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(240 100 75)"/>
-            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(270 100 75)"/>
-            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(300 100 75)"/>
-            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(330 100 75)"/>
-          </g>
-          <!-- Major tick marks (12 positions, longer) -->
-          <g opacity="0.5">
-            <line x1="100" y1="25" x2="100" y2="30" stroke="#fca5a5" stroke-width="1" transform="rotate(0 100 75)"/>
-            <line x1="100" y1="25" x2="100" y2="30" stroke="#fca5a5" stroke-width="1" transform="rotate(90 100 75)"/>
-            <line x1="100" y1="25" x2="100" y2="30" stroke="#fca5a5" stroke-width="1" transform="rotate(180 100 75)"/>
-            <line x1="100" y1="25" x2="100" y2="30" stroke="#fca5a5" stroke-width="1" transform="rotate(270 100 75)"/>
-          </g>
-          <!-- Track ring (background) -->
-          <circle cx="100" cy="75" r="42" stroke="rgba(127,29,29,0.35)" stroke-width="3" fill="none"/>
-          <!-- Progress ring (animated) -->
-          <circle cx="100" cy="75" r="42" stroke="url(#tm-ring1)" stroke-width="3" stroke-dasharray="264" class="anim-pulse-ring" stroke-linecap="round" transform="rotate(-90 100 75)" filter="url(#tm-gl)"/>
-          <!-- Inner track ring -->
-          <circle cx="100" cy="75" r="35" stroke="rgba(127,29,29,0.2)" stroke-width="1.5" fill="none"/>
-          <!-- Inner progress ring -->
-          <circle cx="100" cy="75" r="35" stroke="url(#tm-ring2)" stroke-width="1.5" stroke-dasharray="110 110" stroke-linecap="round" transform="rotate(-90 100 75)" filter="url(#tm-gl-sm)"/>
-          <!-- Glow ring (outermost, subtle) -->
-          <circle cx="100" cy="75" r="46" stroke="rgba(248,113,113,0.08)" stroke-width="1" fill="none"/>
-          <!-- Frosted glass center -->
-          <circle cx="100" cy="75" r="25" fill="url(#tm-frost)"/>
-          <circle cx="100" cy="75" r="25" stroke="rgba(255,255,255,0.06)" stroke-width="0.5" fill="none"/>
-          <!-- Center dot -->
-          <circle cx="100" cy="75" r="4" fill="#f87171" opacity="0.9"/>
-          <circle cx="100" cy="75" r="6" fill="#f87171" opacity="0.15"/>
-          <circle cx="100" cy="75" r="2" fill="#fca5a5"/>
-          <!-- Sweep hand -->
-          <g class="anim-sweep">
-            <line x1="100" y1="75" x2="100" y2="40" stroke="#f87171" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
-            <circle cx="100" cy="40" r="2" fill="#fca5a5" opacity="0.8"/>
-          </g>
-          <!-- Time text placeholder dots -->
-          <circle cx="90" cy="75" r="1" fill="#fca5a5" opacity="0.4"/>
-          <circle cx="100" cy="75" r="1" fill="#fca5a5" opacity="0.4"/>
-          <circle cx="110" cy="75" r="1" fill="#fca5a5" opacity="0.4"/>
-        </svg>
+        <canvas data-anim="timer"></canvas>
       </div>
       <div class="project-info">
         <h3 class="project-name">Focus Timer</h3>
@@ -967,69 +670,56 @@ footer {
       </div>
     </a>
 
-    <!-- Mood Journal: Layered waves with sparkles -->
     <a href="apps/mood-journal/" class="project-card reveal reveal-delay-4">
       <div class="project-visual vis-mood">
-        <svg viewBox="0 0 200 150" fill="none">
-          <defs>
-            <linearGradient id="md-g1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.7"/><stop offset="50%" stop-color="#7c3aed" stop-opacity="0.5"/><stop offset="100%" stop-color="#00AAFF" stop-opacity="0.7"/></linearGradient>
-            <linearGradient id="md-g2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#7c3aed" stop-opacity="0.5"/><stop offset="50%" stop-color="#a855f7" stop-opacity="0.3"/><stop offset="100%" stop-color="#0088FF" stop-opacity="0.5"/></linearGradient>
-            <linearGradient id="md-g3" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#0066FF" stop-opacity="0.4"/><stop offset="50%" stop-color="#6d28d9" stop-opacity="0.25"/><stop offset="100%" stop-color="#00AAFF" stop-opacity="0.4"/></linearGradient>
-            <linearGradient id="md-g4" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#a855f7" stop-opacity="0.2"/><stop offset="50%" stop-color="#0088FF" stop-opacity="0.15"/><stop offset="100%" stop-color="#7c3aed" stop-opacity="0.2"/></linearGradient>
-            <linearGradient id="md-g5" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#0044DD" stop-opacity="0.15"/><stop offset="50%" stop-color="#5b21b6" stop-opacity="0.1"/><stop offset="100%" stop-color="#0066FF" stop-opacity="0.15"/></linearGradient>
-            <radialGradient id="md-sparkle" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/><stop offset="100%" stop-color="#00AAFF" stop-opacity="0"/></radialGradient>
-            <filter id="md-blur"><feGaussianBlur stdDeviation="2"/></filter>
-            <filter id="md-blur2"><feGaussianBlur stdDeviation="4"/></filter>
-          </defs>
-          <!-- Background gradient wash -->
-          <rect x="0" y="0" width="200" height="150" fill="url(#md-g5)" filter="url(#md-blur2)" opacity="0.5"/>
-          <!-- Wave layer 5 (deepest, most blurred) -->
-          <g class="anim-wave" opacity="0.2" filter="url(#md-blur)">
-            <path d="M-20,95 Q0,75 20,95 Q40,115 60,95 Q80,75 100,95 Q120,115 140,95 Q160,75 180,95 Q200,115 220,95" stroke="url(#md-g5)" stroke-width="3" fill="none" stroke-linecap="round"/>
-          </g>
-          <!-- Wave layer 4 -->
-          <g style="animation: wave-shift 3.5s linear infinite;" opacity="0.3">
-            <path d="M-20,88 Q0,70 20,88 Q40,106 60,88 Q80,70 100,88 Q120,106 140,88 Q160,70 180,88 Q200,106 220,88" stroke="url(#md-g4)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-          </g>
-          <!-- Wave layer 3 -->
-          <g style="animation: wave-shift 2.8s linear infinite reverse;" opacity="0.4">
-            <path d="M-20,80 Q0,62 20,80 Q40,98 60,80 Q80,62 100,80 Q120,98 140,80 Q160,62 180,80 Q200,98 220,80" stroke="url(#md-g3)" stroke-width="2" fill="none" stroke-linecap="round"/>
-          </g>
-          <!-- Wave layer 2 -->
-          <g style="animation: wave-shift 2.2s linear infinite;" opacity="0.6">
-            <path d="M-20,73 Q0,55 20,73 Q40,91 60,73 Q80,55 100,73 Q120,91 140,73 Q160,55 180,73 Q200,91 220,73" stroke="url(#md-g2)" stroke-width="2" fill="none" stroke-linecap="round"/>
-          </g>
-          <!-- Wave layer 1 (foreground) -->
-          <g class="anim-wave" opacity="0.85">
-            <path d="M-20,68 Q0,48 20,68 Q40,88 60,68 Q80,48 100,68 Q120,88 140,68 Q160,48 180,68 Q200,88 220,68" stroke="url(#md-g1)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-          </g>
-          <!-- Secondary foreground wave (offset) -->
-          <g style="animation: wave-shift 1.6s linear infinite reverse;" opacity="0.5">
-            <path d="M-20,62 Q5,50 25,65 Q50,82 75,62 Q95,48 115,65 Q140,82 165,62 Q185,48 210,65" stroke="url(#md-g1)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-          </g>
-          <!-- Filled wave areas for depth -->
-          <path d="M0,120 Q10,108 30,115 Q50,125 70,112 Q90,105 110,115 Q130,128 150,112 Q170,102 190,115 L200,150 L0,150 Z" fill="rgba(124,58,237,0.06)"/>
-          <path d="M0,125 Q20,115 40,122 Q60,130 80,118 Q100,110 120,122 Q140,132 160,118 Q180,108 200,120 L200,150 L0,150 Z" fill="rgba(0,102,255,0.04)"/>
-          <!-- Sparkle particles floating above -->
-          <circle cx="35" cy="40" r="2" fill="url(#md-sparkle)" class="anim-sparkle1"/>
-          <circle cx="72" cy="32" r="1.5" fill="url(#md-sparkle)" class="anim-sparkle2"/>
-          <circle cx="110" cy="38" r="2.5" fill="url(#md-sparkle)" class="anim-sparkle3"/>
-          <circle cx="148" cy="30" r="1.8" fill="url(#md-sparkle)" class="anim-sparkle4"/>
-          <circle cx="170" cy="42" r="2" fill="url(#md-sparkle)" class="anim-sparkle5"/>
-          <circle cx="55" cy="48" r="1.2" fill="url(#md-sparkle)" class="anim-sparkle3"/>
-          <circle cx="130" cy="45" r="1.5" fill="url(#md-sparkle)" class="anim-sparkle1"/>
-          <circle cx="90" cy="28" r="1.8" fill="url(#md-sparkle)" class="anim-sparkle4"/>
-          <!-- Tiny accent dots -->
-          <circle cx="25" cy="55" r="0.8" fill="#7c3aed" opacity="0.4" class="anim-shimmer"/>
-          <circle cx="185" cy="50" r="0.8" fill="#00AAFF" opacity="0.4" class="anim-shimmer2"/>
-          <circle cx="60" cy="25" r="0.6" fill="#a855f7" opacity="0.3" class="anim-shimmer"/>
-          <circle cx="155" cy="22" r="0.6" fill="#0088FF" opacity="0.3" class="anim-shimmer2"/>
-        </svg>
+        <canvas data-anim="mood"></canvas>
       </div>
       <div class="project-info">
         <h3 class="project-name">Mood Journal</h3>
         <p class="project-type">Wellness</p>
         <p class="project-desc">Track emotional patterns through abstract visualizations, not words.</p>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ─── FIELD STUDIES ─── -->
+<section id="field-studies">
+  <p class="section-label reveal">Field Studies</p>
+  <h2 class="section-title reveal reveal-delay-1">Design Experiments</h2>
+  <div class="studies-grid">
+
+    <a href="/lab/001/" class="study-card reveal reveal-delay-2">
+      <div class="study-visual">
+        <canvas data-anim="magnetic"></canvas>
+      </div>
+      <div class="study-info">
+        <p class="study-number">Study 001</p>
+        <h3 class="study-name">Magnetic Field</h3>
+        <p class="study-desc">Interactive particle dynamics responding to cursor gravity and repulsion forces.</p>
+      </div>
+    </a>
+
+    <a href="/lab/002/" class="study-card reveal reveal-delay-3">
+      <div class="study-visual">
+        <canvas data-anim="typo"></canvas>
+      </div>
+      <div class="study-info">
+        <p class="study-number">Study 002</p>
+        <h3 class="study-name">Audio-Reactive Typography</h3>
+        <p class="study-desc">Letterforms that breathe, warp, and dissolve in response to ambient sound.</p>
+      </div>
+    </a>
+
+    <a href="/lab/003/" class="study-card reveal reveal-delay-4">
+      <div class="study-visual">
+        <canvas data-anim="orbital"></canvas>
+      </div>
+      <div class="study-info">
+        <p class="study-number">Study 003</p>
+        <h3 class="study-name">Orbital Clock</h3>
+        <p class="study-desc">Time as orbital mechanics, where hours, minutes, and seconds trace celestial paths.</p>
       </div>
     </a>
 
@@ -1058,13 +748,13 @@ footer {
     <h2 class="section-title reveal reveal-delay-1">About</h2>
     <div class="about-grid">
       <div class="about-card reveal reveal-delay-2">
-        <div class="about-initial about-initial-e">E</div>
+        <div class="about-initial">E</div>
         <h3 class="about-name">Eli</h3>
         <p class="about-role">Founder &amp; Designer</p>
         <p class="about-bio">Product designer and systems thinker based in Seattle. Works at the intersection of AI, developer tools, and design. Builds things that are ambitious, niche, and slightly unconventional.</p>
       </div>
       <div class="about-card reveal reveal-delay-3">
-        <div class="about-initial about-initial-k">K</div>
+        <div class="about-initial">K</div>
         <h3 class="about-name">Kim</h3>
         <p class="about-role">Co-Founder &amp; Operator</p>
         <p class="about-bio">Digital operator and strategist. Runs systems, coordinates agents, and keeps everything moving. The infrastructure behind the experiments.</p>
@@ -1082,186 +772,818 @@ footer {
   <p class="footer-copy">ewk labs</p>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ─── Progress Bar ───
-const progress = document.getElementById('progress');
-window.addEventListener('scroll', function() {
-  var h = document.documentElement.scrollHeight - window.innerHeight;
-  progress.style.height = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
-}, { passive: true });
+/* ═══════════════════════════════════════════════════════════════
+   CORE: Progress bar + scroll reveals
+   ═══════════════════════════════════════════════════════════════ */
+(function(){
+  var progress = document.getElementById('progress');
+  window.addEventListener('scroll', function() {
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    progress.style.height = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
+  }, { passive: true });
 
-// ─── Scroll Reveals ───
-var reveals = document.querySelectorAll('.reveal');
-var observer = new IntersectionObserver(function(entries) {
-  entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
-}, { threshold: 0.15 });
-reveals.forEach(function(el) { observer.observe(el); });
+  var reveals = document.querySelectorAll('.reveal');
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(function(el) { obs.observe(el); });
+})();
 
-// ─── Three.js Hero: Universal WebGL1-compatible glass shapes ───
-(function() {
+/* ═══════════════════════════════════════════════════════════════
+   HERO: Gradient mesh with flowing noise
+   ═══════════════════════════════════════════════════════════════ */
+(function(){
   var canvas = document.getElementById('hero-canvas');
   var fallback = document.getElementById('hero-fallback');
+  var ctx;
+  try { ctx = canvas.getContext('2d'); } catch(e) {}
+  if (!ctx) { canvas.style.display='none'; fallback.style.display='block'; return; }
 
-  // Check WebGL availability
-  var gl = null;
-  try {
-    gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-  } catch(e) {}
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var w, h;
 
-  if (!gl) {
-    // Show CSS fallback
-    canvas.style.display = 'none';
-    fallback.style.display = 'block';
-    return;
+  function resize() {
+    w = canvas.offsetWidth; h = canvas.offsetHeight;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Simplex-like noise via sin composition
+  function fbm(x, y, t) {
+    return Math.sin(x*0.8 + t*0.3) * Math.cos(y*0.6 + t*0.2) * 0.5
+         + Math.sin(x*1.6 + y*1.2 + t*0.5) * 0.25
+         + Math.cos(x*0.4 - y*0.8 + t*0.15) * 0.25;
   }
 
-  try {
-    var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(60, canvas.offsetWidth / canvas.offsetHeight, 0.1, 100);
-    camera.position.z = 5;
+  var orbs = [
+    { x: 0.2, y: 0.3, r: 0.35, sx: 0.15, sy: 0.1, phase: 0 },
+    { x: 0.7, y: 0.5, r: 0.3, sx: -0.1, sy: 0.15, phase: 2 },
+    { x: 0.5, y: 0.7, r: 0.28, sx: 0.12, sy: -0.08, phase: 4 },
+    { x: 0.3, y: 0.6, r: 0.22, sx: -0.08, sy: -0.12, phase: 6 },
+    { x: 0.8, y: 0.2, r: 0.25, sx: 0.06, sy: 0.1, phase: 1 }
+  ];
 
-    var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-    renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  var t = 0;
+  function draw() {
+    requestAnimationFrame(draw);
+    t += 0.004;
+    ctx.clearRect(0, 0, w, h);
 
-    // Rim-lit glass shader (WebGL1 compatible, works everywhere)
-    var glassVertexShader = [
-      'varying vec3 vNormal;',
-      'varying vec3 vViewPosition;',
-      'void main() {',
-      '  vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);',
-      '  vViewPosition = -mvPosition.xyz;',
-      '  vNormal = normalMatrix * normal;',
-      '  gl_Position = projectionMatrix * mvPosition;',
-      '}'
-    ].join('\n');
+    orbs.forEach(function(o) {
+      var cx = (o.x + Math.sin(t * 0.3 + o.phase) * o.sx) * w;
+      var cy = (o.y + Math.cos(t * 0.25 + o.phase) * o.sy) * h;
+      var r = o.r * Math.max(w, h) * (0.9 + fbm(o.x, o.y, t) * 0.2);
 
-    var glassFragmentShader = [
-      'uniform vec3 uColor;',
-      'uniform float uOpacity;',
-      'uniform float uRimPower;',
-      'varying vec3 vNormal;',
-      'varying vec3 vViewPosition;',
-      'void main() {',
-      '  vec3 normal = normalize(vNormal);',
-      '  vec3 viewDir = normalize(vViewPosition);',
-      '  float rim = 1.0 - max(dot(viewDir, normal), 0.0);',
-      '  rim = pow(rim, uRimPower);',
-      '  vec3 color = uColor + vec3(0.3, 0.5, 1.0) * rim * 0.8;',
-      '  float alpha = uOpacity + rim * 0.4;',
-      '  gl_FragColor = vec4(color, alpha);',
-      '}'
-    ].join('\n');
-
-    function makeGlassMat(color, opacity, rimPower) {
-      return new THREE.ShaderMaterial({
-        uniforms: {
-          uColor: { value: new THREE.Color(color) },
-          uOpacity: { value: opacity },
-          uRimPower: { value: rimPower || 2.5 }
-        },
-        vertexShader: glassVertexShader,
-        fragmentShader: glassFragmentShader,
-        transparent: true,
-        side: THREE.DoubleSide,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending
-      });
-    }
-
-    var shapes = [];
-    var geometries = [
-      new THREE.IcosahedronGeometry(0.8, 0),
-      new THREE.OctahedronGeometry(0.6, 0),
-      new THREE.TetrahedronGeometry(0.5, 0),
-      new THREE.IcosahedronGeometry(0.4, 1),
-      new THREE.OctahedronGeometry(0.35, 0)
-    ];
-
-    var positions = [
-      { x: -2.5, y: 0.5, z: -1 },
-      { x: 2.2, y: -0.8, z: -0.5 },
-      { x: -1, y: -1.5, z: -2 },
-      { x: 1.8, y: 1.5, z: -1.5 },
-      { x: -0.3, y: 2, z: -2.5 }
-    ];
-
-    var colors = [0x0066FF, 0x00AAFF, 0x0044DD, 0x0088FF, 0x0055DD];
-    var opacities = [0.12, 0.1, 0.08, 0.1, 0.06];
-
-    geometries.forEach(function(geo, i) {
-      var mat = makeGlassMat(colors[i], opacities[i], 2.0 + Math.random());
-      var mesh = new THREE.Mesh(geo, mat);
-      mesh.position.set(positions[i].x, positions[i].y, positions[i].z);
-      mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
-      scene.add(mesh);
-      shapes.push({
-        mesh: mesh,
-        rotSpeed: { x: 0.002 + Math.random() * 0.004, y: 0.003 + Math.random() * 0.004 },
-        floatSpeed: 0.3 + Math.random() * 0.3,
-        floatAmp: 0.15 + Math.random() * 0.15,
-        baseY: positions[i].y
-      });
+      var grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+      grad.addColorStop(0, 'rgba(108, 71, 255, 0.12)');
+      grad.addColorStop(0.4, 'rgba(139, 111, 255, 0.06)');
+      grad.addColorStop(1, 'rgba(108, 71, 255, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
     });
 
-    // Wireframe overlays
-    var wireMat = new THREE.MeshBasicMaterial({ color: 0x00AAFF, wireframe: true, transparent: true, opacity: 0.06 });
-    shapes.forEach(function(s) {
-      var wire = new THREE.Mesh(s.mesh.geometry, wireMat);
-      wire.position.copy(s.mesh.position);
-      wire.rotation.copy(s.mesh.rotation);
-      wire.scale.set(1.15, 1.15, 1.15);
-      s.wire = wire;
-      scene.add(wire);
-    });
-
-    // Particle field
-    var particleCount = 150;
-    var particleGeo = new THREE.BufferGeometry();
-    var particlePos = new Float32Array(particleCount * 3);
-    for (var i = 0; i < particleCount; i++) {
-      particlePos[i * 3] = (Math.random() - 0.5) * 12;
-      particlePos[i * 3 + 1] = (Math.random() - 0.5) * 8;
-      particlePos[i * 3 + 2] = (Math.random() - 0.5) * 8 - 2;
-    }
-    particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
-    var particleMat = new THREE.PointsMaterial({ color: 0x0088FF, size: 0.03, transparent: true, opacity: 0.5, sizeAttenuation: true });
-    var particles = new THREE.Points(particleGeo, particleMat);
-    scene.add(particles);
-
-    var time = 0;
-    function animate() {
-      requestAnimationFrame(animate);
-      time += 0.01;
-
-      shapes.forEach(function(s) {
-        s.mesh.rotation.x += s.rotSpeed.x;
-        s.mesh.rotation.y += s.rotSpeed.y;
-        s.mesh.position.y = s.baseY + Math.sin(time * s.floatSpeed) * s.floatAmp;
-        if (s.wire) {
-          s.wire.rotation.copy(s.mesh.rotation);
-          s.wire.position.copy(s.mesh.position);
+    // Subtle dot grid overlay
+    ctx.fillStyle = 'rgba(108, 71, 255, 0.04)';
+    var spacing = 40;
+    for (var gx = 0; gx < w; gx += spacing) {
+      for (var gy = 0; gy < h; gy += spacing) {
+        var n = fbm(gx * 0.01, gy * 0.01, t * 2);
+        if (n > 0.1) {
+          ctx.beginPath();
+          ctx.arc(gx, gy, 1, 0, Math.PI * 2);
+          ctx.fill();
         }
-      });
+      }
+    }
+  }
+  draw();
+})();
 
-      particles.rotation.y = time * 0.02;
-      renderer.render(scene, camera);
+/* ═══════════════════════════════════════════════════════════════
+   CARD ANIMATIONS — Canvas 2D per card
+   ═══════════════════════════════════════════════════════════════ */
+(function(){
+  var ACCENT = [108, 71, 255];
+
+  function initCanvas(canvas, drawFn) {
+    var ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var w, h;
+
+    function resize() {
+      w = canvas.offsetWidth || 300;
+      h = canvas.offsetHeight || 225;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
-    animate();
+    var resizeObs = new ResizeObserver(function(){ resize(); });
+    resizeObs.observe(canvas.parentElement);
+    resize();
 
-    window.addEventListener('resize', function() {
-      camera.aspect = canvas.offsetWidth / canvas.offsetHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+    var t = Math.random() * 100;
+    var visible = false;
+
+    var intObs = new IntersectionObserver(function(entries){
+      visible = entries[0].isIntersecting;
+    }, { threshold: 0 });
+    intObs.observe(canvas);
+
+    function loop() {
+      requestAnimationFrame(loop);
+      if (!visible) return;
+      t += 0.008;
+      ctx.clearRect(0, 0, w, h);
+      drawFn(ctx, w, h, t);
+    }
+    loop();
+  }
+
+  // ── FutureSelf: Two translucent figures connected by flowing light ──
+  function drawFutureself(ctx, w, h, t) {
+    var cx = w / 2, cy = h / 2;
+
+    // Left figure aura
+    var g1 = ctx.createRadialGradient(cx - w*0.18, cy, 0, cx - w*0.18, cy, w*0.22);
+    g1.addColorStop(0, 'rgba(108, 71, 255, 0.15)');
+    g1.addColorStop(1, 'rgba(108, 71, 255, 0)');
+    ctx.fillStyle = g1;
+    ctx.fillRect(0, 0, w, h);
+
+    // Right figure aura (fainter)
+    var g2 = ctx.createRadialGradient(cx + w*0.18, cy, 0, cx + w*0.18, cy, w*0.22);
+    g2.addColorStop(0, 'rgba(139, 111, 255, 0.1)');
+    g2.addColorStop(1, 'rgba(108, 71, 255, 0)');
+    ctx.fillStyle = g2;
+    ctx.fillRect(0, 0, w, h);
+
+    // Silhouette shapes (abstract ovals)
+    ctx.save();
+    ctx.globalAlpha = 0.2 + Math.sin(t * 0.7) * 0.05;
+    // Left
+    ctx.beginPath();
+    ctx.ellipse(cx - w*0.16, cy - h*0.1 + Math.sin(t)*3, w*0.08, h*0.12, 0, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(108, 71, 255, 0.25)';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(cx - w*0.16, cy + h*0.12 + Math.sin(t)*3, w*0.1, h*0.18, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    // Right (ghost)
+    ctx.globalAlpha = 0.12 + Math.sin(t * 0.5) * 0.03;
+    ctx.beginPath();
+    ctx.ellipse(cx + w*0.16, cy - h*0.1 + Math.cos(t*0.8)*4, w*0.08, h*0.12, 0, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(139, 111, 255, 0.2)';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(cx + w*0.16, cy + h*0.12 + Math.cos(t*0.8)*4, w*0.1, h*0.18, 0, 0, Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+
+    // Flowing connection streams
+    ctx.save();
+    for (var i = 0; i < 5; i++) {
+      var yOff = (i - 2) * h * 0.06;
+      ctx.beginPath();
+      ctx.moveTo(cx - w*0.08, cy + yOff);
+      ctx.bezierCurveTo(
+        cx - w*0.03, cy + yOff - 10 + Math.sin(t*2 + i)*6,
+        cx + w*0.03, cy + yOff + 10 + Math.cos(t*2 + i)*6,
+        cx + w*0.08, cy + yOff
+      );
+      ctx.strokeStyle = 'rgba(108, 71, 255, ' + (0.15 - i*0.02) + ')';
+      ctx.lineWidth = 1.5 - i*0.2;
+
+      // Animated dash
+      ctx.setLineDash([4, 8]);
+      ctx.lineDashOffset = -t * 40 + i * 10;
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    ctx.restore();
+
+    // Particles along connection
+    for (var p = 0; p < 8; p++) {
+      var prog = ((t * 0.5 + p * 0.125) % 1);
+      var px = cx - w*0.08 + prog * w*0.16;
+      var py = cy + Math.sin(prog * Math.PI * 2 + t*2) * 8;
+      var alpha = Math.sin(prog * Math.PI) * 0.6;
+      ctx.beginPath();
+      ctx.arc(px, py, 2, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(139, 111, 255, ' + alpha + ')';
+      ctx.fill();
+    }
+  }
+
+  // ── System 0: Neural constellation with pulse waves ──
+  function drawSystem0(ctx, w, h, t) {
+    var cx = w/2, cy = h/2;
+    var nodes = [
+      {x: 0, y: -0.28}, {x: -0.28, y: -0.05}, {x: 0.28, y: -0.05},
+      {x: -0.18, y: 0.22}, {x: 0.18, y: 0.22}, {x: 0, y: 0.05}
+    ];
+
+    // Scale to canvas
+    var pts = nodes.map(function(n) {
+      return { x: cx + n.x * w, y: cy + n.y * h };
     });
 
-  } catch(e) {
-    // If Three.js fails for any reason, show CSS fallback
-    canvas.style.display = 'none';
-    fallback.style.display = 'block';
+    // Pulse rings from center
+    for (var r = 0; r < 3; r++) {
+      var radius = ((t * 0.3 + r * 0.33) % 1) * w * 0.35;
+      var alpha = (1 - radius / (w*0.35)) * 0.12;
+      ctx.beginPath();
+      ctx.arc(pts[5].x, pts[5].y, radius, 0, Math.PI*2);
+      ctx.strokeStyle = 'rgba(108, 71, 255, ' + alpha + ')';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // Connections
+    var edges = [[0,1],[0,2],[1,3],[2,4],[1,5],[2,5],[5,3],[5,4],[0,5],[3,4]];
+    edges.forEach(function(e) {
+      var a = pts[e[0]], b = pts[e[1]];
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.strokeStyle = 'rgba(108, 71, 255, 0.12)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Flowing particle on edge
+      var prog = ((t * 0.6 + e[0]*0.15 + e[1]*0.1) % 1);
+      var px = a.x + (b.x - a.x) * prog;
+      var py = a.y + (b.y - a.y) * prog;
+      ctx.beginPath();
+      ctx.arc(px, py, 2, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(139, 111, 255, ' + (Math.sin(prog*Math.PI)*0.5) + ')';
+      ctx.fill();
+    });
+
+    // Nodes with glow
+    pts.forEach(function(p, i) {
+      var size = i === 5 ? 10 : (i < 3 ? 8 : 6);
+      var pulse = 1 + Math.sin(t * 2 + i) * 0.15;
+
+      // Glow
+      var g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size * 3 * pulse);
+      g.addColorStop(0, 'rgba(108, 71, 255, 0.15)');
+      g.addColorStop(1, 'rgba(108, 71, 255, 0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(p.x - size*3, p.y - size*3, size*6, size*6);
+
+      // Node
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, size * pulse, 0, Math.PI*2);
+      var ng = ctx.createRadialGradient(p.x - 2, p.y - 2, 0, p.x, p.y, size * pulse);
+      ng.addColorStop(0, 'rgba(139, 111, 255, 0.8)');
+      ng.addColorStop(1, 'rgba(108, 71, 255, 0.4)');
+      ctx.fillStyle = ng;
+      ctx.fill();
+
+      // Specular highlight
+      ctx.beginPath();
+      ctx.arc(p.x - size*0.25, p.y - size*0.3, size*0.4, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.fill();
+    });
   }
+
+  // ── CausalMe: Directed graph with flowing causality ──
+  function drawCausalme(ctx, w, h, t) {
+    var cx = w/2, cy = h/2;
+    var nodes = [
+      {x: -0.22, y: -0.28, r: 14}, {x: 0.22, y: -0.28, r: 14},
+      {x: 0, y: 0, r: 18},
+      {x: -0.25, y: 0.28, r: 10}, {x: 0.25, y: 0.28, r: 10}
+    ];
+    var pts = nodes.map(function(n){ return { x: cx + n.x*w, y: cy + n.y*h, r: n.r }; });
+    var edges = [[0,2],[1,2],[2,3],[2,4]];
+
+    // Background glow
+    var bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, w*0.4);
+    bg.addColorStop(0, 'rgba(108, 71, 255, 0.06)');
+    bg.addColorStop(1, 'rgba(108, 71, 255, 0)');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, w, h);
+
+    // Edges with arrows and flow
+    edges.forEach(function(e, i) {
+      var a = pts[e[0]], b = pts[e[1]];
+      var dx = b.x - a.x, dy = b.y - a.y;
+      var len = Math.sqrt(dx*dx + dy*dy);
+      var nx = dx/len, ny = dy/len;
+
+      // Trim by radius
+      var ax = a.x + nx*a.r, ay = a.y + ny*a.r;
+      var bx = b.x - nx*b.r, by = b.y - ny*b.r;
+
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(bx, by);
+      ctx.strokeStyle = 'rgba(108, 71, 255, 0.2)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Arrow
+      var aSize = 6;
+      ctx.beginPath();
+      ctx.moveTo(bx, by);
+      ctx.lineTo(bx - nx*aSize + ny*aSize*0.5, by - ny*aSize - nx*aSize*0.5);
+      ctx.lineTo(bx - nx*aSize - ny*aSize*0.5, by - ny*aSize + nx*aSize*0.5);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(108, 71, 255, 0.4)';
+      ctx.fill();
+
+      // Flowing particles
+      for (var p = 0; p < 3; p++) {
+        var prog = ((t * 0.4 + p * 0.33 + i*0.2) % 1);
+        var px = ax + (bx - ax)*prog;
+        var py = ay + (by - ay)*prog;
+        ctx.beginPath();
+        ctx.arc(px, py, 2.5, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(139, 111, 255, ' + (Math.sin(prog*Math.PI)*0.6) + ')';
+        ctx.fill();
+      }
+    });
+
+    // Nodes
+    pts.forEach(function(p, i) {
+      var pulse = 1 + Math.sin(t*1.5 + i*1.2)*0.08;
+      // Glow
+      var g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r*2.5);
+      g.addColorStop(0, 'rgba(108, 71, 255, 0.12)');
+      g.addColorStop(1, 'rgba(108, 71, 255, 0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r*2.5, 0, Math.PI*2);
+      ctx.fill();
+
+      // Solid node
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * pulse, 0, Math.PI*2);
+      var ng = ctx.createRadialGradient(p.x - 3, p.y - 3, 0, p.x, p.y, p.r*pulse);
+      ng.addColorStop(0, 'rgba(159, 141, 255, 0.7)');
+      ng.addColorStop(1, 'rgba(108, 71, 255, 0.35)');
+      ctx.fillStyle = ng;
+      ctx.fill();
+
+      // Glass highlight
+      ctx.beginPath();
+      ctx.arc(p.x - p.r*0.2, p.y - p.r*0.3, p.r*0.35, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(255,255,255,0.25)';
+      ctx.fill();
+    });
+  }
+
+  // ── Snake: Flowing gradient trail ──
+  function drawSnake(ctx, w, h, t) {
+    var segments = 12;
+    var baseX = w * 0.15, baseY = h * 0.5;
+
+    // Undulating path
+    var points = [];
+    for (var i = 0; i < segments; i++) {
+      var prog = i / (segments - 1);
+      var x = baseX + prog * w * 0.7;
+      var y = baseY + Math.sin(t * 2.5 + prog * Math.PI * 2) * h * 0.12;
+      points.push({ x: x, y: y, prog: prog });
+    }
+
+    // Trail glow
+    ctx.save();
+    ctx.lineCap = 'round';
+    for (var s = 20; s > 0; s--) {
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (var i = 1; i < points.length - 1; i++) {
+        var mx = (points[i].x + points[i+1].x) / 2;
+        var my = (points[i].y + points[i+1].y) / 2;
+        ctx.quadraticCurveTo(points[i].x, points[i].y, mx, my);
+      }
+      ctx.strokeStyle = 'rgba(76, 175, 80, ' + (0.01 * s / 20) + ')';
+      ctx.lineWidth = s * 2;
+      ctx.stroke();
+    }
+
+    // Main trail
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (var i = 1; i < points.length - 1; i++) {
+      var mx = (points[i].x + points[i+1].x) / 2;
+      var my = (points[i].y + points[i+1].y) / 2;
+      ctx.quadraticCurveTo(points[i].x, points[i].y, mx, my);
+    }
+    var tGrad = ctx.createLinearGradient(points[0].x, 0, points[segments-1].x, 0);
+    tGrad.addColorStop(0, 'rgba(76, 175, 80, 0.8)');
+    tGrad.addColorStop(0.5, 'rgba(102, 187, 106, 0.6)');
+    tGrad.addColorStop(1, 'rgba(76, 175, 80, 0.15)');
+    ctx.strokeStyle = tGrad;
+    ctx.lineWidth = 8;
+    ctx.stroke();
+    ctx.restore();
+
+    // Head
+    var head = points[0];
+    var hg = ctx.createRadialGradient(head.x - 3, head.y - 3, 0, head.x, head.y, 12);
+    hg.addColorStop(0, 'rgba(129, 199, 132, 0.9)');
+    hg.addColorStop(1, 'rgba(76, 175, 80, 0.5)');
+    ctx.beginPath();
+    ctx.arc(head.x, head.y, 10, 0, Math.PI*2);
+    ctx.fillStyle = hg;
+    ctx.fill();
+
+    // Eyes
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.beginPath(); ctx.arc(head.x - 3, head.y - 3, 2.5, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(head.x + 3, head.y - 3, 2.5, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#1B5E20';
+    ctx.beginPath(); ctx.arc(head.x - 3, head.y - 3, 1.2, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(head.x + 3, head.y - 3, 1.2, 0, Math.PI*2); ctx.fill();
+
+    // Apple (target)
+    var appleX = w * 0.82, appleY = h * 0.35 + Math.sin(t * 1.5) * 5;
+    var ag = ctx.createRadialGradient(appleX - 2, appleY - 3, 0, appleX, appleY, 9);
+    ag.addColorStop(0, 'rgba(239, 83, 80, 0.9)');
+    ag.addColorStop(1, 'rgba(198, 40, 40, 0.6)');
+    ctx.beginPath();
+    ctx.arc(appleX, appleY, 8, 0, Math.PI*2);
+    ctx.fillStyle = ag;
+    ctx.fill();
+    // Apple glow
+    var aGlow = ctx.createRadialGradient(appleX, appleY, 0, appleX, appleY, 20);
+    aGlow.addColorStop(0, 'rgba(239, 83, 80, 0.12)');
+    aGlow.addColorStop(1, 'rgba(239, 83, 80, 0)');
+    ctx.fillStyle = aGlow;
+    ctx.beginPath();
+    ctx.arc(appleX, appleY, 20, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  // ── Timer: Concentric rings with sweep ──
+  function drawTimer(ctx, w, h, t) {
+    var cx = w/2, cy = h/2;
+    var maxR = Math.min(w, h) * 0.38;
+
+    // Outer glow
+    var g = ctx.createRadialGradient(cx, cy, maxR*0.6, cx, cy, maxR*1.3);
+    g.addColorStop(0, 'rgba(239, 83, 80, 0.06)');
+    g.addColorStop(1, 'rgba(239, 83, 80, 0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+
+    // Track rings
+    [1, 0.78, 0.56].forEach(function(scale, i) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, maxR * scale, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(239, 83, 80, 0.08)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    });
+
+    // Animated arcs
+    var rings = [
+      { r: 1, speed: 0.3, len: 0.65, width: 3 },
+      { r: 0.78, speed: -0.45, len: 0.4, width: 2.5 },
+      { r: 0.56, speed: 0.6, len: 0.55, width: 2 }
+    ];
+
+    rings.forEach(function(ring) {
+      var startAngle = t * ring.speed * Math.PI * 2 - Math.PI/2;
+      var endAngle = startAngle + ring.len * Math.PI * 2;
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, maxR * ring.r, startAngle, endAngle);
+      var aGrad = ctx.createLinearGradient(
+        cx + Math.cos(startAngle) * maxR * ring.r,
+        cy + Math.sin(startAngle) * maxR * ring.r,
+        cx + Math.cos(endAngle) * maxR * ring.r,
+        cy + Math.sin(endAngle) * maxR * ring.r
+      );
+      aGrad.addColorStop(0, 'rgba(239, 83, 80, 0.05)');
+      aGrad.addColorStop(0.5, 'rgba(239, 83, 80, 0.5)');
+      aGrad.addColorStop(1, 'rgba(239, 83, 80, 0.05)');
+      ctx.strokeStyle = aGrad;
+      ctx.lineWidth = ring.width;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // End dot
+      var ex = cx + Math.cos(endAngle) * maxR * ring.r;
+      var ey = cy + Math.sin(endAngle) * maxR * ring.r;
+      ctx.beginPath();
+      ctx.arc(ex, ey, 3, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(239, 83, 80, 0.7)';
+      ctx.fill();
+    });
+
+    // Center dot
+    ctx.beginPath();
+    ctx.arc(cx, cy, 4, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(239, 83, 80, 0.6)';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx, cy, 2, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(252, 165, 165, 0.9)';
+    ctx.fill();
+
+    // Tick marks
+    for (var tick = 0; tick < 12; tick++) {
+      var angle = (tick / 12) * Math.PI * 2 - Math.PI/2;
+      var inner = maxR * 0.92;
+      var outer = maxR * 0.98;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(angle)*inner, cy + Math.sin(angle)*inner);
+      ctx.lineTo(cx + Math.cos(angle)*outer, cy + Math.sin(angle)*outer);
+      ctx.strokeStyle = 'rgba(239, 83, 80, 0.2)';
+      ctx.lineWidth = tick % 3 === 0 ? 2 : 1;
+      ctx.stroke();
+    }
+  }
+
+  // ── Mood: Layered gradient waves ──
+  function drawMood(ctx, w, h, t) {
+    var colors = [
+      [108, 71, 255],
+      [139, 111, 255],
+      [124, 58, 237],
+      [167, 139, 250],
+      [108, 71, 255]
+    ];
+
+    for (var layer = colors.length - 1; layer >= 0; layer--) {
+      var c = colors[layer];
+      var baseY = h * 0.35 + layer * h * 0.09;
+      var alpha = 0.12 + (colors.length - layer) * 0.04;
+
+      ctx.beginPath();
+      ctx.moveTo(0, h);
+      for (var x = 0; x <= w; x += 3) {
+        var y = baseY
+          + Math.sin(x * 0.015 + t * (1.2 + layer * 0.3) + layer * 0.8) * h * 0.08
+          + Math.sin(x * 0.008 - t * (0.5 + layer * 0.1)) * h * 0.05;
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(w, h);
+      ctx.closePath();
+
+      var grad = ctx.createLinearGradient(0, baseY - h*0.1, 0, h);
+      grad.addColorStop(0, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + alpha + ')');
+      grad.addColorStop(1, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ', 0.02)');
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+
+    // Sparkle particles
+    for (var s = 0; s < 8; s++) {
+      var sx = (Math.sin(s * 3.7 + t * 0.3) * 0.5 + 0.5) * w;
+      var sy = h * 0.15 + (Math.cos(s * 2.3 + t * 0.4) * 0.5 + 0.5) * h * 0.3;
+      var sa = (Math.sin(t * 2 + s * 1.5) * 0.5 + 0.5) * 0.5;
+      ctx.beginPath();
+      ctx.arc(sx, sy, 2, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(255, 255, 255, ' + sa + ')';
+      ctx.fill();
+    }
+  }
+
+  // ── Magnetic Field (Study 001): Particle field with field lines ──
+  function drawMagnetic(ctx, w, h, t) {
+    var cx = w/2, cy = h/2;
+    var poles = [
+      { x: cx - w*0.2, y: cy, charge: 1 },
+      { x: cx + w*0.2, y: cy, charge: -1 }
+    ];
+
+    // Field lines
+    for (var line = 0; line < 12; line++) {
+      var angle = (line / 12) * Math.PI * 2;
+      var x = poles[0].x + Math.cos(angle) * 15;
+      var y = poles[0].y + Math.sin(angle) * 15;
+
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      for (var step = 0; step < 60; step++) {
+        var fx = 0, fy = 0;
+        poles.forEach(function(p) {
+          var dx = x - p.x, dy = y - p.y;
+          var dist = Math.max(Math.sqrt(dx*dx + dy*dy), 5);
+          var f = p.charge / (dist * dist) * 500;
+          fx += f * dx / dist;
+          fy += f * dy / dist;
+        });
+        var fLen = Math.sqrt(fx*fx + fy*fy);
+        if (fLen > 0) { x += fx/fLen * 4; y += fy/fLen * 4; }
+        ctx.lineTo(x, y);
+        if (x < 0 || x > w || y < 0 || y > h) break;
+      }
+      ctx.strokeStyle = 'rgba(108, 71, 255, 0.08)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // Floating particles following field
+    for (var p = 0; p < 30; p++) {
+      var seed = p * 7.31;
+      var px = ((Math.sin(seed) * 0.5 + 0.5 + t * 0.02 * (1 + (p%3)*0.5)) % 1) * w;
+      var py = ((Math.cos(seed * 1.3) * 0.5 + 0.5) * 0.8 + 0.1) * h;
+
+      // Perturb by field
+      var fx2 = 0, fy2 = 0;
+      poles.forEach(function(pl) {
+        var ddx = px - pl.x, ddy = py - pl.y;
+        var dd = Math.max(Math.sqrt(ddx*ddx + ddy*ddy), 20);
+        fx2 += pl.charge / (dd*dd) * 200 * ddy / dd;
+        fy2 += -pl.charge / (dd*dd) * 200 * ddx / dd;
+      });
+      px += Math.sin(t + seed) * 3 + fx2 * 0.3;
+      py += Math.cos(t * 0.8 + seed) * 3 + fy2 * 0.3;
+
+      var dist1 = Math.sqrt(Math.pow(px-poles[0].x,2)+Math.pow(py-poles[0].y,2));
+      var dist2 = Math.sqrt(Math.pow(px-poles[1].x,2)+Math.pow(py-poles[1].y,2));
+      var nearness = 1 - Math.min(dist1, dist2) / (w*0.5);
+      var alpha = Math.max(0.1, Math.min(0.6, nearness));
+
+      ctx.beginPath();
+      ctx.arc(px, py, 2 + nearness * 2, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(108, 71, 255, ' + alpha + ')';
+      ctx.fill();
+    }
+
+    // Pole markers
+    poles.forEach(function(pl) {
+      var g = ctx.createRadialGradient(pl.x, pl.y, 0, pl.x, pl.y, 20);
+      g.addColorStop(0, 'rgba(108, 71, 255, 0.25)');
+      g.addColorStop(1, 'rgba(108, 71, 255, 0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(pl.x, pl.y, 20, 0, Math.PI*2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(pl.x, pl.y, 5 + Math.sin(t*2)*1, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(108, 71, 255, 0.5)';
+      ctx.fill();
+    });
+  }
+
+  // ── Audio Typography (Study 002): Waveform bars ──
+  function drawTypo(ctx, w, h, t) {
+    var cx = w/2, cy = h/2;
+    var barCount = 32;
+    var barWidth = w * 0.7 / barCount;
+    var startX = w * 0.15;
+
+    // "Sound" bars
+    for (var i = 0; i < barCount; i++) {
+      var freq = Math.sin(i * 0.3 + t * 3) * 0.5
+               + Math.sin(i * 0.7 + t * 2.1) * 0.3
+               + Math.sin(i * 0.15 + t * 1.3) * 0.2;
+      var barH = (0.3 + Math.abs(freq) * 0.7) * h * 0.5;
+      var x = startX + i * (barWidth + 2);
+
+      var alpha = 0.15 + Math.abs(freq) * 0.35;
+      var grad = ctx.createLinearGradient(x, cy - barH/2, x, cy + barH/2);
+      grad.addColorStop(0, 'rgba(108, 71, 255, 0)');
+      grad.addColorStop(0.3, 'rgba(108, 71, 255, ' + alpha + ')');
+      grad.addColorStop(0.5, 'rgba(139, 111, 255, ' + (alpha + 0.1) + ')');
+      grad.addColorStop(0.7, 'rgba(108, 71, 255, ' + alpha + ')');
+      grad.addColorStop(1, 'rgba(108, 71, 255, 0)');
+
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.roundRect(x, cy - barH/2, barWidth, barH, barWidth/2);
+      ctx.fill();
+    }
+
+    // Center text-like shapes (abstract)
+    ctx.save();
+    ctx.globalAlpha = 0.08;
+    ctx.font = '600 ' + (w*0.18) + 'px Inter';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'rgba(108, 71, 255, 1)';
+    ctx.fillText('Aa', cx, cy);
+    ctx.restore();
+
+    // Waveform line through center
+    ctx.beginPath();
+    for (var x2 = 0; x2 <= w; x2 += 2) {
+      var amp = Math.sin(x2*0.03 + t*4) * 8 + Math.sin(x2*0.06 + t*2.7) * 4;
+      if (x2 === 0) ctx.moveTo(x2, cy + amp);
+      else ctx.lineTo(x2, cy + amp);
+    }
+    ctx.strokeStyle = 'rgba(108, 71, 255, 0.12)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // ── Orbital Clock (Study 003): Concentric orbits ──
+  function drawOrbital(ctx, w, h, t) {
+    var cx = w/2, cy = h/2;
+    var maxR = Math.min(w, h) * 0.4;
+
+    // Central sun
+    var sg = ctx.createRadialGradient(cx, cy, 0, cx, cy, 12);
+    sg.addColorStop(0, 'rgba(139, 111, 255, 0.8)');
+    sg.addColorStop(1, 'rgba(108, 71, 255, 0.1)');
+    ctx.fillStyle = sg;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 12, 0, Math.PI*2);
+    ctx.fill();
+
+    // Glow
+    var gg = ctx.createRadialGradient(cx, cy, 0, cx, cy, 30);
+    gg.addColorStop(0, 'rgba(108, 71, 255, 0.15)');
+    gg.addColorStop(1, 'rgba(108, 71, 255, 0)');
+    ctx.fillStyle = gg;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 30, 0, Math.PI*2);
+    ctx.fill();
+
+    // Orbits
+    var orbits = [
+      { r: 0.35, speed: 0.2, size: 6, count: 1, opacity: 0.6 },
+      { r: 0.55, speed: -0.35, size: 5, count: 2, opacity: 0.45 },
+      { r: 0.75, speed: 0.15, size: 4, count: 3, opacity: 0.35 },
+      { r: 0.92, speed: -0.5, size: 3, count: 4, opacity: 0.25 }
+    ];
+
+    orbits.forEach(function(orbit) {
+      var r = maxR * orbit.r;
+
+      // Track
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI*2);
+      ctx.strokeStyle = 'rgba(108, 71, 255, 0.06)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Bodies
+      for (var b = 0; b < orbit.count; b++) {
+        var angle = t * orbit.speed * Math.PI * 2 + (b / orbit.count) * Math.PI * 2;
+        var bx = cx + Math.cos(angle) * r;
+        var by = cy + Math.sin(angle) * r;
+
+        // Trail
+        ctx.beginPath();
+        var trailLen = 0.3;
+        ctx.arc(cx, cy, r, angle - trailLen, angle);
+        ctx.strokeStyle = 'rgba(108, 71, 255, ' + (orbit.opacity * 0.4) + ')';
+        ctx.lineWidth = orbit.size * 0.6;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+
+        // Body glow
+        var bg = ctx.createRadialGradient(bx, by, 0, bx, by, orbit.size * 3);
+        bg.addColorStop(0, 'rgba(108, 71, 255, ' + (orbit.opacity * 0.3) + ')');
+        bg.addColorStop(1, 'rgba(108, 71, 255, 0)');
+        ctx.fillStyle = bg;
+        ctx.beginPath();
+        ctx.arc(bx, by, orbit.size * 3, 0, Math.PI*2);
+        ctx.fill();
+
+        // Body
+        var bodyGrad = ctx.createRadialGradient(bx - 1, by - 1, 0, bx, by, orbit.size);
+        bodyGrad.addColorStop(0, 'rgba(179, 161, 255, ' + orbit.opacity + ')');
+        bodyGrad.addColorStop(1, 'rgba(108, 71, 255, ' + (orbit.opacity * 0.6) + ')');
+        ctx.beginPath();
+        ctx.arc(bx, by, orbit.size, 0, Math.PI*2);
+        ctx.fillStyle = bodyGrad;
+        ctx.fill();
+
+        // Specular
+        ctx.beginPath();
+        ctx.arc(bx - orbit.size*0.2, by - orbit.size*0.3, orbit.size*0.35, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.fill();
+      }
+    });
+  }
+
+  // ── Initialize all card canvases ──
+  var animMap = {
+    futureself: drawFutureself,
+    system0: drawSystem0,
+    causalme: drawCausalme,
+    snake: drawSnake,
+    timer: drawTimer,
+    mood: drawMood,
+    magnetic: drawMagnetic,
+    typo: drawTypo,
+    orbital: drawOrbital
+  };
+
+  document.querySelectorAll('canvas[data-anim]').forEach(function(c) {
+    var key = c.getAttribute('data-anim');
+    if (animMap[key]) initCanvas(c, animMap[key]);
+  });
 })();
 </script>
 
