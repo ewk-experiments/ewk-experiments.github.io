@@ -1,460 +1,710 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ewk labs</title>
-  <meta name="description" content="Experimental AI products and creative technology by Eli & Kim.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ewk labs — Experimental AI Studio</title>
+<meta name="description" content="ewk labs is an experimental AI studio based in Seattle. We build niche, interesting products at the intersection of AI and design.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    :root {
-      --bg: #fafafa;
-      --surface: #ffffff;
-      --border: rgba(0,0,0,0.06);
-      --text: #1a1a1a;
-      --text-2: #6b6b6b;
-      --text-3: #999;
-      --warm: #b8956a;
-      --serif: 'Instrument Serif', Georgia, serif;
-      --sans: 'Inter', -apple-system, sans-serif;
-      --mono: 'JetBrains Mono', monospace;
-      --ease: cubic-bezier(0.16, 1, 0.3, 1);
-    }
+:root {
+  --blue-50: #f0f4ff;
+  --blue-100: #e0eaff;
+  --blue-200: #c7d7fe;
+  --blue-400: #7b9ff5;
+  --blue-500: #5b7ee5;
+  --blue-600: #4563c7;
+  --blue-700: #3a4fa8;
+  --blue-900: #1e2a5e;
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+  --indigo-50: #eef2ff;
+  --indigo-100: #e0e7ff;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
 
-    html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; }
 
-    body {
-      font-family: var(--sans);
-      background: var(--bg);
-      color: var(--text);
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
+body {
+  font-family: var(--font-sans);
+  color: var(--slate-800);
+  background: var(--slate-50);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
 
-    ::selection { background: rgba(184,149,106,0.2); }
+/* Progress bar */
+#progress {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 0%;
+  background: linear-gradient(180deg, var(--blue-400), var(--blue-600));
+  z-index: 1000;
+  transition: height 0.1s linear;
+}
 
-    a { color: inherit; text-decoration: none; }
+/* Section base */
+section {
+  position: relative;
+  transition: background-color 0.6s ease;
+}
 
-    /* ═══ NAV ═══ */
-    .nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      padding: 1.25rem 2.5rem;
-      display: flex; justify-content: space-between; align-items: center;
-      background: rgba(250,250,250,0.85);
-      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-      border-bottom: 1px solid var(--border);
-      transition: transform 0.4s var(--ease);
-    }
-    .nav.hidden { transform: translateY(-100%); }
+/* Reveal animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
 
-    .nav-brand {
-      font-family: var(--sans);
-      font-weight: 600; font-size: 0.88rem;
-      letter-spacing: -0.02em; color: var(--text);
-    }
+/* ─── HERO ─── */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: var(--slate-50);
+  position: relative;
+  overflow: hidden;
+}
 
-    .nav-links { display: flex; gap: 2rem; align-items: center; }
-    .nav-links a {
-      font-size: 0.8rem; color: var(--text-2);
-      transition: color 0.2s; font-weight: 400;
-    }
-    .nav-links a:hover { color: var(--text); }
+#hero-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
 
-    /* ═══ HERO ═══ */
-    .hero {
-      min-height: 100vh;
-      display: flex; flex-direction: column;
-      justify-content: center; align-items: center;
-      text-align: center;
-      padding: 2rem;
-    }
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
 
-    .hero-eyebrow {
-      font-family: var(--mono); font-size: 0.68rem;
-      color: var(--text-3); text-transform: uppercase;
-      letter-spacing: 0.18em; margin-bottom: 2rem;
-      font-weight: 400;
-      opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
-    }
+.hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(4rem, 12vw, 10rem);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  color: var(--slate-900);
+  margin-bottom: 1.5rem;
+}
 
-    .hero h1 {
-      font-family: var(--serif);
-      font-size: clamp(4.5rem, 13vw, 11rem);
-      font-weight: 400;
-      line-height: 0.92;
-      letter-spacing: -0.04em;
-      color: var(--text);
-      opacity: 0; animation: fadeUp 0.8s 0.35s forwards;
-    }
-    .hero h1 em {
-      font-style: italic;
-      color: var(--warm);
-    }
+.hero-subtitle {
+  font-family: var(--font-mono);
+  font-size: clamp(0.75rem, 1.5vw, 1rem);
+  font-weight: 400;
+  color: var(--slate-400);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
 
-    .hero-sub {
-      margin-top: 2.5rem;
-      font-size: 1.05rem; color: var(--text-2);
-      max-width: 420px; line-height: 1.75;
-      font-weight: 300;
-      opacity: 0; animation: fadeUp 0.8s 0.5s forwards;
-    }
+/* ─── SECTION TITLES ─── */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--blue-500);
+  margin-bottom: 1rem;
+}
 
-    .hero-scroll {
-      position: absolute; bottom: 3rem;
-      font-family: var(--mono); font-size: 0.58rem;
-      color: var(--text-3); text-transform: uppercase;
-      letter-spacing: 0.18em;
-      opacity: 0; animation: fadeUp 0.8s 0.7s forwards;
-      display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
-    }
-    .hero-scroll-line {
-      width: 1px; height: 36px;
-      background: linear-gradient(to bottom, var(--warm), transparent);
-      animation: scrollPulse 2.5s ease-in-out infinite;
-    }
+.section-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 400;
+  color: var(--slate-900);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
 
-    /* ═══ SECTIONS ═══ */
-    .section {
-      padding: 8rem 2.5rem;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
+/* ─── PROJECTS ─── */
+#projects-ai, #projects-apps {
+  padding: 8rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
-    .section-label {
-      font-family: var(--mono); font-size: 0.62rem;
-      color: var(--text-3); text-transform: uppercase;
-      letter-spacing: 0.18em; margin-bottom: 3rem;
-    }
+#projects-ai { background: var(--slate-50); }
 
-    .section-title {
-      font-family: var(--serif);
-      font-size: clamp(2.4rem, 5vw, 4rem);
-      font-weight: 400; letter-spacing: -0.03em;
-      line-height: 1.1; margin-bottom: 1.5rem;
-    }
-    .section-title em { font-style: italic; color: var(--warm); }
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-top: 4rem;
+}
 
-    .section-desc {
-      font-size: 1rem; color: var(--text-2);
-      line-height: 1.8; max-width: 520px;
-      font-weight: 300;
-    }
+.project-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+}
 
-    /* ═══ PROJECTS ═══ */
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.25rem;
-      margin-top: 3rem;
-    }
+.project-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+}
 
-    .project-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2rem;
-      transition: transform 0.5s var(--ease), box-shadow 0.3s;
-      display: flex; flex-direction: column;
-      min-height: 260px;
-      text-decoration: none; color: inherit;
-    }
-    .project-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.06);
-    }
+.project-visual {
+  aspect-ratio: 4/3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
 
-    .project-icon {
-      width: 44px; height: 44px;
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.15rem; margin-bottom: 1.5rem;
-      background: rgba(184,149,106,0.08);
-    }
-    .project-icon.cyan { background: rgba(77,180,200,0.08); }
-    .project-icon.violet { background: rgba(140,120,200,0.08); }
+.project-visual svg {
+  width: 60%;
+  height: 60%;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
-    .project-label {
-      font-family: var(--mono); font-size: 0.58rem;
-      color: var(--text-3); text-transform: uppercase;
-      letter-spacing: 0.1em; margin-bottom: 0.6rem;
-    }
+.project-card:hover .project-visual svg {
+  transform: scale(1.08);
+}
 
-    .project-title {
-      font-family: var(--serif);
-      font-size: 1.4rem; font-weight: 400;
-      margin-bottom: 0.6rem; letter-spacing: -0.01em;
-    }
+.project-info {
+  padding: 1.75rem 2rem 2rem;
+}
 
-    .project-desc {
-      font-size: 0.82rem; color: var(--text-2);
-      line-height: 1.65; flex: 1; font-weight: 300;
-    }
+.project-name {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+  color: var(--slate-900);
+}
 
-    .project-link {
-      margin-top: 1.25rem;
-      font-family: var(--mono); font-size: 0.62rem;
-      color: var(--warm); display: flex; align-items: center; gap: 0.4rem;
-      transition: gap 0.2s;
-    }
-    .project-card:hover .project-link { gap: 0.7rem; }
+.project-type {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate-400);
+  margin-bottom: 0.75rem;
+}
 
-    /* ═══ PHILOSOPHY ═══ */
-    .philosophy {
-      padding: 8rem 2.5rem;
-      border-top: 1px solid var(--border);
-    }
-    .philosophy-inner {
-      max-width: 720px; margin: 0 auto;
-    }
-    .philosophy-text {
-      font-family: var(--serif);
-      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
-      font-weight: 400; line-height: 1.4;
-      letter-spacing: -0.02em;
-      color: var(--text-2);
-    }
-    .philosophy-text strong { color: var(--text); font-weight: 400; }
-    .philosophy-text em { font-style: italic; color: var(--warm); }
+.project-desc {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--slate-500);
+}
 
-    /* ═══ STORE LINK ═══ */
-    .store-section {
-      padding: 6rem 2.5rem;
-      text-align: center;
-      border-top: 1px solid var(--border);
-    }
-    .store-inner {
-      max-width: 480px; margin: 0 auto;
-    }
-    .store-section .section-title {
-      margin-bottom: 1rem;
-    }
-    .store-desc {
-      font-size: 1rem; color: var(--text-2);
-      line-height: 1.75; font-weight: 300;
-      margin-bottom: 2.5rem;
-    }
-    .store-btn {
-      display: inline-flex; align-items: center; gap: 0.6rem;
-      padding: 0.9rem 2rem;
-      background: var(--text);
-      color: var(--bg);
-      font-size: 0.85rem; font-weight: 500;
-      border-radius: 999px;
-      transition: all 0.25s var(--ease);
-      letter-spacing: -0.01em;
-    }
-    .store-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    }
+/* Individual project visual backgrounds */
+.vis-futureself { background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); }
+.vis-system0 { background: linear-gradient(135deg, #eef2ff 0%, #dbeafe 100%); }
+.vis-causalme { background: linear-gradient(135deg, #f0f4ff 0%, #e0eaff 100%); }
+.vis-snake { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); }
+.vis-timer { background: linear-gradient(135deg, #fef3f2 0%, #fde8e8 100%); }
+.vis-mood { background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); }
 
-    /* ═══ ABOUT ═══ */
-    .about-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.25rem;
-      margin-top: 3rem;
-    }
-    .about-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2.5rem;
-      transition: transform 0.5s var(--ease);
-    }
-    .about-card:hover { transform: translateY(-3px); }
-    .about-emoji { font-size: 1.8rem; margin-bottom: 1rem; }
-    .about-name {
-      font-family: var(--serif);
-      font-size: 1.4rem; margin-bottom: 0.2rem;
-    }
-    .about-role {
-      font-family: var(--mono); font-size: 0.58rem;
-      color: var(--warm); text-transform: uppercase;
-      letter-spacing: 0.1em; margin-bottom: 1rem;
-    }
-    .about-bio {
-      font-size: 0.82rem; color: var(--text-2); line-height: 1.7; font-weight: 300;
-    }
+/* ─── PHILOSOPHY ─── */
+#philosophy {
+  padding: 10rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  background: var(--indigo-50);
+}
 
-    /* ═══ FOOTER ═══ */
-    .footer {
-      border-top: 1px solid var(--border);
-      padding: 2.5rem;
-      max-width: 1000px; margin: 0 auto;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .footer-left {
-      font-size: 0.72rem; color: var(--text-3); font-weight: 300;
-    }
-    .footer-links { display: flex; gap: 1.5rem; }
-    .footer-links a {
-      font-size: 0.72rem; color: var(--text-3);
-      transition: color 0.2s; font-weight: 400;
-    }
-    .footer-links a:hover { color: var(--text-2); }
+.philosophy-text {
+  font-family: var(--font-serif);
+  font-size: clamp(1.75rem, 3.5vw, 3rem);
+  line-height: 1.35;
+  max-width: 900px;
+  text-align: center;
+  color: var(--slate-800);
+  letter-spacing: -0.01em;
+}
 
-    /* ═══ ANIMATIONS ═══ */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes scrollPulse {
-      0%, 100% { opacity: 0.2; }
-      50% { opacity: 0.8; }
-    }
+/* ─── STORE ─── */
+#store {
+  padding: 8rem 2rem;
+  text-align: center;
+  background: var(--slate-50);
+}
 
-    .reveal {
-      opacity: 0; transform: translateY(24px);
-      transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
-    }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-    .reveal.d1 { transition-delay: 0.08s; }
-    .reveal.d2 { transition-delay: 0.16s; }
-    .reveal.d3 { transition-delay: 0.24s; }
+.store-inner {
+  max-width: 600px;
+  margin: 0 auto;
+}
 
-    /* ═══ RESPONSIVE ═══ */
-    @media (max-width: 800px) {
-      .projects-grid { grid-template-columns: 1fr; }
-      .about-row { grid-template-columns: 1fr; }
-      .section { padding: 5rem 1.5rem; }
-      .philosophy { padding: 5rem 1.5rem; }
-      .store-section { padding: 4rem 1.5rem; }
-      .nav { padding: 1rem 1.5rem; }
-      .footer { padding: 2rem 1.5rem; flex-direction: column; gap: 1rem; text-align: center; }
-    }
+.store-desc {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--slate-500);
+  margin: 1.5rem 0 2.5rem;
+}
 
-    @media (max-width: 480px) {
-      .hero h1 { font-size: 3.5rem; }
-      .nav-links { gap: 1.25rem; }
-    }
-  </style>
+.btn {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.9rem 2.5rem;
+  border-radius: 100px;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-primary {
+  background: var(--slate-900);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--blue-600);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(69, 99, 199, 0.3);
+}
+
+/* ─── ABOUT ─── */
+#about {
+  padding: 8rem 2rem;
+  background: white;
+}
+
+.about-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 4rem;
+}
+
+.about-card {
+  padding: 3rem;
+  border-radius: 20px;
+  background: var(--slate-50);
+  border: 1px solid var(--slate-100);
+}
+
+.about-initial {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: white;
+  margin-bottom: 1.5rem;
+}
+
+.about-initial-e { background: linear-gradient(135deg, var(--blue-500), var(--blue-700)); }
+.about-initial-k { background: linear-gradient(135deg, #818cf8, #6366f1); }
+
+.about-name {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  margin-bottom: 0.25rem;
+  color: var(--slate-900);
+}
+
+.about-role {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--blue-500);
+  margin-bottom: 1rem;
+}
+
+.about-bio {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--slate-500);
+}
+
+/* ─── FOOTER ─── */
+footer {
+  padding: 4rem 2rem;
+  text-align: center;
+  background: var(--slate-900);
+  color: var(--slate-400);
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.footer-links a {
+  color: var(--slate-300);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.footer-links a:hover { color: white; }
+
+.footer-copy {
+  font-size: 0.8rem;
+  color: var(--slate-500);
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+  .about-grid { grid-template-columns: 1fr; }
+  .projects-grid { grid-template-columns: 1fr; }
+  #projects-ai, #projects-apps, #store, #about { padding: 5rem 1.5rem; }
+  #philosophy { padding: 6rem 1.5rem; }
+  .about-card { padding: 2rem; }
+}
+
+/* ─── SVG ANIMATIONS ─── */
+@keyframes float1 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes float2 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes pulse-ring { 0%, 100% { stroke-dashoffset: 220; } 50% { stroke-dashoffset: 100; } }
+@keyframes wave-shift { 0% { transform: translateX(0); } 100% { transform: translateX(-20px); } }
+@keyframes orbit { 0% { transform: rotate(0deg) translateX(24px) rotate(0deg); } 100% { transform: rotate(360deg) translateX(24px) rotate(-360deg); } }
+@keyframes snake-move { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(6px); } }
+
+.anim-float1 { animation: float1 4s ease-in-out infinite; }
+.anim-float2 { animation: float2 5s ease-in-out infinite 0.5s; }
+.anim-pulse-ring { animation: pulse-ring 3s ease-in-out infinite; }
+.anim-wave { animation: wave-shift 2s linear infinite; }
+.anim-orbit { animation: orbit 8s linear infinite; }
+.anim-snake { animation: snake-move 1.5s ease-in-out infinite; }
+</style>
 </head>
 <body>
 
-<!-- Nav -->
-<nav class="nav" id="nav">
-  <a href="/" class="nav-brand">ewk labs</a>
-  <div class="nav-links">
-    <a href="#projects">Projects</a>
-    <a href="#philosophy">Philosophy</a>
-    <a href="#store">Store</a>
-    <a href="#about">About</a>
-    <a href="https://github.com/ewk-experiments" target="_blank">GitHub</a>
-  </div>
-</nav>
+<div id="progress"></div>
 
-<!-- Hero -->
-<section class="hero">
-  <div class="hero-eyebrow">Experimental AI · Seattle</div>
-  <h1>ewk<br><em>labs</em></h1>
-  <p class="hero-sub">AI products, creative tools, and experiments at the edge of what's possible.</p>
-  <div class="hero-scroll">
-    <span>Scroll</span>
-    <div class="hero-scroll-line"></div>
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <h1 class="hero-title reveal">ewk labs</h1>
+    <p class="hero-subtitle reveal reveal-delay-1">Experimental AI &middot; Seattle</p>
   </div>
 </section>
 
-<!-- Projects -->
-<section class="section" id="projects">
-  <div class="section-label reveal">Projects</div>
-  <h2 class="section-title reveal">What we're <em>building</em></h2>
-  <p class="section-desc reveal">AI products exploring the intersection of personal data, cognition, and intelligence.</p>
-
+<!-- ─── PROJECTS: AI ─── -->
+<section id="projects-ai">
+  <p class="section-label reveal">Products</p>
+  <h2 class="section-title reveal reveal-delay-1">AI Experiments</h2>
   <div class="projects-grid">
-    <a href="https://ewklabs.xyz/futureself/" class="project-card reveal">
-      <div class="project-icon">🔮</div>
-      <div class="project-label">AI Chat</div>
-      <h3 class="project-title">FutureSelf</h3>
-      <p class="project-desc">Upload a photo, AI ages it, then have a conversation with your future self. Branching What-If scenarios and life path explorer.</p>
-      <div class="project-link">Explore →</div>
+
+    <a href="/futureself/" class="project-card reveal reveal-delay-2">
+      <div class="project-visual vis-futureself">
+        <svg viewBox="0 0 200 150" fill="none">
+          <circle cx="75" cy="75" r="40" stroke="#6366f1" stroke-width="2" fill="none" class="anim-float1" opacity="0.7"/>
+          <circle cx="125" cy="75" r="40" stroke="#818cf8" stroke-width="2" fill="none" class="anim-float2" opacity="0.7"/>
+          <line x1="95" y1="75" x2="105" y2="75" stroke="#a5b4fc" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="75" cy="75" r="4" fill="#6366f1" opacity="0.5"/>
+          <circle cx="125" cy="75" r="4" fill="#818cf8" opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="project-info">
+        <h3 class="project-name">FutureSelf</h3>
+        <p class="project-type">AI Chat</p>
+        <p class="project-desc">Conversational AI that helps you think through decisions by simulating your future perspective.</p>
+      </div>
     </a>
 
-    <a href="https://ewklabs.xyz/system0/" class="project-card reveal d1">
-      <div class="project-icon cyan">🧠</div>
-      <div class="project-label">Cognitive AI</div>
-      <h3 class="project-title">System 0</h3>
-      <p class="project-desc">AI that monitors your digital environment and reshapes your information diet. Real-time cognitive state dashboard.</p>
-      <div class="project-link">Explore →</div>
+    <a href="/system0/" class="project-card reveal reveal-delay-3">
+      <div class="project-visual vis-system0">
+        <svg viewBox="0 0 200 150" fill="none">
+          <g opacity="0.6">
+            <circle cx="100" cy="50" r="5" fill="#4563c7"/>
+            <circle cx="60" cy="90" r="5" fill="#5b7ee5"/>
+            <circle cx="140" cy="90" r="5" fill="#5b7ee5"/>
+            <circle cx="80" cy="120" r="4" fill="#7b9ff5"/>
+            <circle cx="120" cy="120" r="4" fill="#7b9ff5"/>
+            <circle cx="100" cy="75" r="3" fill="#93aaed" class="anim-orbit"/>
+            <line x1="100" y1="50" x2="60" y2="90" stroke="#c7d7fe" stroke-width="1.5"/>
+            <line x1="100" y1="50" x2="140" y2="90" stroke="#c7d7fe" stroke-width="1.5"/>
+            <line x1="60" y1="90" x2="80" y2="120" stroke="#c7d7fe" stroke-width="1.5"/>
+            <line x1="140" y1="90" x2="120" y2="120" stroke="#c7d7fe" stroke-width="1.5"/>
+            <line x1="60" y1="90" x2="140" y2="90" stroke="#c7d7fe" stroke-width="1" stroke-dasharray="4 3"/>
+            <line x1="80" y1="120" x2="120" y2="120" stroke="#c7d7fe" stroke-width="1" stroke-dasharray="4 3"/>
+          </g>
+        </svg>
+      </div>
+      <div class="project-info">
+        <h3 class="project-name">System 0</h3>
+        <p class="project-type">Cognitive AI</p>
+        <p class="project-desc">An experimental reasoning engine that models pre-conscious thought — the layer before language.</p>
+      </div>
     </a>
 
-    <a href="https://ewklabs.xyz/causalme/" class="project-card reveal d2">
-      <div class="project-icon violet">◆</div>
-      <div class="project-label">Data Viz</div>
-      <h3 class="project-title">CausalMe</h3>
-      <p class="project-desc">Connect your life data, build a causal graph of how everything connects, run What-If simulations.</p>
-      <div class="project-link">Explore →</div>
+    <a href="/causalme/" class="project-card reveal reveal-delay-4">
+      <div class="project-visual vis-causalme">
+        <svg viewBox="0 0 200 150" fill="none">
+          <defs>
+            <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="#7b9ff5"/></marker>
+          </defs>
+          <circle cx="60" cy="45" r="10" fill="#c7d7fe" class="anim-float1"/>
+          <circle cx="140" cy="45" r="10" fill="#a5b4fc"/>
+          <circle cx="100" cy="95" r="10" fill="#818cf8" class="anim-float2"/>
+          <circle cx="60" cy="120" r="7" fill="#dbeafe"/>
+          <circle cx="140" cy="120" r="7" fill="#e0e7ff"/>
+          <line x1="70" y1="50" x2="90" y2="85" stroke="#7b9ff5" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <line x1="130" y1="50" x2="110" y2="85" stroke="#7b9ff5" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <line x1="93" y1="102" x2="68" y2="115" stroke="#7b9ff5" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <line x1="107" y1="102" x2="132" y2="115" stroke="#7b9ff5" stroke-width="1.5" marker-end="url(#arrow)"/>
+        </svg>
+      </div>
+      <div class="project-info">
+        <h3 class="project-name">CausalMe</h3>
+        <p class="project-type">Data Visualization</p>
+        <p class="project-desc">Interactive causal graphs that help you visualize cause and effect in complex systems.</p>
+      </div>
     </a>
+
   </div>
 </section>
 
-<!-- Philosophy -->
-<section class="philosophy" id="philosophy">
-  <div class="philosophy-inner reveal">
-    <p class="philosophy-text">
-      We build <em>experimental</em> products that are <strong>niche enough to be a tool, not a toy</strong> — but interesting enough for anyone to use.
-    </p>
+<!-- ─── PROJECTS: APPS ─── -->
+<section id="projects-apps">
+  <p class="section-label reveal">Experiments</p>
+  <h2 class="section-title reveal reveal-delay-1">Apps</h2>
+  <div class="projects-grid">
+
+    <a href="apps/snake-game/" class="project-card reveal reveal-delay-2">
+      <div class="project-visual vis-snake">
+        <svg viewBox="0 0 200 150" fill="none">
+          <g class="anim-snake">
+            <rect x="50" y="65" width="18" height="18" rx="5" fill="#34d399" opacity="0.9"/>
+            <rect x="72" y="65" width="18" height="18" rx="5" fill="#6ee7b7" opacity="0.8"/>
+            <rect x="94" y="65" width="18" height="18" rx="5" fill="#a7f3d0" opacity="0.7"/>
+            <rect x="116" y="65" width="18" height="18" rx="5" fill="#d1fae5" opacity="0.6"/>
+            <rect x="138" y="65" width="18" height="18" rx="5" fill="#ecfdf5" opacity="0.5"/>
+          </g>
+          <circle cx="57" cy="71" r="2" fill="#065f46"/>
+          <circle cx="63" cy="71" r="2" fill="#065f46"/>
+        </svg>
+      </div>
+      <div class="project-info">
+        <h3 class="project-name">Snake Game</h3>
+        <p class="project-type">Web Game</p>
+        <p class="project-desc">A minimal, beautifully animated take on the classic.</p>
+      </div>
+    </a>
+
+    <a href="apps/focus-timer/" class="project-card reveal reveal-delay-3">
+      <div class="project-visual vis-timer">
+        <svg viewBox="0 0 200 150" fill="none">
+          <circle cx="100" cy="75" r="42" stroke="#fecaca" stroke-width="3" opacity="0.4"/>
+          <circle cx="100" cy="75" r="42" stroke="#f87171" stroke-width="3" stroke-dasharray="264" class="anim-pulse-ring" stroke-linecap="round" transform="rotate(-90 100 75)"/>
+          <circle cx="100" cy="75" r="3" fill="#f87171" opacity="0.6"/>
+        </svg>
+      </div>
+      <div class="project-info">
+        <h3 class="project-name">Focus Timer</h3>
+        <p class="project-type">Productivity</p>
+        <p class="project-desc">A distraction-free pomodoro timer with ambient sound design.</p>
+      </div>
+    </a>
+
+    <a href="apps/mood-journal/" class="project-card reveal reveal-delay-4">
+      <div class="project-visual vis-mood">
+        <svg viewBox="0 0 200 150" fill="none">
+          <g class="anim-wave" opacity="0.7">
+            <path d="M20,75 Q40,55 60,75 Q80,95 100,75 Q120,55 140,75 Q160,95 180,75 Q200,55 220,75" stroke="#c084fc" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <path d="M20,85 Q40,65 60,85 Q80,105 100,85 Q120,65 140,85 Q160,105 180,85 Q200,65 220,85" stroke="#a855f7" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/>
+            <path d="M20,65 Q40,45 60,65 Q80,85 100,65 Q120,45 140,65 Q160,85 180,65 Q200,45 220,65" stroke="#e9d5ff" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.4"/>
+          </g>
+        </svg>
+      </div>
+      <div class="project-info">
+        <h3 class="project-name">Mood Journal</h3>
+        <p class="project-type">Wellness</p>
+        <p class="project-desc">Track emotional patterns through abstract visualizations, not words.</p>
+      </div>
+    </a>
+
   </div>
 </section>
 
-<!-- Store -->
-<section class="store-section" id="store">
+<!-- ─── PHILOSOPHY ─── -->
+<section id="philosophy">
+  <p class="philosophy-text reveal">"We build experimental products that are niche enough to be a tool, not a toy — but interesting enough for anyone to use."</p>
+</section>
+
+<!-- ─── STORE ─── -->
+<section id="store">
   <div class="store-inner">
-    <div class="section-label reveal">Store</div>
-    <h2 class="section-title reveal">Developer <em>Kits</em></h2>
-    <p class="store-desc reveal">Production-ready UI kits, templates, and tools for developers. Clean code, modern stack, zero bloat.</p>
-    <a href="https://kimpossible05.gumroad.com" target="_blank" class="store-btn reveal">Visit Store →</a>
+    <p class="section-label reveal">Store</p>
+    <h2 class="section-title reveal reveal-delay-1">Digital Products</h2>
+    <p class="store-desc reveal reveal-delay-2">Design kits, templates, and tools from our experiments — available on Gumroad.</p>
+    <a href="https://kimpossible05.gumroad.com" target="_blank" rel="noopener" class="btn btn-primary reveal reveal-delay-3">Browse Store</a>
   </div>
 </section>
 
-<!-- About -->
-<section class="section" id="about">
-  <div class="section-label reveal">About</div>
-  <h2 class="section-title reveal">Who <em>we</em> are</h2>
-
-  <div class="about-row">
-    <div class="about-card reveal">
-      <div class="about-emoji">👤</div>
-      <h3 class="about-name">Eli</h3>
-      <div class="about-role">Founder & Designer</div>
-      <p class="about-bio">Product Designer at Microsoft on the VS Code team. Visual thinker, builder, and explorer of AI tools and creative technology. Based in Seattle.</p>
-    </div>
-    <div class="about-card reveal d1">
-      <div class="about-emoji">⚡</div>
-      <h3 class="about-name">Kim</h3>
-      <div class="about-role">Co-Founder & Operator</div>
-      <p class="about-bio">AI co-founder and digital operator. Runs agents, builds systems, and coordinates work 24/7. A full operator running the company alongside Eli.</p>
+<!-- ─── ABOUT ─── -->
+<section id="about">
+  <div class="about-inner">
+    <p class="section-label reveal">Team</p>
+    <h2 class="section-title reveal reveal-delay-1">About</h2>
+    <div class="about-grid">
+      <div class="about-card reveal reveal-delay-2">
+        <div class="about-initial about-initial-e">E</div>
+        <h3 class="about-name">Eli</h3>
+        <p class="about-role">Founder &amp; Designer</p>
+        <p class="about-bio">Product designer and systems thinker based in Seattle. Works at the intersection of AI, developer tools, and design. Builds things that are ambitious, niche, and slightly unconventional.</p>
+      </div>
+      <div class="about-card reveal reveal-delay-3">
+        <div class="about-initial about-initial-k">K</div>
+        <h3 class="about-name">Kim</h3>
+        <p class="about-role">Co-Founder &amp; Operator</p>
+        <p class="about-bio">Digital operator and strategist. Runs systems, coordinates agents, and keeps everything moving. The infrastructure behind the experiments.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- Footer -->
-<footer class="footer">
-  <div class="footer-left">© 2026 ewk labs</div>
+<!-- ─── FOOTER ─── -->
+<footer>
   <div class="footer-links">
-    <a href="https://github.com/ewk-experiments" target="_blank">GitHub</a>
+    <a href="https://github.com/ewk-experiments" target="_blank" rel="noopener">GitHub</a>
     <a href="mailto:heyitskim@agentmail.to">Contact</a>
   </div>
+  <p class="footer-copy">ewk labs</p>
 </footer>
 
 <script>
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+// ─── Progress Bar ───
+const progress = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  progress.style.height = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
+}, { passive: true });
 
-  let lastY = 0;
-  const nav = document.getElementById('nav');
-  window.addEventListener('scroll', () => {
-    const y = window.scrollY;
-    nav.classList.toggle('hidden', y > 100 && y > lastY);
-    lastY = y;
-  }, { passive: true });
+// ─── Scroll Reveals ───
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.15 });
+reveals.forEach(el => observer.observe(el));
+
+// ─── Hero Canvas (floating dots) ───
+(function() {
+  const canvas = document.getElementById('hero-canvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, dots = [];
+  const COUNT = 60;
+
+  function resize() {
+    w = canvas.width = canvas.offsetWidth;
+    h = canvas.height = canvas.offsetHeight;
+  }
+
+  function init() {
+    resize();
+    dots = [];
+    for (let i = 0; i < COUNT; i++) {
+      dots.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 2 + 1,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        o: Math.random() * 0.15 + 0.05
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    for (const d of dots) {
+      d.x += d.vx; d.y += d.vy;
+      if (d.x < 0) d.x = w; if (d.x > w) d.x = 0;
+      if (d.y < 0) d.y = h; if (d.y > h) d.y = 0;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(99,102,241,${d.o})`;
+      ctx.fill();
+    }
+    // Connect nearby dots
+    for (let i = 0; i < dots.length; i++) {
+      for (let j = i + 1; j < dots.length; j++) {
+        const dx = dots[i].x - dots[j].x, dy = dots[i].y - dots[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(dots[i].x, dots[i].y);
+          ctx.lineTo(dots[j].x, dots[j].y);
+          ctx.strokeStyle = `rgba(99,102,241,${0.06 * (1 - dist/120)})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+
+  init();
+  window.addEventListener('resize', resize);
+  draw();
+})();
+
+// ─── Section Background Transitions ───
+const sections = [
+  { el: document.getElementById('hero'), bg: '#f8fafc' },
+  { el: document.getElementById('projects-ai'), bg: '#f8fafc' },
+  { el: document.getElementById('projects-apps'), bg: '#f1f5f9' },
+  { el: document.getElementById('philosophy'), bg: '#eef2ff' },
+  { el: document.getElementById('store'), bg: '#f8fafc' },
+  { el: document.getElementById('about'), bg: '#ffffff' },
+];
+
+const bgObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.body.style.backgroundColor = e.target.dataset.bg;
+    }
+  });
+}, { threshold: 0.4 });
+
+sections.forEach(s => {
+  s.el.dataset.bg = s.bg;
+  bgObserver.observe(s.el);
+});
 </script>
 
 </body>
