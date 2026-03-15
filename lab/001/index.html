@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field Study 001 / ewk labs</title>
+<meta name="description" content="An interactive magnetic field visualizer by ewk labs.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&family=Lora:ital,wght@0,400;1,400&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #111111;
+    --gold: #D4A843;
+    --teal: #0A4D3C;
+    --text: #999999;
+    --text-dim: #555555;
+    --gold-dim: rgba(212, 168, 67, 0.15);
+    --teal-bright: #0D6B52;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 300;
+    overflow: hidden;
+    height: 100dvh;
+    width: 100vw;
+    cursor: crosshair;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .chrome {
+    position: fixed;
+    z-index: 10;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .header {
+    top: 2rem;
+    left: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .header h1 {
+    font-family: 'Lora', serif;
+    font-weight: 400;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .header p {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .stats {
+    bottom: 2rem;
+    left: 2.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 300;
+    color: var(--text-dim);
+    line-height: 1.7;
+    letter-spacing: 0.04em;
+  }
+
+  .stats .val { color: var(--text); }
+
+  .badge {
+    bottom: 2rem;
+    right: 2.5rem;
+    text-align: right;
+  }
+
+  .badge a {
+    pointer-events: auto;
+    text-decoration: none;
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border: 1px solid var(--text-dim);
+    padding: 0.45rem 0.9rem;
+    transition: all 0.3s ease;
+    display: inline-block;
+  }
+
+  .badge a:hover {
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+
+  .controls {
+    top: 2rem;
+    right: 2.5rem;
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .controls button {
+    pointer-events: auto;
+    background: none;
+    border: 1px solid var(--text-dim);
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.7rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .controls button:hover,
+  .controls button.active {
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+
+  @media (max-width: 600px) {
+    .header, .stats, .badge, .controls { left: 1.25rem; right: 1.25rem; }
+    .header { top: 1.25rem; }
+    .stats { bottom: 1.25rem; }
+    .badge { bottom: 1.25rem; }
+    .controls { top: 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<div class="chrome header">
+  <h1>Field Study 001</h1>
+  <p>Magnetic vector field / ewk labs</p>
+</div>
+
+<div class="chrome controls">
+  <button id="modeBtn" class="active">Attract</button>
+  <button id="trailBtn">Trails</button>
+</div>
+
+<div class="chrome stats" id="stats"></div>
+
+<div class="chrome badge">
+  <a href="https://ewklabs.xyz" target="_blank" rel="noopener">ewk labs</a>
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d');
+  const statsEl = document.getElementById('stats');
+  const modeBtn = document.getElementById('modeBtn');
+  const trailBtn = document.getElementById('trailBtn');
+
+  let W, H, dpr;
+  let mouse = { x: -9999, y: -9999 };
+  let attract = true;
+  let trails = false;
+  let particles = [];
+  const COUNT = Math.min(window.innerWidth < 600 ? 800 : 2000, 2000);
+  const INFLUENCE = 220;
+  const STRENGTH = 0.00012;
+  const FRICTION = 0.96;
+  const RETURN = 0.003;
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function init() {
+    resize();
+    particles = [];
+    const cols = Math.ceil(Math.sqrt(COUNT * (W / H)));
+    const rows = Math.ceil(COUNT / cols);
+    const sx = W / cols;
+    const sy = H / rows;
+    for (let i = 0; i < COUNT; i++) {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      const ox = sx * (col + 0.5);
+      const oy = sy * (row + 0.5);
+      particles.push({ x: ox, y: oy, ox, oy, vx: 0, vy: 0 });
+    }
+  }
+
+  function tick() {
+    if (!trails) {
+      ctx.fillStyle = 'rgba(17,17,17,1)';
+      ctx.fillRect(0, 0, W, H);
+    } else {
+      ctx.fillStyle = 'rgba(17,17,17,0.08)';
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    const mx = mouse.x;
+    const my = mouse.y;
+    const inf2 = INFLUENCE * INFLUENCE;
+    const sign = attract ? -1 : 1;
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      const dx = p.x - mx;
+      const dy = p.y - my;
+      const d2 = dx * dx + dy * dy;
+
+      if (d2 < inf2 && d2 > 1) {
+        const d = Math.sqrt(d2);
+        const force = (INFLUENCE - d) * STRENGTH * sign;
+        p.vx += (dx / d) * force * d;
+        p.vy += (dy / d) * force * d;
+      }
+
+      // return home
+      p.vx += (p.ox - p.x) * RETURN;
+      p.vy += (p.oy - p.y) * RETURN;
+
+      p.vx *= FRICTION;
+      p.vy *= FRICTION;
+
+      p.x += p.vx;
+      p.y += p.vy;
+
+      // displacement for color
+      const disp = Math.sqrt((p.x - p.ox) ** 2 + (p.y - p.oy) ** 2);
+      const t = Math.min(disp / 60, 1);
+
+      // lerp gold -> teal
+      const r = Math.round(212 + (13 - 212) * t);
+      const g = Math.round(168 + (107 - 168) * t);
+      const b = Math.round(67 + (82 - 67) * t);
+      const alpha = 0.25 + t * 0.65;
+      const size = 1 + t * 1.5;
+
+      ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+      ctx.fillRect(p.x - size * 0.5, p.y - size * 0.5, size, size);
+    }
+
+    // stats
+    const speed = particles.reduce((s, p) => s + Math.abs(p.vx) + Math.abs(p.vy), 0) / particles.length;
+    statsEl.innerHTML =
+      `particles <span class="val">${COUNT}</span><br>` +
+      `velocity  <span class="val">${speed.toFixed(3)}</span><br>` +
+      `field     <span class="val">${attract ? 'attract' : 'repel'}</span>`;
+
+    requestAnimationFrame(tick);
+  }
+
+  // events
+  window.addEventListener('resize', () => { resize(); });
+  window.addEventListener('pointermove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+  window.addEventListener('pointerleave', () => { mouse.x = -9999; mouse.y = -9999; });
+
+  modeBtn.addEventListener('click', () => {
+    attract = !attract;
+    modeBtn.textContent = attract ? 'Attract' : 'Repel';
+    modeBtn.classList.toggle('active');
+  });
+
+  trailBtn.addEventListener('click', () => {
+    trails = !trails;
+    trailBtn.classList.toggle('active');
+  });
+
+  init();
+  tick();
+})();
+</script>
+</body>
+</html>

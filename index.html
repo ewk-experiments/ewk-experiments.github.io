@@ -704,6 +704,237 @@ section {
   color: var(--accent-warm);
 }
 
+/* ── LAB ── */
+.lab {
+  padding: 160px 48px;
+  background: var(--bg);
+  position: relative;
+}
+
+.lab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 48px;
+  right: 48px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(240, 240, 240, 0.06), transparent);
+}
+
+.lab-desc {
+  font-size: 16px;
+  color: var(--text-secondary);
+  max-width: 480px;
+  line-height: 1.7;
+  margin-top: 16px;
+}
+
+.lab-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.lab-card {
+  background: var(--surface-raised);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(240, 240, 240, 0.04);
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.lab-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(212, 168, 67, 0.15);
+  box-shadow: var(--shadow-glow);
+}
+
+.lab-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(212, 168, 67, 0.03), transparent);
+  opacity: 0;
+  transition: opacity 0.5s;
+  pointer-events: none;
+}
+
+.lab-card:hover::after { opacity: 1; }
+
+.lab-card-visual {
+  aspect-ratio: 16/10;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Lab 001: Magnetic Field viz */
+.lab-viz-magnetic {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: linear-gradient(135deg, #0a0a1a, #111128);
+}
+
+.mag-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 168, 67, 0.15);
+  transform: translate(-50%, -50%);
+  animation: magPulse 4s ease-in-out infinite;
+}
+
+.mag-ring:nth-child(1) { width: 40px; height: 40px; animation-delay: 0s; border-color: rgba(212, 168, 67, 0.3); }
+.mag-ring:nth-child(2) { width: 80px; height: 80px; animation-delay: 0.4s; }
+.mag-ring:nth-child(3) { width: 120px; height: 120px; animation-delay: 0.8s; }
+.mag-ring:nth-child(4) { width: 160px; height: 160px; animation-delay: 1.2s; border-color: rgba(13, 107, 82, 0.15); }
+.mag-ring:nth-child(5) { width: 200px; height: 200px; animation-delay: 1.6s; border-color: rgba(13, 107, 82, 0.1); }
+
+.mag-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-warm);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 20px rgba(212, 168, 67, 0.4);
+}
+
+@keyframes magPulse {
+  0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.95); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+}
+
+/* Lab 002: Placeholder grid */
+.lab-viz-pending {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: linear-gradient(135deg, #0d1a15, #0a1612);
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 4px;
+  padding: 24px;
+}
+
+.pending-cell {
+  border-radius: 3px;
+  background: rgba(13, 107, 82, 0.08);
+  border: 1px solid rgba(13, 107, 82, 0.06);
+  transition: background 0.6s;
+}
+
+.lab-viz-pending:hover .pending-cell:nth-child(odd) {
+  background: rgba(13, 107, 82, 0.15);
+}
+
+/* Lab 003: Placeholder wave */
+.lab-viz-pending-b {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: linear-gradient(135deg, #1a1210, #15110d);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px;
+  padding: 24px 32px;
+}
+
+.wave-bar {
+  flex: 1;
+  background: rgba(212, 168, 67, 0.1);
+  border-radius: 2px 2px 0 0;
+  transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.wave-bar:nth-child(1) { height: 20%; }
+.wave-bar:nth-child(2) { height: 35%; }
+.wave-bar:nth-child(3) { height: 55%; }
+.wave-bar:nth-child(4) { height: 70%; }
+.wave-bar:nth-child(5) { height: 85%; }
+.wave-bar:nth-child(6) { height: 65%; }
+.wave-bar:nth-child(7) { height: 45%; }
+.wave-bar:nth-child(8) { height: 30%; }
+.wave-bar:nth-child(9) { height: 50%; }
+.wave-bar:nth-child(10) { height: 40%; }
+.wave-bar:nth-child(11) { height: 25%; }
+.wave-bar:nth-child(12) { height: 15%; }
+
+.lab-card:hover .wave-bar { background: rgba(212, 168, 67, 0.2); }
+
+.lab-card-info {
+  padding: 28px;
+}
+
+.lab-card-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent-warm);
+  margin-bottom: 12px;
+}
+
+.lab-card-title {
+  font-family: var(--font-editorial);
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.lab-card-status {
+  font-size: 13px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+
+.lab-card-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 28px 24px;
+}
+
+.lab-card .project-arrow {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(240, 240, 240, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+.lab-card:hover .project-arrow {
+  background: var(--accent-warm-dim);
+  color: var(--accent-warm);
+}
+
+@media (max-width: 900px) {
+  .lab { padding: 80px 24px; }
+  .lab-grid { grid-template-columns: 1fr; }
+}
+
 /* ── PHILOSOPHY ── */
 .philosophy {
   padding: 160px 48px;
@@ -1176,6 +1407,7 @@ footer {
   </a>
   <div class="nav-links">
     <a href="#projects">Projects</a>
+    <a href="#lab">Lab</a>
     <a href="#philosophy">Philosophy</a>
     <a href="#about">About</a>
     <a href="/shop/" class="nav-store">Store</a>
@@ -1185,6 +1417,7 @@ footer {
 <div class="section-nav" id="sectionNav">
   <a href="#hero" data-label="Home" class="active"></a>
   <a href="#projects" data-label="Projects"></a>
+  <a href="#lab" data-label="Lab"></a>
   <a href="#philosophy" data-label="Philosophy"></a>
   <a href="#store-cta" data-label="Store"></a>
   <a href="#about" data-label="About"></a>
@@ -1329,6 +1562,83 @@ footer {
           <span class="tech-pill">CSS</span>
           <span class="tech-pill">JS</span>
         </div>
+        <div class="project-arrow">&nearr;</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- LAB -->
+<section class="lab" id="lab">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-label">Field Studies</div>
+      <h2 class="section-title">Lab</h2>
+      <p class="lab-desc">Interactive experiments in code and design</p>
+    </div>
+    <div class="section-count">03 Studies</div>
+  </div>
+
+  <div class="lab-grid">
+    <a class="lab-card reveal" style="--delay: 0ms" href="/lab/001/">
+      <div class="lab-card-visual">
+        <div class="lab-viz-magnetic">
+          <div class="mag-ring"></div>
+          <div class="mag-ring"></div>
+          <div class="mag-ring"></div>
+          <div class="mag-ring"></div>
+          <div class="mag-ring"></div>
+          <div class="mag-core"></div>
+        </div>
+      </div>
+      <div class="lab-card-info">
+        <div class="lab-card-num">Study 001</div>
+        <div class="lab-card-title">Magnetic Field</div>
+        <div class="lab-card-status">Particle physics visualizer</div>
+      </div>
+      <div class="lab-card-footer">
+        <div class="project-arrow">&nearr;</div>
+      </div>
+    </a>
+
+    <a class="lab-card reveal" style="--delay: 100ms" href="/lab/002/">
+      <div class="lab-card-visual">
+        <div class="lab-viz-pending">
+          <div class="pending-cell"></div><div class="pending-cell"></div><div class="pending-cell"></div>
+          <div class="pending-cell"></div><div class="pending-cell"></div><div class="pending-cell"></div>
+          <div class="pending-cell"></div><div class="pending-cell"></div><div class="pending-cell"></div>
+          <div class="pending-cell"></div><div class="pending-cell"></div><div class="pending-cell"></div>
+          <div class="pending-cell"></div><div class="pending-cell"></div><div class="pending-cell"></div>
+          <div class="pending-cell"></div><div class="pending-cell"></div><div class="pending-cell"></div>
+          <div class="pending-cell"></div><div class="pending-cell"></div><div class="pending-cell"></div>
+          <div class="pending-cell"></div><div class="pending-cell"></div><div class="pending-cell"></div>
+        </div>
+      </div>
+      <div class="lab-card-info">
+        <div class="lab-card-num">Study 002</div>
+        <div class="lab-card-title">Coming Soon</div>
+        <div class="lab-card-status">In progress</div>
+      </div>
+      <div class="lab-card-footer">
+        <div class="project-arrow">&nearr;</div>
+      </div>
+    </a>
+
+    <a class="lab-card reveal" style="--delay: 200ms" href="/lab/003/">
+      <div class="lab-card-visual">
+        <div class="lab-viz-pending-b">
+          <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+          <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+          <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+          <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        </div>
+      </div>
+      <div class="lab-card-info">
+        <div class="lab-card-num">Study 003</div>
+        <div class="lab-card-title">Coming Soon</div>
+        <div class="lab-card-status">In progress</div>
+      </div>
+      <div class="lab-card-footer">
         <div class="project-arrow">&nearr;</div>
       </div>
     </a>
