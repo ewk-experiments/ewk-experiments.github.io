@@ -12,28 +12,26 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --plum-50: #faf5ff;
-  --plum-100: #f0e4f7;
-  --plum-200: #dcc5eb;
-  --plum-300: #b88bd4;
-  --plum-400: #8e4dab;
-  --plum-500: #6b2d8b;
-  --plum-600: #4A1942;
-  --plum-700: #3a1235;
-  --plum-800: #2D1B3D;
-  --plum-900: #1a0e24;
-  --warm-50: #fdfcfb;
-  --warm-100: #f9f7f5;
-  --warm-200: #f0ece8;
-  --warm-300: #d6d0ca;
-  --warm-400: #a89e94;
-  --warm-500: #7a7068;
-  --warm-600: #5c534b;
-  --warm-700: #3d362f;
-  --warm-800: #2a241f;
-  --warm-900: #1a1613;
-  --rose-400: #c4516e;
-  --gold-400: #c9973e;
+  --blue-400: #00AAFF;
+  --blue-500: #0088FF;
+  --blue-600: #0066FF;
+  --blue-700: #0044DD;
+  --blue-glow: rgba(0, 102, 255, 0.4);
+  --blue-glow-soft: rgba(0, 136, 255, 0.15);
+  --dark-950: #08090c;
+  --dark-900: #0d0f14;
+  --dark-800: #13161d;
+  --dark-700: #1a1e28;
+  --dark-600: #232836;
+  --dark-500: #3a4050;
+  --dark-400: #555d70;
+  --dark-300: #7a8394;
+  --dark-200: #a0a8b8;
+  --dark-100: #c8cdd8;
+  --dark-50: #e8ebf0;
+  --light-50: #f8f9fc;
+  --light-100: #f0f2f7;
+  --light-200: #e4e7ef;
   --font-serif: 'Instrument Serif', Georgia, serif;
   --font-sans: 'Inter', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -43,8 +41,8 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: var(--font-sans);
-  color: var(--warm-800);
-  background: var(--warm-50);
+  color: var(--dark-100);
+  background: var(--dark-950);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
@@ -56,15 +54,10 @@ body {
   top: 0;
   width: 3px;
   height: 0%;
-  background: linear-gradient(180deg, var(--plum-400), var(--plum-600));
+  background: linear-gradient(180deg, var(--blue-400), var(--blue-600));
   z-index: 1000;
   transition: height 0.1s linear;
-}
-
-/* Section base */
-section {
-  position: relative;
-  transition: background-color 0.6s ease;
+  box-shadow: 0 0 12px var(--blue-glow);
 }
 
 /* Reveal animation */
@@ -73,10 +66,7 @@ section {
   transform: translateY(40px);
   transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
+.reveal.visible { opacity: 1; transform: translateY(0); }
 .reveal-delay-1 { transition-delay: 0.1s; }
 .reveal-delay-2 { transition-delay: 0.2s; }
 .reveal-delay-3 { transition-delay: 0.3s; }
@@ -91,7 +81,7 @@ section {
   justify-content: center;
   align-items: center;
   text-align: center;
-  background: var(--warm-50);
+  background: var(--dark-950);
   position: relative;
   overflow: hidden;
 }
@@ -115,15 +105,16 @@ section {
   font-weight: 400;
   line-height: 0.9;
   letter-spacing: -0.03em;
-  color: var(--plum-900);
+  color: #fff;
   margin-bottom: 1.5rem;
+  text-shadow: 0 0 80px rgba(0, 102, 255, 0.3), 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .hero-subtitle {
   font-family: var(--font-mono);
   font-size: clamp(0.75rem, 1.5vw, 1rem);
   font-weight: 400;
-  color: var(--warm-400);
+  color: var(--dark-300);
   letter-spacing: 0.15em;
   text-transform: uppercase;
 }
@@ -135,7 +126,7 @@ section {
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--plum-500);
+  color: var(--blue-500);
   margin-bottom: 1rem;
 }
 
@@ -143,9 +134,10 @@ section {
   font-family: var(--font-serif);
   font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 400;
-  color: var(--plum-900);
+  color: #fff;
   line-height: 1.1;
   letter-spacing: -0.02em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 /* ─── PROJECTS ─── */
@@ -155,8 +147,6 @@ section {
   margin: 0 auto;
 }
 
-#projects-ai { background: var(--warm-50); }
-
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -164,20 +154,44 @@ section {
   margin-top: 4rem;
 }
 
+/* ─── GLASS CARD ─── */
 .project-card {
-  background: white;
+  background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
   border-radius: 20px;
   overflow: hidden;
   text-decoration: none;
   color: inherit;
   display: block;
+  position: relative;
   transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.06) inset,
+    0 4px 24px rgba(0,0,0,0.3),
+    0 1px 3px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: radial-gradient(ellipse at 30% 0%, rgba(0,136,255,0.08) 0%, transparent 60%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.project-card:hover::before { opacity: 1; }
 
 .project-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 8px 30px rgba(74,25,66,0.12), 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.08) inset,
+    0 16px 48px rgba(0,102,255,0.15),
+    0 4px 12px rgba(0,0,0,0.3);
 }
 
 .project-visual {
@@ -193,6 +207,7 @@ section {
   width: 60%;
   height: 60%;
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
 }
 
 .project-card:hover .project-visual svg {
@@ -207,7 +222,8 @@ section {
   font-family: var(--font-serif);
   font-size: 1.5rem;
   margin-bottom: 0.25rem;
-  color: var(--plum-900);
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .project-type {
@@ -215,23 +231,23 @@ section {
   font-size: 0.7rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--warm-400);
+  color: var(--blue-400);
   margin-bottom: 0.75rem;
 }
 
 .project-desc {
   font-size: 0.9rem;
   line-height: 1.6;
-  color: var(--warm-500);
+  color: var(--dark-300);
 }
 
 /* Individual project visual backgrounds */
-.vis-futureself { background: linear-gradient(135deg, #2D1B3D 0%, #4A1942 100%); }
-.vis-system0 { background: linear-gradient(135deg, #1a0e24 0%, #2D1B3D 100%); }
-.vis-causalme { background: linear-gradient(135deg, #3a1235 0%, #4A1942 100%); }
-.vis-snake { background: linear-gradient(135deg, #1a2e1a 0%, #2d4a2d 100%); }
-.vis-timer { background: linear-gradient(135deg, #3d1f1f 0%, #5c2b2b 100%); }
-.vis-mood { background: linear-gradient(135deg, #2D1B3D 0%, #1a0e24 100%); }
+.vis-futureself { background: linear-gradient(135deg, #0a1628 0%, #0d2040 100%); }
+.vis-system0 { background: linear-gradient(135deg, #080c18 0%, #0a1628 100%); }
+.vis-causalme { background: linear-gradient(135deg, #0d1530 0%, #0a1e40 100%); }
+.vis-snake { background: linear-gradient(135deg, #0a1a12 0%, #0d2818 100%); }
+.vis-timer { background: linear-gradient(135deg, #1a0d0d 0%, #2a1212 100%); }
+.vis-mood { background: linear-gradient(135deg, #0d0a1a 0%, #140e28 100%); }
 
 /* ─── PHILOSOPHY ─── */
 #philosophy {
@@ -240,7 +256,16 @@ section {
   align-items: center;
   justify-content: center;
   min-height: 70vh;
-  background: var(--plum-900);
+  background: var(--dark-900);
+  position: relative;
+}
+
+#philosophy::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(0,102,255,0.06) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .philosophy-text {
@@ -249,15 +274,16 @@ section {
   line-height: 1.35;
   max-width: 900px;
   text-align: center;
-  color: var(--plum-200);
+  color: var(--dark-200);
   letter-spacing: -0.01em;
+  position: relative;
 }
 
-/* ─── STORE ─── */
+/* ─── STORE CTA ─── */
 #store {
   padding: 8rem 2rem;
   text-align: center;
-  background: var(--warm-50);
+  background: var(--dark-950);
 }
 
 .store-inner {
@@ -268,10 +294,11 @@ section {
 .store-desc {
   font-size: 1.1rem;
   line-height: 1.7;
-  color: var(--warm-500);
+  color: var(--dark-300);
   margin: 1.5rem 0 2.5rem;
 }
 
+/* ─── GLOWING BUTTON ─── */
 .btn {
   display: inline-block;
   font-family: var(--font-sans);
@@ -280,24 +307,34 @@ section {
   padding: 0.9rem 2.5rem;
   border-radius: 100px;
   text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-primary {
-  background: var(--plum-600);
+  background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-500) 100%);
   color: white;
+  box-shadow:
+    0 0 20px rgba(0,102,255,0.3),
+    0 0 60px rgba(0,102,255,0.1),
+    0 1px 0 rgba(255,255,255,0.15) inset,
+    0 4px 12px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .btn-primary:hover {
-  background: var(--plum-500);
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(74,25,66,0.35);
+  box-shadow:
+    0 0 30px rgba(0,102,255,0.5),
+    0 0 80px rgba(0,102,255,0.2),
+    0 1px 0 rgba(255,255,255,0.2) inset,
+    0 8px 24px rgba(0,0,0,0.3);
 }
 
 /* ─── ABOUT ─── */
 #about {
   padding: 8rem 2rem;
-  background: white;
+  background: var(--dark-900);
 }
 
 .about-inner {
@@ -315,8 +352,26 @@ section {
 .about-card {
   padding: 3rem;
   border-radius: 20px;
-  background: var(--warm-100);
-  border: 1px solid var(--warm-200);
+  background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.05) inset,
+    0 4px 24px rgba(0,0,0,0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.about-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 30% 20%, rgba(0,102,255,0.04) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 .about-initial {
@@ -330,16 +385,24 @@ section {
   font-size: 1.5rem;
   color: white;
   margin-bottom: 1.5rem;
+  position: relative;
 }
 
-.about-initial-e { background: linear-gradient(135deg, var(--plum-600), var(--plum-800)); }
-.about-initial-k { background: linear-gradient(135deg, var(--plum-400), var(--plum-600)); }
+.about-initial-e {
+  background: linear-gradient(135deg, var(--blue-600), var(--blue-700));
+  box-shadow: 0 4px 16px rgba(0,102,255,0.3), 0 1px 0 rgba(255,255,255,0.15) inset;
+}
+
+.about-initial-k {
+  background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+  box-shadow: 0 4px 16px rgba(0,136,255,0.3), 0 1px 0 rgba(255,255,255,0.15) inset;
+}
 
 .about-name {
   font-family: var(--font-serif);
   font-size: 1.75rem;
   margin-bottom: 0.25rem;
-  color: var(--plum-900);
+  color: #fff;
 }
 
 .about-role {
@@ -347,22 +410,23 @@ section {
   font-size: 0.7rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--plum-500);
+  color: var(--blue-400);
   margin-bottom: 1rem;
 }
 
 .about-bio {
   font-size: 0.95rem;
   line-height: 1.7;
-  color: var(--warm-500);
+  color: var(--dark-300);
+  position: relative;
 }
 
 /* ─── FOOTER ─── */
 footer {
   padding: 4rem 2rem;
   text-align: center;
-  background: var(--plum-900);
-  color: var(--warm-400);
+  background: var(--dark-950);
+  border-top: 1px solid rgba(255,255,255,0.05);
 }
 
 .footer-links {
@@ -373,18 +437,18 @@ footer {
 }
 
 .footer-links a {
-  color: var(--plum-200);
+  color: var(--dark-300);
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
   transition: color 0.3s;
 }
 
-.footer-links a:hover { color: white; }
+.footer-links a:hover { color: var(--blue-400); }
 
 .footer-copy {
   font-size: 0.8rem;
-  color: var(--warm-500);
+  color: var(--dark-500);
 }
 
 /* ─── RESPONSIVE ─── */
@@ -403,6 +467,7 @@ footer {
 @keyframes wave-shift { 0% { transform: translateX(0); } 100% { transform: translateX(-20px); } }
 @keyframes orbit { 0% { transform: rotate(0deg) translateX(24px) rotate(0deg); } 100% { transform: rotate(360deg) translateX(24px) rotate(-360deg); } }
 @keyframes snake-move { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(6px); } }
+@keyframes shimmer { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 
 .anim-float1 { animation: float1 4s ease-in-out infinite; }
 .anim-float2 { animation: float2 5s ease-in-out infinite 0.5s; }
@@ -410,6 +475,7 @@ footer {
 .anim-wave { animation: wave-shift 2s linear infinite; }
 .anim-orbit { animation: orbit 8s linear infinite; }
 .anim-snake { animation: snake-move 1.5s ease-in-out infinite; }
+.anim-shimmer { animation: shimmer 3s ease-in-out infinite; }
 </style>
 </head>
 <body>
@@ -434,11 +500,22 @@ footer {
     <a href="/futureself/" class="project-card reveal reveal-delay-2">
       <div class="project-visual vis-futureself">
         <svg viewBox="0 0 200 150" fill="none">
-          <circle cx="75" cy="75" r="40" stroke="#b88bd4" stroke-width="2" fill="none" class="anim-float1" opacity="0.7"/>
-          <circle cx="125" cy="75" r="40" stroke="#8e4dab" stroke-width="2" fill="none" class="anim-float2" opacity="0.7"/>
-          <line x1="95" y1="75" x2="105" y2="75" stroke="#dcc5eb" stroke-width="2" stroke-linecap="round"/>
-          <circle cx="75" cy="75" r="4" fill="#b88bd4" opacity="0.5"/>
-          <circle cx="125" cy="75" r="4" fill="#8e4dab" opacity="0.5"/>
+          <defs>
+            <radialGradient id="fs-glow" cx="50%" cy="40%" r="50%"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.3"/><stop offset="100%" stop-color="#0066FF" stop-opacity="0"/></radialGradient>
+            <linearGradient id="fs-glass1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.6"/><stop offset="50%" stop-color="#0066FF" stop-opacity="0.2"/><stop offset="100%" stop-color="#0044DD" stop-opacity="0.4"/></linearGradient>
+            <linearGradient id="fs-glass2" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00CCFF" stop-opacity="0.5"/><stop offset="100%" stop-color="#0055DD" stop-opacity="0.3"/></linearGradient>
+            <filter id="fs-blur"><feGaussianBlur stdDeviation="8"/></filter>
+          </defs>
+          <ellipse cx="100" cy="80" rx="50" ry="10" fill="url(#fs-glow)" filter="url(#fs-blur)"/>
+          <circle cx="72" cy="70" r="32" fill="url(#fs-glass1)" class="anim-float1"/>
+          <circle cx="72" cy="70" r="32" stroke="rgba(255,255,255,0.15)" stroke-width="1" fill="none" class="anim-float1"/>
+          <ellipse cx="62" cy="58" rx="12" ry="6" fill="rgba(255,255,255,0.08)" transform="rotate(-20 62 58)" class="anim-float1"/>
+          <circle cx="128" cy="70" r="32" fill="url(#fs-glass2)" class="anim-float2"/>
+          <circle cx="128" cy="70" r="32" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none" class="anim-float2"/>
+          <ellipse cx="118" cy="58" rx="10" ry="5" fill="rgba(255,255,255,0.06)" transform="rotate(-15 118 58)" class="anim-float2"/>
+          <line x1="95" y1="70" x2="105" y2="70" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="72" cy="70" r="5" fill="#00AAFF" opacity="0.6" class="anim-float1 anim-shimmer"/>
+          <circle cx="128" cy="70" r="5" fill="#0088FF" opacity="0.6" class="anim-float2 anim-shimmer"/>
         </svg>
       </div>
       <div class="project-info">
@@ -451,19 +528,29 @@ footer {
     <a href="/system0/" class="project-card reveal reveal-delay-3">
       <div class="project-visual vis-system0">
         <svg viewBox="0 0 200 150" fill="none">
-          <g opacity="0.8">
-            <circle cx="100" cy="50" r="5" fill="#8e4dab"/>
-            <circle cx="60" cy="90" r="5" fill="#b88bd4"/>
-            <circle cx="140" cy="90" r="5" fill="#b88bd4"/>
-            <circle cx="80" cy="120" r="4" fill="#dcc5eb"/>
-            <circle cx="120" cy="120" r="4" fill="#dcc5eb"/>
-            <circle cx="100" cy="75" r="3" fill="#f0e4f7" class="anim-orbit"/>
-            <line x1="100" y1="50" x2="60" y2="90" stroke="#6b2d8b" stroke-width="1.5"/>
-            <line x1="100" y1="50" x2="140" y2="90" stroke="#6b2d8b" stroke-width="1.5"/>
-            <line x1="60" y1="90" x2="80" y2="120" stroke="#6b2d8b" stroke-width="1.5"/>
-            <line x1="140" y1="90" x2="120" y2="120" stroke="#6b2d8b" stroke-width="1.5"/>
-            <line x1="60" y1="90" x2="140" y2="90" stroke="#4A1942" stroke-width="1" stroke-dasharray="4 3"/>
-            <line x1="80" y1="120" x2="120" y2="120" stroke="#4A1942" stroke-width="1" stroke-dasharray="4 3"/>
+          <defs>
+            <radialGradient id="s0-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#0066FF" stop-opacity="0.2"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+            <linearGradient id="s0-node" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00AAFF"/><stop offset="100%" stop-color="#0055DD"/></linearGradient>
+            <filter id="s0-glo"><feGaussianBlur stdDeviation="4"/></filter>
+          </defs>
+          <circle cx="100" cy="75" r="45" fill="url(#s0-glow)"/>
+          <g opacity="0.9">
+            <circle cx="100" cy="45" r="7" fill="url(#s0-node)"/>
+            <circle cx="100" cy="45" r="7" stroke="rgba(255,255,255,0.2)" stroke-width="0.5" fill="none"/>
+            <circle cx="100" cy="45" r="12" fill="#00AAFF" opacity="0.15" filter="url(#s0-glo)"/>
+            <circle cx="60" cy="85" r="6" fill="#0088FF"/>
+            <circle cx="60" cy="85" r="6" stroke="rgba(255,255,255,0.15)" stroke-width="0.5" fill="none"/>
+            <circle cx="140" cy="85" r="6" fill="#0088FF"/>
+            <circle cx="140" cy="85" r="6" stroke="rgba(255,255,255,0.15)" stroke-width="0.5" fill="none"/>
+            <circle cx="80" cy="115" r="5" fill="#0066FF" opacity="0.7"/>
+            <circle cx="120" cy="115" r="5" fill="#0066FF" opacity="0.7"/>
+            <circle cx="100" cy="72" r="3" fill="#00CCFF" class="anim-orbit"/>
+            <line x1="100" y1="45" x2="60" y2="85" stroke="rgba(0,170,255,0.4)" stroke-width="1.5"/>
+            <line x1="100" y1="45" x2="140" y2="85" stroke="rgba(0,170,255,0.4)" stroke-width="1.5"/>
+            <line x1="60" y1="85" x2="80" y2="115" stroke="rgba(0,136,255,0.3)" stroke-width="1.5"/>
+            <line x1="140" y1="85" x2="120" y2="115" stroke="rgba(0,136,255,0.3)" stroke-width="1.5"/>
+            <line x1="60" y1="85" x2="140" y2="85" stroke="rgba(0,102,255,0.15)" stroke-width="1" stroke-dasharray="4 3"/>
+            <line x1="80" y1="115" x2="120" y2="115" stroke="rgba(0,102,255,0.15)" stroke-width="1" stroke-dasharray="4 3"/>
           </g>
         </svg>
       </div>
@@ -478,17 +565,25 @@ footer {
       <div class="project-visual vis-causalme">
         <svg viewBox="0 0 200 150" fill="none">
           <defs>
-            <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="#b88bd4"/></marker>
+            <marker id="arrow-b" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="#00AAFF"/></marker>
+            <linearGradient id="cm-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.8"/><stop offset="100%" stop-color="#0055DD" stop-opacity="0.5"/></linearGradient>
+            <linearGradient id="cm-g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0088FF" stop-opacity="0.7"/><stop offset="100%" stop-color="#0044DD" stop-opacity="0.4"/></linearGradient>
+            <filter id="cm-sh"><feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#0066FF" flood-opacity="0.3"/></filter>
           </defs>
-          <circle cx="60" cy="45" r="10" fill="#6b2d8b" class="anim-float1"/>
-          <circle cx="140" cy="45" r="10" fill="#8e4dab"/>
-          <circle cx="100" cy="95" r="10" fill="#b88bd4" class="anim-float2"/>
-          <circle cx="60" cy="120" r="7" fill="#4A1942"/>
-          <circle cx="140" cy="120" r="7" fill="#3a1235"/>
-          <line x1="70" y1="50" x2="90" y2="85" stroke="#b88bd4" stroke-width="1.5" marker-end="url(#arrow)"/>
-          <line x1="130" y1="50" x2="110" y2="85" stroke="#b88bd4" stroke-width="1.5" marker-end="url(#arrow)"/>
-          <line x1="93" y1="102" x2="68" y2="115" stroke="#b88bd4" stroke-width="1.5" marker-end="url(#arrow)"/>
-          <line x1="107" y1="102" x2="132" y2="115" stroke="#b88bd4" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <circle cx="60" cy="42" r="13" fill="url(#cm-g1)" filter="url(#cm-sh)" class="anim-float1"/>
+          <circle cx="60" cy="42" r="13" stroke="rgba(255,255,255,0.15)" stroke-width="0.5" fill="none" class="anim-float1"/>
+          <ellipse cx="55" cy="37" rx="5" ry="3" fill="rgba(255,255,255,0.1)" class="anim-float1"/>
+          <circle cx="140" cy="42" r="13" fill="url(#cm-g2)"/>
+          <circle cx="140" cy="42" r="13" stroke="rgba(255,255,255,0.12)" stroke-width="0.5" fill="none"/>
+          <circle cx="100" cy="88" r="15" fill="url(#cm-g1)" filter="url(#cm-sh)" class="anim-float2"/>
+          <circle cx="100" cy="88" r="15" stroke="rgba(255,255,255,0.15)" stroke-width="0.5" fill="none" class="anim-float2"/>
+          <ellipse cx="94" cy="82" rx="6" ry="3" fill="rgba(255,255,255,0.08)" class="anim-float2"/>
+          <circle cx="56" cy="120" r="9" fill="#0066FF" opacity="0.5"/>
+          <circle cx="144" cy="120" r="9" fill="#0055DD" opacity="0.5"/>
+          <line x1="70" y1="48" x2="88" y2="78" stroke="rgba(0,170,255,0.5)" stroke-width="1.5" marker-end="url(#arrow-b)"/>
+          <line x1="130" y1="48" x2="112" y2="78" stroke="rgba(0,170,255,0.5)" stroke-width="1.5" marker-end="url(#arrow-b)"/>
+          <line x1="92" y1="100" x2="65" y2="114" stroke="rgba(0,136,255,0.4)" stroke-width="1.5" marker-end="url(#arrow-b)"/>
+          <line x1="108" y1="100" x2="135" y2="114" stroke="rgba(0,136,255,0.4)" stroke-width="1.5" marker-end="url(#arrow-b)"/>
         </svg>
       </div>
       <div class="project-info">
@@ -510,12 +605,17 @@ footer {
     <a href="apps/snake-game/" class="project-card reveal reveal-delay-2">
       <div class="project-visual vis-snake">
         <svg viewBox="0 0 200 150" fill="none">
-          <g class="anim-snake">
-            <rect x="50" y="65" width="18" height="18" rx="5" fill="#4ade80" opacity="0.9"/>
-            <rect x="72" y="65" width="18" height="18" rx="5" fill="#6ee7b7" opacity="0.8"/>
-            <rect x="94" y="65" width="18" height="18" rx="5" fill="#a7f3d0" opacity="0.7"/>
-            <rect x="116" y="65" width="18" height="18" rx="5" fill="#bbf7d0" opacity="0.5"/>
-            <rect x="138" y="65" width="18" height="18" rx="5" fill="#d1fae5" opacity="0.3"/>
+          <defs>
+            <linearGradient id="sn-g" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#4ade80" stop-opacity="0.9"/><stop offset="100%" stop-color="#22c55e" stop-opacity="0.3"/></linearGradient>
+            <filter id="sn-gl"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#4ade80" flood-opacity="0.4"/></filter>
+          </defs>
+          <g class="anim-snake" filter="url(#sn-gl)">
+            <rect x="50" y="65" width="18" height="18" rx="6" fill="#4ade80" opacity="0.9"/>
+            <rect x="50" y="65" width="18" height="18" rx="6" stroke="rgba(255,255,255,0.2)" stroke-width="0.5" fill="none"/>
+            <rect x="72" y="65" width="18" height="18" rx="6" fill="#6ee7b7" opacity="0.8"/>
+            <rect x="94" y="65" width="18" height="18" rx="6" fill="#a7f3d0" opacity="0.6"/>
+            <rect x="116" y="65" width="18" height="18" rx="6" fill="#bbf7d0" opacity="0.4"/>
+            <rect x="138" y="65" width="18" height="18" rx="6" fill="#d1fae5" opacity="0.2"/>
           </g>
           <circle cx="57" cy="71" r="2" fill="#f0fdf4"/>
           <circle cx="63" cy="71" r="2" fill="#f0fdf4"/>
@@ -531,9 +631,13 @@ footer {
     <a href="apps/focus-timer/" class="project-card reveal reveal-delay-3">
       <div class="project-visual vis-timer">
         <svg viewBox="0 0 200 150" fill="none">
-          <circle cx="100" cy="75" r="42" stroke="#7f1d1d" stroke-width="3" opacity="0.3"/>
-          <circle cx="100" cy="75" r="42" stroke="#f87171" stroke-width="3" stroke-dasharray="264" class="anim-pulse-ring" stroke-linecap="round" transform="rotate(-90 100 75)"/>
-          <circle cx="100" cy="75" r="3" fill="#f87171" opacity="0.8"/>
+          <defs>
+            <filter id="tm-gl"><feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#f87171" flood-opacity="0.4"/></filter>
+          </defs>
+          <circle cx="100" cy="75" r="42" stroke="rgba(127,29,29,0.4)" stroke-width="3"/>
+          <circle cx="100" cy="75" r="42" stroke="#f87171" stroke-width="3" stroke-dasharray="264" class="anim-pulse-ring" stroke-linecap="round" transform="rotate(-90 100 75)" filter="url(#tm-gl)"/>
+          <circle cx="100" cy="75" r="4" fill="#f87171" opacity="0.9"/>
+          <circle cx="100" cy="75" r="8" fill="#f87171" opacity="0.1"/>
         </svg>
       </div>
       <div class="project-info">
@@ -546,10 +650,13 @@ footer {
     <a href="apps/mood-journal/" class="project-card reveal reveal-delay-4">
       <div class="project-visual vis-mood">
         <svg viewBox="0 0 200 150" fill="none">
-          <g class="anim-wave" opacity="0.8">
-            <path d="M20,75 Q40,55 60,75 Q80,95 100,75 Q120,55 140,75 Q160,95 180,75 Q200,55 220,75" stroke="#b88bd4" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-            <path d="M20,85 Q40,65 60,85 Q80,105 100,85 Q120,65 140,85 Q160,105 180,85 Q200,65 220,85" stroke="#8e4dab" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
-            <path d="M20,65 Q40,45 60,65 Q80,85 100,65 Q120,45 140,65 Q160,85 180,65 Q200,45 220,65" stroke="#dcc5eb" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.4"/>
+          <defs>
+            <linearGradient id="md-g1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.6"/><stop offset="100%" stop-color="#7c3aed" stop-opacity="0.4"/></linearGradient>
+          </defs>
+          <g class="anim-wave" opacity="0.9">
+            <path d="M20,75 Q40,55 60,75 Q80,95 100,75 Q120,55 140,75 Q160,95 180,75 Q200,55 220,75" stroke="url(#md-g1)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <path d="M20,85 Q40,65 60,85 Q80,105 100,85 Q120,65 140,85 Q160,105 180,85 Q200,65 220,85" stroke="#0066FF" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.4"/>
+            <path d="M20,65 Q40,45 60,65 Q80,85 100,65 Q120,45 140,65 Q160,85 180,65 Q200,45 220,65" stroke="#00AAFF" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.3"/>
           </g>
         </svg>
       </div>
@@ -609,6 +716,7 @@ footer {
   <p class="footer-copy">ewk labs</p>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 // ─── Progress Bar ───
 const progress = document.getElementById('progress');
@@ -624,89 +732,143 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.15 });
 reveals.forEach(el => observer.observe(el));
 
-// ─── Hero Canvas (floating dots) ───
+// ─── Three.js Hero: Crystal Glass Structures ───
 (function() {
-  const canvas = document.getElementById('hero-canvas');
-  const ctx = canvas.getContext('2d');
-  let w, h, dots = [];
-  const COUNT = 60;
+  const container = document.getElementById('hero-canvas');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, container.offsetWidth / container.offsetHeight, 0.1, 100);
+  camera.position.z = 5;
 
-  function resize() {
-    w = canvas.width = canvas.offsetWidth;
-    h = canvas.height = canvas.offsetHeight;
-  }
+  const renderer = new THREE.WebGLRenderer({ canvas: container, alpha: true, antialias: true });
+  renderer.setSize(container.offsetWidth, container.offsetHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  function init() {
-    resize();
-    dots = [];
-    for (let i = 0; i < COUNT; i++) {
-      dots.push({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        r: Math.random() * 2 + 1,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        o: Math.random() * 0.15 + 0.05
-      });
-    }
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, w, h);
-    for (const d of dots) {
-      d.x += d.vx; d.y += d.vy;
-      if (d.x < 0) d.x = w; if (d.x > w) d.x = 0;
-      if (d.y < 0) d.y = h; if (d.y > h) d.y = 0;
-      ctx.beginPath();
-      ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(74,25,66,${d.o})`;
-      ctx.fill();
-    }
-    // Connect nearby dots
-    for (let i = 0; i < dots.length; i++) {
-      for (let j = i + 1; j < dots.length; j++) {
-        const dx = dots[i].x - dots[j].x, dy = dots[i].y - dots[j].y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        if (dist < 120) {
-          ctx.beginPath();
-          ctx.moveTo(dots[i].x, dots[i].y);
-          ctx.lineTo(dots[j].x, dots[j].y);
-          ctx.strokeStyle = `rgba(74,25,66,${0.08 * (1 - dist/120)})`;
-          ctx.lineWidth = 1;
-          ctx.stroke();
-        }
-      }
-    }
-    requestAnimationFrame(draw);
-  }
-
-  init();
-  window.addEventListener('resize', resize);
-  draw();
-})();
-
-// ─── Section Background Transitions ───
-const sections = [
-  { el: document.getElementById('hero'), bg: '#fdfcfb' },
-  { el: document.getElementById('projects-ai'), bg: '#fdfcfb' },
-  { el: document.getElementById('projects-apps'), bg: '#f9f7f5' },
-  { el: document.getElementById('philosophy'), bg: '#1a0e24' },
-  { el: document.getElementById('store'), bg: '#fdfcfb' },
-  { el: document.getElementById('about'), bg: '#ffffff' },
-];
-
-const bgObserver = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      document.body.style.backgroundColor = e.target.dataset.bg;
-    }
+  // Floating glass icosahedrons
+  const glassMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0x0066FF,
+    metalness: 0.1,
+    roughness: 0.05,
+    transmission: 0.9,
+    thickness: 1.5,
+    transparent: true,
+    opacity: 0.4,
+    side: THREE.DoubleSide,
   });
-}, { threshold: 0.4 });
 
-sections.forEach(s => {
-  s.el.dataset.bg = s.bg;
-  bgObserver.observe(s.el);
-});
+  const glassMaterial2 = new THREE.MeshPhysicalMaterial({
+    color: 0x00AAFF,
+    metalness: 0.15,
+    roughness: 0.1,
+    transmission: 0.85,
+    thickness: 1.0,
+    transparent: true,
+    opacity: 0.3,
+    side: THREE.DoubleSide,
+  });
+
+  const shapes = [];
+  const geometries = [
+    new THREE.IcosahedronGeometry(0.8, 0),
+    new THREE.OctahedronGeometry(0.6, 0),
+    new THREE.TetrahedronGeometry(0.5, 0),
+    new THREE.IcosahedronGeometry(0.4, 1),
+    new THREE.OctahedronGeometry(0.35, 0),
+  ];
+
+  const positions = [
+    { x: -2.5, y: 0.5, z: -1 },
+    { x: 2.2, y: -0.8, z: -0.5 },
+    { x: -1, y: -1.5, z: -2 },
+    { x: 1.8, y: 1.5, z: -1.5 },
+    { x: -0.3, y: 2, z: -2.5 },
+  ];
+
+  geometries.forEach((geo, i) => {
+    const mat = i % 2 === 0 ? glassMaterial : glassMaterial2;
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(positions[i].x, positions[i].y, positions[i].z);
+    mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+    scene.add(mesh);
+    shapes.push({
+      mesh,
+      rotSpeed: { x: 0.002 + Math.random() * 0.004, y: 0.003 + Math.random() * 0.004 },
+      floatSpeed: 0.3 + Math.random() * 0.3,
+      floatAmp: 0.15 + Math.random() * 0.15,
+      baseY: positions[i].y,
+    });
+  });
+
+  // Wireframe overlay versions
+  const wireMat = new THREE.MeshBasicMaterial({ color: 0x00AAFF, wireframe: true, transparent: true, opacity: 0.08 });
+  shapes.forEach(s => {
+    const wire = new THREE.Mesh(s.mesh.geometry, wireMat);
+    wire.position.copy(s.mesh.position);
+    wire.rotation.copy(s.mesh.rotation);
+    wire.scale.set(1.15, 1.15, 1.15);
+    s.wire = wire;
+    scene.add(wire);
+  });
+
+  // Particle field
+  const particleCount = 150;
+  const particleGeo = new THREE.BufferGeometry();
+  const particlePos = new Float32Array(particleCount * 3);
+  const particleSizes = new Float32Array(particleCount);
+  for (let i = 0; i < particleCount; i++) {
+    particlePos[i * 3] = (Math.random() - 0.5) * 12;
+    particlePos[i * 3 + 1] = (Math.random() - 0.5) * 8;
+    particlePos[i * 3 + 2] = (Math.random() - 0.5) * 8 - 2;
+    particleSizes[i] = Math.random() * 3 + 1;
+  }
+  particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
+  particleGeo.setAttribute('size', new THREE.BufferAttribute(particleSizes, 1));
+  const particleMat = new THREE.PointsMaterial({ color: 0x0088FF, size: 0.03, transparent: true, opacity: 0.5, sizeAttenuation: true });
+  const particles = new THREE.Points(particleGeo, particleMat);
+  scene.add(particles);
+
+  // Lights
+  const light1 = new THREE.PointLight(0x0066FF, 2, 20);
+  light1.position.set(3, 3, 3);
+  scene.add(light1);
+
+  const light2 = new THREE.PointLight(0x00AAFF, 1.5, 20);
+  light2.position.set(-3, -2, 2);
+  scene.add(light2);
+
+  const ambient = new THREE.AmbientLight(0x111122, 0.5);
+  scene.add(ambient);
+
+  let time = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    time += 0.01;
+
+    shapes.forEach(s => {
+      s.mesh.rotation.x += s.rotSpeed.x;
+      s.mesh.rotation.y += s.rotSpeed.y;
+      s.mesh.position.y = s.baseY + Math.sin(time * s.floatSpeed) * s.floatAmp;
+      if (s.wire) {
+        s.wire.rotation.copy(s.mesh.rotation);
+        s.wire.position.copy(s.mesh.position);
+      }
+    });
+
+    particles.rotation.y = time * 0.02;
+
+    light1.position.x = Math.sin(time * 0.5) * 4;
+    light1.position.y = Math.cos(time * 0.3) * 3;
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = container.offsetWidth / container.offsetHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.offsetWidth, container.offsetHeight);
+  });
+})();
 </script>
 
 </body>
