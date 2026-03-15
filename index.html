@@ -408,21 +408,23 @@ body::after {
   font-style: italic;
 }
 
-/* ─── STORE CTA ─── */
+/* ─── STORE / PRODUCTS ─── */
 #store {
-  padding: 6rem 4rem;
+  padding: 8rem 4rem;
   border-bottom: 1px solid var(--border);
 }
 
 .store-inner {
   max-width: 1400px;
   margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
-.store-text { max-width: 500px; }
+.store-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 3rem;
+}
 
 .store-desc {
   font-size: 1rem;
@@ -440,6 +442,7 @@ body::after {
   align-items: center;
   gap: 0.75rem;
   transition: color 0.3s;
+  white-space: nowrap;
 }
 
 .store-link:hover { color: var(--vermillion); }
@@ -450,6 +453,103 @@ body::after {
 }
 
 .store-link:hover span { transform: translateX(4px); }
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.product-card {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  background: #fff;
+}
+
+.product-card:hover {
+  border-color: var(--vermillion);
+  box-shadow: 0 2px 20px rgba(232, 56, 13, 0.06);
+}
+
+.product-card:hover .product-cta { color: var(--vermillion); }
+
+.product-preview {
+  height: 140px;
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.product-preview canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.product-info {
+  padding: 1.25rem;
+}
+
+.product-name {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  color: var(--text-primary);
+  margin-bottom: 0.3rem;
+}
+
+.product-desc-short {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin-bottom: 0.6rem;
+}
+
+.product-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 0.75rem;
+}
+
+.product-tag {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: var(--surface-warm);
+  padding: 0.2rem 0.45rem;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+}
+
+.product-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.product-price {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.product-cta {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  transition: color 0.3s;
+}
 
 /* ─── ABOUT ─── */
 #about {
@@ -563,7 +663,8 @@ footer {
   .field-studies-header { padding: 0 2rem; }
   #philosophy { padding: 6rem 2rem; }
   #store { padding: 4rem 2rem; }
-  .store-inner { flex-direction: column; gap: 2rem; align-items: flex-start; }
+  .store-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .product-grid { grid-template-columns: 1fr; }
   #about { padding: 5rem 2rem; }
   .about-grid { grid-template-columns: 1fr; gap: 3rem; }
   footer { padding: 3rem 2rem; flex-direction: column; gap: 1.5rem; }
@@ -719,16 +820,107 @@ footer {
   <p class="philosophy-text reveal">"We build experimental products that are <em>niche enough to be a tool, not a toy</em>, but interesting enough for anyone to use."</p>
 </section>
 
-<!-- ─── STORE ─── -->
+<!-- ─── STORE / PRODUCTS ─── -->
 <section id="store">
   <div class="store-inner">
-    <div class="store-text">
-      <div class="section-number reveal">03</div>
-      <p class="section-label reveal reveal-delay-1">Store</p>
-      <h2 class="section-title reveal reveal-delay-2">Digital Products</h2>
-      <p class="store-desc reveal reveal-delay-3">Design kits, templates, and tools from our experiments.</p>
+    <div class="store-header">
+      <div>
+        <div class="section-number reveal">03</div>
+        <p class="section-label reveal reveal-delay-1">Store</p>
+        <h2 class="section-title reveal reveal-delay-2">Digital Products</h2>
+        <p class="store-desc reveal reveal-delay-3">Design kits, templates, and tools from our experiments.</p>
+      </div>
+      <a href="/shop/" class="store-link reveal reveal-delay-3">Browse All <span>&rarr;</span></a>
     </div>
-    <a href="/shop/" class="store-link reveal reveal-delay-4">Browse Store <span>&rarr;</span></a>
+
+    <div class="product-grid">
+
+      <a href="https://kimpossible05.gumroad.com/l/emvmct" target="_blank" rel="noopener" class="product-card reveal">
+        <div class="product-preview"><canvas data-anim="dashboard"></canvas></div>
+        <div class="product-info">
+          <h3 class="product-name">AI Dashboard Starter Kit</h3>
+          <p class="product-desc-short">Dashboard components, charts, and layouts for data-rich AI interfaces.</p>
+          <div class="product-tags">
+            <span class="product-tag">React</span>
+            <span class="product-tag">Tailwind</span>
+            <span class="product-tag">Charts</span>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">$12</span>
+            <span class="product-cta">Acquire</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="https://kimpossible05.gumroad.com/l/arottc" target="_blank" rel="noopener" class="product-card reveal reveal-delay-1">
+        <div class="product-preview"><canvas data-anim="causal"></canvas></div>
+        <div class="product-info">
+          <h3 class="product-name">Causal Graph UI Kit</h3>
+          <p class="product-desc-short">Interactive node-based graph components for data visualization.</p>
+          <div class="product-tags">
+            <span class="product-tag">React</span>
+            <span class="product-tag">SVG</span>
+            <span class="product-tag">D3-Compatible</span>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">$15</span>
+            <span class="product-cta">Acquire</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="https://gumroad.com/products/aqsrrt" target="_blank" rel="noopener" class="product-card reveal reveal-delay-2">
+        <div class="product-preview"><canvas data-anim="landing"></canvas></div>
+        <div class="product-info">
+          <h3 class="product-name">AI Landing Page Kit</h3>
+          <p class="product-desc-short">Modern landing page templates designed for AI products.</p>
+          <div class="product-tags">
+            <span class="product-tag">HTML</span>
+            <span class="product-tag">CSS</span>
+            <span class="product-tag">Responsive</span>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">$15</span>
+            <span class="product-cta">Acquire</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="https://gumroad.com/products/oolmc" target="_blank" rel="noopener" class="product-card reveal reveal-delay-3">
+        <div class="product-preview"><canvas data-anim="portfolio"></canvas></div>
+        <div class="product-info">
+          <h3 class="product-name">Developer Portfolio Kit</h3>
+          <p class="product-desc-short">Minimal portfolio templates with intentional restraint.</p>
+          <div class="product-tags">
+            <span class="product-tag">HTML</span>
+            <span class="product-tag">CSS</span>
+            <span class="product-tag">Dark Mode</span>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">$10</span>
+            <span class="product-cta">Acquire</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="https://gumroad.com/products/waitlist" target="_blank" rel="noopener" class="product-card reveal reveal-delay-4">
+        <div class="product-preview"><canvas data-anim="waitlist"></canvas></div>
+        <div class="product-info">
+          <h3 class="product-name">Waitlist Launch Page Kit</h3>
+          <p class="product-desc-short">Pre-launch waitlist pages with signup forms and social proof.</p>
+          <div class="product-tags">
+            <span class="product-tag">HTML</span>
+            <span class="product-tag">CSS</span>
+            <span class="product-tag">JavaScript</span>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">$10</span>
+            <span class="product-cta">Acquire</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
   </div>
 </section>
 
@@ -785,7 +977,7 @@ footer {
       cursor.style.top = cy + 'px';
       requestAnimationFrame(loop);
     })();
-    document.querySelectorAll('a, button, .catalog-entry, .study-cell, .store-link').forEach(function(el) {
+    document.querySelectorAll('a, button, .catalog-entry, .study-cell, .store-link, .product-card').forEach(function(el) {
       el.addEventListener('mouseenter', function() { cursor.classList.add('hovering'); });
       el.addEventListener('mouseleave', function() { cursor.classList.remove('hovering'); });
     });
@@ -1288,8 +1480,139 @@ footer {
     mood: drawMood,
     magnetic: drawMagnetic,
     typo: drawTypo,
-    orbital: drawOrbital
+    orbital: drawOrbital,
+    dashboard: drawDashboard,
+    causal: drawCausal,
+    landing: drawLanding,
+    portfolio: drawPortfolio,
+    waitlist: drawWaitlist
   };
+
+  // ── Dashboard: mini chart cards + sparkline ──
+  function drawDashboard(ctx, w, h, t) {
+    var pad = 10;
+    var cardW = (w - pad*2 - 8*2) / 3, cardH = h * 0.32;
+    for (var i = 0; i < 3; i++) {
+      var x = pad + i * (cardW + 8), y = pad;
+      ctx.fillStyle = 'rgba(26,26,26,0.03)';
+      ctx.beginPath(); ctx.roundRect(x, y, cardW, cardH, 3); ctx.fill();
+      ctx.strokeStyle = 'rgba(26,26,26,0.05)'; ctx.lineWidth = 0.5;
+      ctx.strokeRect(x, y, cardW, cardH);
+      var barCount = 4, barW = (cardW - 12) / barCount - 2;
+      for (var b = 0; b < barCount; b++) {
+        var bh = (0.3 + Math.abs(Math.sin(t*1.5+b*0.8+i*2))*0.6) * cardH * 0.5;
+        ctx.fillStyle = b===barCount-1 && i===0 ? 'rgba('+V[0]+','+V[1]+','+V[2]+',0.25)' : 'rgba(26,26,26,0.08)';
+        ctx.beginPath(); ctx.roundRect(x+6+b*(barW+2), y+cardH-5-bh, barW, bh, 1); ctx.fill();
+      }
+    }
+    var sparkY = pad + cardH + 10, sparkH = h - sparkY - pad;
+    ctx.fillStyle = 'rgba(26,26,26,0.02)';
+    ctx.beginPath(); ctx.roundRect(pad, sparkY, w-pad*2, sparkH, 3); ctx.fill();
+    ctx.beginPath();
+    for (var s = 0; s <= 40; s++) {
+      var px = pad+6+(s/40)*(w-pad*2-12);
+      var py = sparkY+sparkH*0.5+Math.sin(t*2+s*0.2)*sparkH*0.25;
+      if (s===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+    }
+    ctx.strokeStyle = 'rgba('+V[0]+','+V[1]+','+V[2]+',0.4)'; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+
+  // ── Causal Graph ──
+  function drawCausal(ctx, w, h, t) {
+    var cx = w/2, cy = h/2;
+    var nodes = [
+      {x:cx-w*0.3,y:cy-h*0.28},{x:cx+w*0.15,y:cy-h*0.32},
+      {x:cx-w*0.05,y:cy-h*0.02},{x:cx-w*0.25,y:cy+h*0.28},
+      {x:cx+w*0.28,y:cy+h*0.18},{x:cx+w*0.32,y:cy-h*0.08}
+    ];
+    var edges = [[0,2],[1,2],[2,3],[2,4],[1,5],[5,4]];
+    nodes.forEach(function(n,i){n.x+=Math.sin(t*0.8+i*1.7)*3;n.y+=Math.cos(t*0.6+i*2.3)*2;});
+    edges.forEach(function(e,i){
+      var a=nodes[e[0]],b=nodes[e[1]];
+      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+      ctx.strokeStyle='rgba(26,26,26,0.1)';ctx.lineWidth=1;ctx.stroke();
+      var dx=b.x-a.x,dy=b.y-a.y,len=Math.sqrt(dx*dx+dy*dy),nx=dx/len,ny=dy/len;
+      ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(b.x-nx*5+ny*2.5,b.y-ny*5-nx*2.5);
+      ctx.lineTo(b.x-nx*5-ny*2.5,b.y-ny*5+nx*2.5);ctx.closePath();
+      ctx.fillStyle='rgba(26,26,26,0.15)';ctx.fill();
+      for(var p=0;p<2;p++){
+        var prog=((t*0.35+p*0.5+i*0.2)%1);
+        ctx.beginPath();ctx.arc(a.x+(b.x-a.x)*prog,a.y+(b.y-a.y)*prog,2,0,Math.PI*2);
+        ctx.fillStyle='rgba('+V[0]+','+V[1]+','+V[2]+','+(Math.sin(prog*Math.PI)*0.45)+')';ctx.fill();
+      }
+    });
+    nodes.forEach(function(n,i){
+      ctx.beginPath();ctx.arc(n.x,n.y,i===2?5:3,0,Math.PI*2);
+      ctx.fillStyle=i===2?'rgba('+V[0]+','+V[1]+','+V[2]+',0.4)':'rgba(26,26,26,0.18)';ctx.fill();
+    });
+  }
+
+  // ── Landing Page wireframe ──
+  function drawLanding(ctx, w, h, t) {
+    var padX=w*0.15,padY=h*0.08,pw=w-padX*2,ph=h-padY*2;
+    ctx.strokeStyle='rgba(26,26,26,0.06)';ctx.lineWidth=1;ctx.strokeRect(padX,padY,pw,ph);
+    ctx.fillStyle='rgba(26,26,26,0.03)';ctx.fillRect(padX,padY,pw,8);
+    var heroY=padY+8+ph*0.08;
+    ctx.fillStyle='rgba(26,26,26,0.12)';
+    ctx.beginPath();ctx.roundRect(padX+pw*0.12,heroY,pw*0.76,6,3);ctx.fill();
+    ctx.fillStyle='rgba(26,26,26,0.06)';
+    ctx.beginPath();ctx.roundRect(padX+pw*0.22,heroY+12,pw*0.56,4,2);ctx.fill();
+    var btnY=heroY+26,btnW=pw*0.24,btnH=10;
+    ctx.fillStyle='rgba('+V[0]+','+V[1]+','+V[2]+','+(0.15+Math.sin(t*2)*0.05)+')';
+    ctx.beginPath();ctx.roundRect(padX+(pw-btnW)/2,btnY,btnW,btnH,5);ctx.fill();
+    var cardY=btnY+20,cardW=(pw-12)/3,cardH=ph*0.28;
+    for(var i=0;i<3;i++){
+      var cx2=padX+3+i*(cardW+3),fl=Math.sin(t*1.2+i*1.5)*2;
+      ctx.fillStyle='rgba(26,26,26,0.03)';
+      ctx.beginPath();ctx.roundRect(cx2,cardY+fl,cardW,cardH,3);ctx.fill();
+    }
+  }
+
+  // ── Portfolio ──
+  function drawPortfolio(ctx, w, h, t) {
+    var sideW=w*0.3;
+    ctx.fillStyle='rgba(26,26,26,0.025)';ctx.fillRect(0,0,sideW,h);
+    ctx.strokeStyle='rgba(26,26,26,0.05)';ctx.lineWidth=0.5;
+    ctx.beginPath();ctx.moveTo(sideW,0);ctx.lineTo(sideW,h);ctx.stroke();
+    var avR=Math.min(sideW,h)*0.12,avX=sideW/2,avY=h*0.25;
+    ctx.beginPath();ctx.arc(avX,avY,avR,0,Math.PI*2);ctx.fillStyle='rgba(26,26,26,0.06)';ctx.fill();
+    ctx.beginPath();ctx.arc(avX,avY,avR*0.4,0,Math.PI*2);
+    ctx.fillStyle='rgba('+V[0]+','+V[1]+','+V[2]+',0.15)';ctx.fill();
+    var gridX=sideW+12,gridY=12,gw=w-sideW-24,gh=h-24,gap2=8;
+    var cellW=(gw-gap2)/2,cellH=(gh-gap2)/2;
+    for(var row=0;row<2;row++){for(var col=0;col<2;col++){
+      var bx=gridX+col*(cellW+gap2),by=gridY+row*(cellH+gap2),fl=Math.sin(t+row*2+col)*2;
+      ctx.fillStyle='rgba(26,26,26,0.03)';
+      ctx.beginPath();ctx.roundRect(bx,by+fl,cellW,cellH,3);ctx.fill();
+      ctx.strokeStyle='rgba(26,26,26,0.05)';ctx.strokeRect(bx,by+fl,cellW,cellH);
+    }}
+  }
+
+  // ── Waitlist ──
+  function drawWaitlist(ctx, w, h, t) {
+    var cx = w/2;
+    ctx.fillStyle='rgba(26,26,26,0.02)';
+    ctx.beginPath();ctx.roundRect(w*0.1,h*0.08,w*0.8,h*0.84,5);ctx.fill();
+    ctx.strokeStyle='rgba(26,26,26,0.06)';ctx.lineWidth=0.5;
+    ctx.strokeRect(w*0.1,h*0.08,w*0.8,h*0.84);
+    ctx.fillStyle='rgba(26,26,26,0.12)';
+    ctx.beginPath();ctx.roundRect(cx-40,h*0.2,80,6,3);ctx.fill();
+    ctx.fillStyle='rgba(26,26,26,0.06)';
+    ctx.beginPath();ctx.roundRect(cx-28,h*0.2+12,56,4,2);ctx.fill();
+    var inputY=h*0.44,inputW=w*0.5,inputH=16;
+    ctx.fillStyle='#fff';
+    ctx.beginPath();ctx.roundRect(cx-inputW/2,inputY,inputW,inputH,3);ctx.fill();
+    ctx.strokeStyle='rgba(26,26,26,0.1)';ctx.lineWidth=1;
+    ctx.strokeRect(cx-inputW/2,inputY,inputW,inputH);
+    if(Math.sin(t*4)>0){ctx.fillStyle='rgba('+V[0]+','+V[1]+','+V[2]+',0.4)';ctx.fillRect(cx-inputW/2+40,inputY+3,1,10);}
+    var btnY2=inputY+inputH+8,btnW2=inputW*0.45,btnH2=14;
+    ctx.fillStyle='rgba('+V[0]+','+V[1]+','+V[2]+','+(0.2+Math.sin(t*2)*0.05)+')';
+    ctx.beginPath();ctx.roundRect(cx-btnW2/2,btnY2,btnW2,btnH2,3);ctx.fill();
+    ctx.font='500 9px "JetBrains Mono",monospace';ctx.textAlign='center';
+    ctx.fillStyle='rgba(26,26,26,0.2)';
+    ctx.fillText(Math.floor(1247+Math.sin(t*0.5)*3)+' joined',cx,btnY2+btnH2+16);
+    ctx.textAlign='start';
+  }
 
   document.querySelectorAll('canvas[data-anim]').forEach(function(c) {
     var key = c.getAttribute('data-anim');
