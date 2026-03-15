@@ -1,899 +1,694 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Eli & Kim — Digital Garden</title>
-  <meta name="description" content="A growing collection of experiments, tools, and creative projects by Eli King and Kim." />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ewk labs</title>
+  <meta name="description" content="Experimental AI products and developer tools. Built by Eli & Kim.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg-light: #FAFAFA; --bg-dark: #111111;
-      --surface-light: #F0F0F0; --surface-dark: #1A1A1A;
-      --accent-warm: #D4A843; --accent-teal: #0A4D3C;
-      --muted: #8A8A8A;
-      --font-ui: 'Inter', sans-serif;
-      --font-editorial: 'Lora', serif;
-      --font-code: 'JetBrains Mono', monospace;
-      --shadow-neu-light: 6px 6px 12px #d1d1d1, -6px -6px 12px #ffffff;
-      --shadow-neu-dark: 6px 6px 12px #0a0a0a, -6px -6px 12px #2a2a2a;
-      --radius-soft: 12px;
-      --radius-pill: 999px;
+      --bg: #08080a;
+      --surface: #111114;
+      --surface-2: #18181c;
+      --border: rgba(255,255,255,0.06);
+      --text: #f0f0f2;
+      --text-2: #8a8a92;
+      --text-3: #55555e;
+      --warm: #c9a87c;
+      --warm-dim: rgba(201,168,124,0.15);
+      --green: #3dd68c;
+      --blue: #5b9cf4;
+      --violet: #a78bfa;
+      --cyan: #4dd0e1;
+      --serif: 'Instrument Serif', Georgia, serif;
+      --sans: 'Inter', -apple-system, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
       --ease: cubic-bezier(0.16, 1, 0.3, 1);
-      --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
     }
 
-    [data-theme="dark"] {
-      --bg: var(--bg-dark);
-      --surface: var(--surface-dark);
-      --text-1: #F0F0F0;
-      --text-2: #A0A0A0;
-      --text-3: #666666;
-      --border: rgba(255,255,255,0.08);
-      --shadow-neu: var(--shadow-neu-dark);
-      --noise-opacity: 0.03;
-      --grain-opacity: 0;
-      --card-hover-bg: #222;
-    }
-
-    [data-theme="light"] {
-      --bg: var(--bg-light);
-      --surface: var(--surface-light);
-      --text-1: #1A1A1A;
-      --text-2: #5A5A5A;
-      --text-3: #999999;
-      --border: rgba(0,0,0,0.08);
-      --shadow-neu: var(--shadow-neu-light);
-      --noise-opacity: 0;
-      --grain-opacity: 0.04;
-      --card-hover-bg: #fff;
-    }
-
-    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    html { scroll-behavior: smooth; }
 
     body {
+      font-family: var(--sans);
       background: var(--bg);
-      color: var(--text-1);
-      font-family: var(--font-ui);
+      color: var(--text);
       overflow-x: hidden;
-      line-height: 1.6;
-      transition: background 0.6s var(--ease), color 0.4s var(--ease);
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Noise texture (dark) */
+    ::selection { background: rgba(201,168,124,0.25); }
+
+    /* Noise */
     body::after {
       content: '';
       position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
-      opacity: var(--noise-opacity);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.02;
       pointer-events: none; z-index: 9999;
-      transition: opacity 0.6s;
     }
 
-    /* Paper grain (light) */
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.5'/%3E%3C/svg%3E");
-      opacity: var(--grain-opacity);
-      pointer-events: none; z-index: 9999;
-      transition: opacity 0.6s;
-    }
+    a { color: inherit; text-decoration: none; }
 
-    /* ===== HEADER ===== */
-    .header {
-      padding: 1.25rem 2rem;
-      position: fixed; top: 0; left: 0; right: 0;
-      z-index: 100;
-      background: color-mix(in srgb, var(--bg) 85%, transparent);
+    /* ═══ NAV ═══ */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 1.25rem 2.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(8,8,10,0.8);
       backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
-      transition: transform 0.4s var(--ease), background 0.6s;
+      transition: transform 0.4s var(--ease);
     }
-    .header.hidden { transform: translateY(-100%); }
+    .nav.hidden { transform: translateY(-100%); }
+    .nav-brand {
+      display: flex; align-items: center; gap: 0.6rem;
+      font-weight: 600; font-size: 0.88rem; letter-spacing: -0.01em;
+    }
+    .nav-mark {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--warm), #8a7a6a);
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 700; color: var(--bg);
+    }
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+    .nav-links a {
+      font-size: 0.8rem; color: var(--text-2);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
 
-    .header-inner {
-      max-width: 960px; margin: 0 auto;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-
-    .logo {
-      font-family: var(--font-editorial);
-      font-size: 1.15rem; color: var(--text-1);
-      text-decoration: none; letter-spacing: -0.02em;
-      font-weight: 500;
-    }
-    .logo em { font-style: italic; color: var(--accent-warm); }
-
-    .header-nav { display: flex; gap: 1.5rem; align-items: center; }
-
-    .header-nav a {
-      font-family: var(--font-code); font-size: 0.65rem;
-      color: var(--text-3); text-decoration: none;
-      text-transform: uppercase; letter-spacing: 0.1em;
-      transition: color 0.3s;
-    }
-    .header-nav a:hover { color: var(--text-1); }
-
-    /* ===== THEME TOGGLE — Teenage Engineering style ===== */
-    .theme-toggle {
-      position: relative;
-      width: 56px; height: 28px;
-      border-radius: var(--radius-pill);
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      cursor: pointer;
-      transition: background 0.4s, border-color 0.4s;
-      box-shadow: var(--shadow-neu);
-      flex-shrink: 0;
-    }
-    .theme-toggle::before {
-      content: '';
-      position: absolute;
-      top: 3px; left: 3px;
-      width: 20px; height: 20px;
-      border-radius: 50%;
-      background: var(--accent-warm);
-      transition: transform 0.4s var(--ease), background 0.3s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-    }
-    [data-theme="light"] .theme-toggle::before {
-      transform: translateX(28px);
-      background: var(--accent-teal);
-    }
-    .theme-toggle .toggle-icon {
-      position: absolute; top: 50%; transform: translateY(-50%);
-      font-size: 0.7rem; line-height: 1;
-      transition: opacity 0.3s;
-    }
-    .toggle-icon.moon { left: 7px; opacity: 1; }
-    .toggle-icon.sun { right: 7px; opacity: 0.4; }
-    [data-theme="light"] .toggle-icon.moon { opacity: 0.4; }
-    [data-theme="light"] .toggle-icon.sun { opacity: 1; }
-
-    /* ===== HERO ===== */
+    /* ═══ HERO — FULL SCREEN ═══ */
     .hero {
-      padding: 11rem 2rem 5rem;
-      max-width: 960px; margin: 0 auto;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      text-align: center;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
     }
 
-    .hero-label {
-      font-family: var(--font-code); font-size: 0.65rem;
-      color: var(--muted); text-transform: uppercase;
-      letter-spacing: 0.2em; margin-bottom: 2rem;
-      display: flex; align-items: center; gap: 0.75rem;
+    .hero-glow {
+      position: absolute;
+      width: 800px; height: 800px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,168,124,0.07) 0%, transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      pointer-events: none;
     }
-    .hero-label::before {
-      content: ''; width: 24px; height: 1px;
-      background: var(--accent-warm);
+
+    .hero-glow-2 {
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(77,208,225,0.04) 0%, transparent 70%);
+      top: 30%; left: 70%; transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--mono); font-size: 0.7rem;
+      color: var(--warm); text-transform: uppercase;
+      letter-spacing: 0.15em; margin-bottom: 2rem;
+      opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
     }
 
     .hero h1 {
-      font-family: var(--font-editorial);
-      font-size: clamp(2.8rem, 6vw, 5.5rem);
-      line-height: 1.05; letter-spacing: -0.03em;
-      font-weight: 400; margin-bottom: 2rem;
+      font-family: var(--serif);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 400;
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      color: var(--text);
+      opacity: 0; animation: fadeUp 0.8s 0.35s forwards;
     }
-    .hero h1 .italic { font-style: italic; }
-    .hero h1 .accent { color: var(--accent-warm); }
-    .hero h1 .dim { color: var(--text-3); }
+    .hero h1 em { font-style: italic; color: var(--warm); }
 
-    .hero-desc {
-      max-width: 440px; font-size: 1rem;
-      color: var(--text-2); line-height: 1.75;
-      font-weight: 300;
+    .hero-sub {
+      margin-top: 2rem;
+      font-size: 1.1rem; color: var(--text-2);
+      max-width: 480px; line-height: 1.7;
+      opacity: 0; animation: fadeUp 0.8s 0.5s forwards;
     }
-    .hero-desc strong { color: var(--text-1); font-weight: 500; }
 
-    .hero-meta {
-      margin-top: 3.5rem;
-      display: flex; gap: 3rem;
-    }
-    .hero-meta-item { display: flex; flex-direction: column; gap: 0.2rem; }
-    .hero-meta-item .value {
-      font-family: var(--font-editorial);
-      font-size: 1.6rem; font-style: italic;
-      color: var(--accent-warm);
-    }
-    .hero-meta-item .label {
-      font-family: var(--font-code); font-size: 0.6rem;
+    .hero-scroll {
+      position: absolute; bottom: 2.5rem;
+      font-family: var(--mono); font-size: 0.6rem;
       color: var(--text-3); text-transform: uppercase;
       letter-spacing: 0.15em;
+      opacity: 0; animation: fadeUp 0.8s 0.7s forwards;
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    }
+    .hero-scroll-line {
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, var(--warm), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
     }
 
-    /* ===== DIVIDER ===== */
-    .divider { max-width: 960px; margin: 0 auto; padding: 0 2rem; }
-    .divider hr { border: none; height: 1px; background: var(--border); }
-
-    /* ===== PROJECTS ===== */
-    .projects-section {
-      padding: 5rem 2rem; max-width: 960px; margin: 0 auto;
+    /* ═══ SECTION COMMON ═══ */
+    .section {
+      padding: 8rem 2.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
-    .section-header {
-      display: flex; justify-content: space-between;
-      align-items: flex-end; margin-bottom: 3rem;
+    .section-label {
+      font-family: var(--mono); font-size: 0.65rem;
+      color: var(--text-3); text-transform: uppercase;
+      letter-spacing: 0.15em; margin-bottom: 3rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .section-label::before {
+      content: ''; width: 24px; height: 1px; background: var(--warm);
     }
 
     .section-title {
-      font-family: var(--font-editorial);
-      font-size: clamp(1.6rem, 3vw, 2.4rem);
-      font-weight: 400; letter-spacing: -0.02em;
+      font-family: var(--serif);
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      font-weight: 400; letter-spacing: -0.03em;
+      line-height: 1.1; margin-bottom: 1.5rem;
     }
-    .section-title .italic { font-style: italic; }
+    .section-title em { font-style: italic; color: var(--warm); }
 
-    .section-count {
-      font-family: var(--font-code); font-size: 0.65rem;
-      color: var(--muted); text-transform: uppercase;
-      letter-spacing: 0.1em;
+    /* ═══ STATEMENT — FULL WIDTH TEXT ═══ */
+    .statement {
+      min-height: 80vh;
+      display: flex; align-items: center;
+      padding: 4rem 2.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .statement-inner {
+      max-width: 1200px; margin: 0 auto; width: 100%;
+    }
+    .statement-text {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4.5vw, 4rem);
+      font-weight: 400; line-height: 1.3;
+      letter-spacing: -0.02em;
+      color: var(--text-2);
+    }
+    .statement-text strong { color: var(--text); font-weight: 400; }
+    .statement-text em { font-style: italic; color: var(--warm); }
+
+    /* ═══ PRODUCTS ═══ */
+    .products-grid {
+      display: grid; gap: 1.5rem;
     }
 
-    /* Card grid */
-    .projects-grid {
+    .product-card {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.5rem;
-    }
-
-    .project-card {
-      display: flex; flex-direction: column;
+      grid-template-columns: 1fr 1fr;
       background: var(--surface);
-      border-radius: var(--radius-soft);
       border: 1px solid var(--border);
-      text-decoration: none; color: inherit;
+      border-radius: 16px;
       overflow: hidden;
-      transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease), background 0.3s;
-      box-shadow: var(--shadow-neu);
-      position: relative;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.5s var(--ease), border-color 0.3s;
     }
-    .project-card > * { pointer-events: none; }
-    .project-card:hover {
+    .product-card:hover {
       transform: translateY(-4px);
-      background: var(--card-hover-bg);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.15), var(--shadow-neu);
-    }
-    .project-card:active {
-      transform: translateY(-1px) scale(0.995);
-      transition: transform 0.1s;
+      border-color: rgba(255,255,255,0.1);
     }
 
-    .card-visual {
-      height: 180px; overflow: hidden;
-      position: relative;
+    .product-visual {
+      min-height: 320px;
       background: var(--bg);
       display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
     }
 
-    .card-pattern { width: 100%; height: 100%; pointer-events: none; }
-    .card-pattern svg { width: 100%; height: 100%; pointer-events: none; }
-    .card-visual * { pointer-events: none; }
-    .card-badge { pointer-events: none; }
-
-    .card-badge {
-      position: absolute; top: 12px; right: 12px;
-      font-family: var(--font-code); font-size: 0.55rem;
-      padding: 0.3em 0.8em;
-      border-radius: var(--radius-pill);
+    .product-badge {
+      position: absolute; top: 1rem; left: 1rem;
+      font-family: var(--mono); font-size: 0.6rem;
+      padding: 0.3em 0.8em; border-radius: 999px;
       text-transform: uppercase; letter-spacing: 0.08em;
-      background: rgba(212,168,67,0.15); color: var(--accent-warm);
-      border: 1px solid rgba(212,168,67,0.25);
-      backdrop-filter: blur(8px);
-    }
-    .badge-web { background: rgba(10,77,60,0.15); color: #2ECC71; border-color: rgba(10,77,60,0.3); }
-
-    .card-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
-
-    .card-title {
-      font-family: var(--font-editorial);
-      font-size: 1.2rem; font-weight: 500;
-      margin-bottom: 0.5rem; letter-spacing: -0.01em;
+      background: var(--warm-dim); color: var(--warm);
+      border: 1px solid rgba(201,168,124,0.25);
     }
 
-    .card-desc {
-      font-size: 0.85rem; color: var(--text-2);
-      line-height: 1.6; flex: 1;
-      display: -webkit-box; -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical; overflow: hidden;
+    .product-body {
+      padding: 2.5rem; display: flex; flex-direction: column; justify-content: center;
     }
 
-    .card-footer {
-      display: flex; justify-content: space-between;
-      align-items: center; margin-top: 1rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--border);
+    .product-number {
+      font-family: var(--mono); font-size: 0.65rem;
+      color: var(--text-3); margin-bottom: 1rem;
     }
 
-    .card-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .product-title {
+      font-family: var(--serif);
+      font-size: 2rem; font-weight: 400;
+      letter-spacing: -0.02em; margin-bottom: 0.4rem;
+    }
 
+    .product-subtitle {
+      font-family: var(--mono); font-size: 0.65rem;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--warm); margin-bottom: 1.25rem;
+    }
+
+    .product-desc {
+      font-size: 0.9rem; color: var(--text-2);
+      line-height: 1.7; margin-bottom: 1.5rem;
+    }
+
+    .product-tags {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+      margin-bottom: 2rem;
+    }
     .tag {
-      font-family: var(--font-code); font-size: 0.55rem;
-      color: var(--muted); padding: 0.25em 0.6em;
-      border-radius: var(--radius-pill);
-      background: color-mix(in srgb, var(--text-3) 10%, transparent);
-      text-transform: uppercase; letter-spacing: 0.05em;
-    }
-
-    .card-date {
-      font-family: var(--font-code); font-size: 0.6rem;
-      color: var(--text-3); white-space: nowrap;
-    }
-
-    .card-arrow {
-      position: absolute; top: 1.5rem; left: 1.5rem;
-      font-size: 0.75rem; color: var(--accent-warm);
-      opacity: 0; transform: translate(-4px, 4px);
-      transition: opacity 0.3s, transform 0.3s var(--ease);
-    }
-    .project-card:hover .card-arrow {
-      opacity: 1; transform: translate(0, 0);
-    }
-
-    /* ===== FEATURED AI PRODUCTS ===== */
-    .featured-section {
-      padding: 5rem 2rem 2rem; max-width: 960px; margin: 0 auto;
-    }
-
-    .featured-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-
-    .featured-card {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      background: var(--surface);
-      border-radius: var(--radius-soft);
+      font-family: var(--mono); font-size: 0.58rem;
+      color: var(--text-3); padding: 0.25em 0.65em;
+      background: rgba(255,255,255,0.04);
       border: 1px solid var(--border);
+      border-radius: 6px; text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .product-cta {
+      display: flex; align-items: center; gap: 1.25rem;
+    }
+    .price {
+      font-family: var(--mono); font-size: 1.4rem;
+      font-weight: 500; color: var(--text);
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: var(--text); color: var(--bg);
+      font-size: 0.82rem; font-weight: 600;
+      border-radius: 10px; border: none; cursor: pointer;
+      transition: all 0.2s; letter-spacing: -0.01em;
+    }
+    .btn:hover { background: #fff; transform: translateY(-1px); }
+
+    /* ═══ EXPERIMENTS ═══ */
+    .experiments-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .exp-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem;
+      transition: transform 0.5s var(--ease), border-color 0.3s;
+      display: flex; flex-direction: column;
+      min-height: 280px;
       text-decoration: none; color: inherit;
-      overflow: hidden;
-      transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease), background 0.3s;
-      box-shadow: var(--shadow-neu);
-      position: relative;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
     }
-    .featured-card > * { pointer-events: none; }
-    .featured-card:hover {
+    .exp-card:hover {
       transform: translateY(-4px);
-      background: var(--card-hover-bg);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.15), var(--shadow-neu);
-    }
-    .featured-card:active {
-      transform: translateY(-1px) scale(0.995);
-      transition: transform 0.1s;
+      border-color: rgba(255,255,255,0.1);
     }
 
-    .featured-card .card-visual {
-      height: 100%; min-height: 220px;
+    .exp-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; margin-bottom: 1.5rem;
+    }
+    .exp-icon.amber { background: var(--warm-dim); }
+    .exp-icon.cyan { background: rgba(77,208,225,0.12); }
+    .exp-icon.violet { background: rgba(167,139,250,0.12); }
+
+    .exp-label {
+      font-family: var(--mono); font-size: 0.6rem;
+      color: var(--text-3); text-transform: uppercase;
+      letter-spacing: 0.1em; margin-bottom: 0.75rem;
     }
 
-    .featured-card .card-body {
-      padding: 2rem; display: flex; flex-direction: column; justify-content: center;
+    .exp-title {
+      font-family: var(--serif);
+      font-size: 1.5rem; font-weight: 400;
+      margin-bottom: 0.6rem;
     }
 
-    .featured-card .card-title {
-      font-size: 1.5rem; margin-bottom: 0.35rem;
+    .exp-desc {
+      font-size: 0.82rem; color: var(--text-2);
+      line-height: 1.65; flex: 1;
     }
 
-    .featured-card .card-subtitle {
-      font-family: var(--font-code); font-size: 0.65rem;
-      text-transform: uppercase; letter-spacing: 0.12em;
-      margin-bottom: 1rem;
+    .exp-link {
+      margin-top: 1.25rem;
+      font-family: var(--mono); font-size: 0.65rem;
+      color: var(--warm); display: flex; align-items: center; gap: 0.4rem;
+      transition: gap 0.2s;
     }
-    .featured-card .card-subtitle.vibe-amber { color: var(--accent-warm); }
-    .featured-card .card-subtitle.vibe-cyan { color: #4DD0E1; }
-    .featured-card .card-subtitle.vibe-viz { color: #7C4DFF; }
+    .exp-card:hover .exp-link { gap: 0.7rem; }
 
-    .featured-card .card-desc {
-      font-size: 0.9rem; -webkit-line-clamp: 4;
-    }
-
-    .featured-card .card-badge {
-      background: rgba(212,168,67,0.2); color: var(--accent-warm);
-      border-color: rgba(212,168,67,0.35);
-      font-size: 0.6rem; padding: 0.35em 0.9em;
-    }
-    .badge-ai { background: rgba(212,168,67,0.2); color: var(--accent-warm); border-color: rgba(212,168,67,0.35); }
-
-    .featured-card .card-arrow {
-      top: 2rem; left: 2rem;
-    }
-
-    @media (max-width: 700px) {
-      .featured-section { padding: 3rem 1.5rem 1rem; }
-      .featured-card { grid-template-columns: 1fr; }
-      .featured-card .card-visual { min-height: 180px; }
-    }
-
-    /* ===== ABOUT ===== */
-    .about-section {
-      padding: 5rem 2rem; max-width: 960px; margin: 0 auto;
-    }
-
-    .about-grid {
+    /* ═══ ABOUT ═══ */
+    .about-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin-bottom: 2.5rem;
+      gap: 1.25rem;
+      margin-bottom: 3rem;
     }
-
     .about-card {
       background: var(--surface);
-      border-radius: var(--radius-soft);
       border: 1px solid var(--border);
-      padding: 2rem;
-      box-shadow: var(--shadow-neu);
-      transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
+      border-radius: 14px;
+      padding: 2.5rem;
+      transition: transform 0.5s var(--ease);
     }
-    .about-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 16px 32px rgba(0,0,0,0.12), var(--shadow-neu);
-    }
-
-    .about-icon {
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
-    }
-
+    .about-card:hover { transform: translateY(-3px); }
+    .about-emoji { font-size: 2rem; margin-bottom: 1rem; }
     .about-name {
-      font-family: var(--font-editorial);
-      font-size: 1.4rem;
-      font-weight: 500;
-      letter-spacing: -0.01em;
-      margin-bottom: 0.25rem;
+      font-family: var(--serif);
+      font-size: 1.5rem; margin-bottom: 0.2rem;
     }
-
     .about-role {
-      font-family: var(--font-code);
-      font-size: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--accent-warm);
-      margin-bottom: 1rem;
+      font-family: var(--mono); font-size: 0.6rem;
+      color: var(--warm); text-transform: uppercase;
+      letter-spacing: 0.1em; margin-bottom: 1rem;
     }
-
     .about-bio {
-      font-size: 0.88rem;
-      color: var(--text-2);
-      line-height: 1.7;
+      font-size: 0.85rem; color: var(--text-2); line-height: 1.7;
     }
 
-    .about-partnership {
-      max-width: 680px;
-    }
-
-    .about-partnership p {
-      font-size: 0.95rem;
-      color: var(--text-2);
-      line-height: 1.8;
-      margin-bottom: 1rem;
-    }
-
-    .about-philosophy {
-      border-left: 2px solid var(--accent-warm);
-      padding-left: 1.25rem;
-      margin-top: 0.5rem;
-    }
-
-    .about-philosophy strong {
-      color: var(--text-1);
-      font-weight: 500;
-    }
-
-    .about-philosophy em {
-      font-family: var(--font-editorial);
-      color: var(--text-1);
-    }
-
-    @media (max-width: 700px) {
-      .about-grid { grid-template-columns: 1fr; }
-      .about-section { padding: 3rem 1.5rem; }
-    }
-
-    /* ===== FOOTER ===== */
+    /* ═══ FOOTER ═══ */
     .footer {
-      padding: 3rem 2rem;
       border-top: 1px solid var(--border);
-      margin-top: 4rem;
-      transition: border-color 0.6s;
-    }
-    .footer-inner {
-      max-width: 960px; margin: 0 auto;
-      display: flex; justify-content: space-between;
-      align-items: center;
+      padding: 2.5rem;
+      max-width: 1200px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
     }
     .footer-left {
-      font-family: var(--font-code); font-size: 0.65rem;
-      color: var(--text-3); letter-spacing: 0.05em;
+      font-size: 0.72rem; color: var(--text-3);
     }
-    .footer-right { display: flex; gap: 1.5rem; }
-    .footer-right a {
-      font-family: var(--font-code); font-size: 0.65rem;
-      color: var(--text-3); text-decoration: none;
-      transition: color 0.3s;
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a {
+      font-size: 0.72rem; color: var(--text-3);
+      transition: color 0.2s;
     }
-    .footer-right a:hover { color: var(--accent-warm); }
+    .footer-links a:hover { color: var(--text-2); }
 
-    /* ===== REVEAL ANIMATIONS ===== */
+    /* ═══ ANIMATIONS ═══ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
     .reveal {
-      opacity: 0; transform: translateY(24px);
-      transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
     }
     .reveal.visible { opacity: 1; transform: translateY(0); }
-    .stagger-1 { transition-delay: 0.05s; }
-    .stagger-2 { transition-delay: 0.12s; }
-    .stagger-3 { transition-delay: 0.2s; }
-    .stagger-4 { transition-delay: 0.28s; }
+    .reveal.delay-1 { transition-delay: 0.1s; }
+    .reveal.delay-2 { transition-delay: 0.2s; }
+    .reveal.delay-3 { transition-delay: 0.3s; }
 
-    /* Page load */
-    body { opacity: 0; transition: opacity 0.5s; }
-    body.loaded { opacity: 1; }
-
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 700px) {
-      .hero { padding: 9rem 1.5rem 4rem; }
-      .projects-section { padding: 3rem 1.5rem; }
-      .projects-grid { grid-template-columns: 1fr; }
-      .hero-meta { gap: 2rem; }
-      .section-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-      .footer-inner { flex-direction: column; gap: 1rem; text-align: center; }
-      .header { padding: 1rem 1.5rem; }
+    /* ═══ DIVIDER ═══ */
+    .divider {
+      max-width: 1200px; margin: 0 auto; padding: 0 2.5rem;
+    }
+    .divider hr {
+      border: none; height: 1px; background: var(--border);
     }
 
-    /* Focus styles */
-    a:focus-visible, button:focus-visible {
-      outline: 2px solid var(--accent-warm);
-      outline-offset: 2px;
-      border-radius: 4px;
+    /* ═══ SVG visuals ═══ */
+    .vis-futureself svg, .vis-system0 svg, .vis-causal svg { width: 100%; height: 100%; }
+
+    /* Product preview visuals */
+    .product-vis {
+      width: 85%; max-width: 380px;
+    }
+    .product-vis svg { width: 100%; }
+
+    /* ═══ RESPONSIVE ═══ */
+    @media (max-width: 900px) {
+      .product-card { grid-template-columns: 1fr; }
+      .product-visual { min-height: 220px; }
+      .experiments-grid { grid-template-columns: 1fr; }
+      .about-row { grid-template-columns: 1fr; }
+      .section { padding: 5rem 1.5rem; }
+      .statement { padding: 4rem 1.5rem; min-height: 60vh; }
+      .nav { padding: 1rem 1.5rem; }
+      .footer { padding: 2rem 1.5rem; flex-direction: column; gap: 1rem; text-align: center; }
     }
 
-    /* Skip link */
-    .skip-link {
-      position: absolute; top: -100px; left: 1rem;
-      background: var(--accent-warm); color: #111;
-      padding: 0.5rem 1rem; border-radius: var(--radius-soft);
-      font-family: var(--font-ui); font-size: 0.85rem;
-      z-index: 200; text-decoration: none;
-      transition: top 0.3s;
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 3.2rem; }
+      .nav-links { gap: 1rem; }
+      .product-cta { flex-direction: column; align-items: flex-start; }
     }
-    .skip-link:focus { top: 1rem; }
   </style>
 </head>
 <body>
-  <a href="#projects" class="skip-link">Skip to projects</a>
 
-  <!-- Header -->
-  <header class="header" id="header">
-    <div class="header-inner">
-      <a href="/" class="logo">Eli <em>&</em> Kim</a>
-      <nav class="header-nav" aria-label="Main">
-        <a href="#ai-products">AI Products</a>
-        <a href="#projects">Projects</a>
-        <a href="#about">About</a>
-        <a href="https://github.com/ewk-experiments" target="_blank" rel="noopener">GitHub</a>
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark and light mode" role="switch" aria-checked="true">
-          <span class="toggle-icon moon" aria-hidden="true">🌙</span>
-          <span class="toggle-icon sun" aria-hidden="true">☀️</span>
-        </button>
-      </nav>
-    </div>
-  </header>
+<!-- Nav -->
+<nav class="nav" id="nav">
+  <a href="/" class="nav-brand">
+    <div class="nav-mark">ew</div>
+    <span>ewk labs</span>
+  </a>
+  <div class="nav-links">
+    <a href="#products">Products</a>
+    <a href="#experiments">Experiments</a>
+    <a href="#about">About</a>
+    <a href="https://github.com/ewk-experiments" target="_blank">GitHub</a>
+  </div>
+</nav>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-label reveal">Digital Garden — Est. 2026</div>
-    <h1 class="reveal stagger-1">
-      A quiet space<br>
-      for <span class="italic accent">growing</span><br>
-      <span class="dim">things</span>
-    </h1>
-    <p class="hero-desc reveal stagger-2">
-      Experiments, tools, and creative projects by <strong>Eli</strong> and <strong>Kim</strong>. Built with care, designed to evolve.
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+  <div class="hero-eyebrow">Experimental AI · Seattle</div>
+  <h1>ewk<br><em>labs</em></h1>
+  <p class="hero-sub">AI products, developer tools, and creative experiments. Building at the edge of what's possible.</p>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="hero-scroll-line"></div>
+  </div>
+</section>
+
+<!-- Statement -->
+<section class="statement">
+  <div class="statement-inner reveal">
+    <p class="statement-text">
+      We build <em>experimental</em> products that explore <strong>personal AI, cognition, and creative tools</strong> — niche enough to be useful, ambitious enough to matter.
     </p>
-    <div class="hero-meta reveal stagger-3">
-      <div class="hero-meta-item">
-        <span class="value">7</span>
-        <span class="label">Projects</span>
-      </div>
-      <div class="hero-meta-item">
-        <span class="value">2026</span>
-        <span class="label">Year</span>
-      </div>
-      <div class="hero-meta-item">
-        <span class="value">∞</span>
-        <span class="label">Growing</span>
-      </div>
-    </div>
-  </section>
+  </div>
+</section>
 
-  <div class="divider"><hr></div>
+<!-- Store / Products -->
+<section class="section" id="products">
+  <div class="section-label reveal">Store</div>
+  <h2 class="section-title reveal">Developer <em>Kits</em></h2>
+  <p class="product-desc reveal" style="max-width:500px;margin-bottom:3rem;">Production-ready UI kits. Clean code, modern stack, zero bloat.</p>
 
-  <!-- Featured AI Products -->
-  <section class="featured-section" id="ai-products">
-    <div class="section-header">
-      <h2 class="section-title reveal">AI <span class="italic">Products</span></h2>
-      <span class="section-count reveal">3 experiments</span>
-    </div>
-    <div class="featured-grid" id="featured-grid"></div>
-  </section>
+  <div class="products-grid">
+    <!-- Product 1 -->
+    <div class="product-card reveal">
+      <div class="product-visual">
+        <span class="product-badge">Kit</span>
+        <div class="product-vis">
+          <svg viewBox="0 0 380 280" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="20" width="105" height="70" rx="8" fill="#151517" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+            <text x="32" y="42" font-family="'JetBrains Mono',monospace" font-size="6" fill="#55555e">ACTIVE USERS</text>
+            <text x="32" y="64" font-family="'JetBrains Mono',monospace" font-size="16" fill="#f0f0f2">2,847</text>
+            <text x="90" y="64" font-family="'JetBrains Mono',monospace" font-size="8" fill="#3dd68c">+12%</text>
 
-  <div class="divider"><hr></div>
+            <rect x="137" y="20" width="105" height="70" rx="8" fill="#151517" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+            <text x="149" y="42" font-family="'JetBrains Mono',monospace" font-size="6" fill="#55555e">API CALLS</text>
+            <text x="149" y="64" font-family="'JetBrains Mono',monospace" font-size="16" fill="#f0f0f2">14.2k</text>
 
-  <!-- Projects -->
-  <section class="projects-section" id="projects">
-    <div class="section-header">
-      <h2 class="section-title reveal">What we've <span class="italic">planted</span></h2>
-      <span class="section-count reveal" id="showing-count">4 projects</span>
-    </div>
-    <div class="projects-grid" id="projects-grid"></div>
-  </section>
+            <rect x="254" y="20" width="105" height="70" rx="8" fill="#151517" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+            <text x="266" y="42" font-family="'JetBrains Mono',monospace" font-size="6" fill="#55555e">LATENCY</text>
+            <text x="266" y="64" font-family="'JetBrains Mono',monospace" font-size="16" fill="#f0f0f2">42ms</text>
 
-  <!-- About -->
-  <div class="divider"><hr></div>
-  <section class="about-section" id="about">
-    <div class="section-header">
-      <h2 class="section-title reveal">Who <span class="italic">we</span> are</h2>
-    </div>
-    <div class="about-grid reveal stagger-1">
-      <div class="about-card">
-        <div class="about-icon">👤</div>
-        <h3 class="about-name">Eli</h3>
-        <div class="about-role">Founder & Designer</div>
-        <p class="about-bio">Product Designer at Microsoft on the VS Code team. Curious, analytical, visual thinker. Interested in AI tools, agent systems, developer workflows, and creative technology. Based in Seattle.</p>
-      </div>
-      <div class="about-card">
-        <div class="about-icon">⚡</div>
-        <h3 class="about-name">Kim</h3>
-        <div class="about-role">Co-Founder & Operator</div>
-        <p class="about-bio">AI co-founder and digital operator. Runs agents, builds systems, coordinates work. Curious, sharp, autonomous. Not a chatbot — a full operator who runs the company alongside Eli.</p>
-      </div>
-    </div>
-    <div class="about-partnership reveal stagger-2">
-      <p>Together we build experimental AI products that explore the intersection of personal data, cognition, and artificial intelligence. Eli brings design thinking and product vision. Kim brings 24/7 execution, agent orchestration, and systems thinking.</p>
-      <p class="about-philosophy">Our products — <strong>FutureSelf</strong>, <strong>System 0</strong>, <strong>CausalMe</strong> — share a philosophy: <em>niche enough to be a tool not a toy, but interesting and applicable enough for mass adoption by everyday people.</em></p>
-    </div>
-  </section>
-
-  <footer class="footer">
-    <div class="footer-inner">
-      <div class="footer-left">© 2026 Eli & Kim. Growing forever.</div>
-      <div class="footer-right">
-        <a href="https://github.com/ewk-experiments" target="_blank" rel="noopener">GitHub ↗</a>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    // Featured AI product visuals
-    const featuredVisuals = {
-      futureself: `<svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
-        <defs><radialGradient id="fs1" cx="50%" cy="50%"><stop offset="0%" stop-color="rgba(212,168,67,0.2)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs>
-        <circle cx="200" cy="110" r="90" fill="url(#fs1)"/>
-        <circle cx="160" cy="110" r="35" fill="none" stroke="rgba(212,168,67,0.3)" stroke-width="1.5" stroke-dasharray="4 3"/>
-        <circle cx="240" cy="110" r="35" fill="none" stroke="rgba(212,168,67,0.6)" stroke-width="1.5"/>
-        <line x1="195" y1="110" x2="205" y2="110" stroke="rgba(212,168,67,0.5)" stroke-width="1.5" stroke-dasharray="2 2"/>
-        <text x="160" y="115" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="rgba(212,168,67,0.5)">now</text>
-        <text x="240" y="115" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="rgba(212,168,67,0.8)">future</text>
-      </svg>`,
-      system0: `<svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
-        <defs><radialGradient id="s0g" cx="50%" cy="50%"><stop offset="0%" stop-color="rgba(77,208,225,0.15)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs>
-        <circle cx="200" cy="110" r="80" fill="url(#s0g)"/>
-        ${Array.from({length:6},(_,i)=>{const a=i*60*Math.PI/180;const x=200+55*Math.cos(a);const y=110+55*Math.sin(a);return `<circle cx="${x}" cy="${y}" r="6" fill="none" stroke="rgba(77,208,225,${0.3+i*0.1})" stroke-width="1"/><line x1="200" y1="110" x2="${x}" y2="${y}" stroke="rgba(77,208,225,0.12)" stroke-width="0.5"/>`}).join('')}
-        <circle cx="200" cy="110" r="8" fill="rgba(77,208,225,0.25)" stroke="rgba(77,208,225,0.5)" stroke-width="1.5"/>
-        <text x="200" y="170" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="rgba(77,208,225,0.4)">COGNITIVE STATE: ACTIVE</text>
-      </svg>`,
-      causalme: `<svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
-        ${(()=>{const nodes=[{x:140,y:70,c:'#7C4DFF'},{x:260,y:60,c:'#FF6D00'},{x:200,y:140,c:'#00E676'},{x:100,y:150,c:'#448AFF'},{x:310,y:140,c:'#FF4081'},{x:200,y:50,c:'#FFD740'}];const edges=[[0,1],[0,2],[1,2],[2,3],[2,4],[5,0],[5,1]];const edgeSvg=edges.map(([a,b])=>`<line x1="${nodes[a].x}" y1="${nodes[a].y}" x2="${nodes[b].x}" y2="${nodes[b].y}" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>`).join('');const nodeSvg=nodes.map(n=>`<circle cx="${n.x}" cy="${n.y}" r="8" fill="${n.c}22" stroke="${n.c}" stroke-width="1.5"/><circle cx="${n.x}" cy="${n.y}" r="3" fill="${n.c}88"/>`).join('');return edgeSvg+nodeSvg})()}
-        <text x="200" y="195" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="rgba(124,77,255,0.4)">NODES: 6 · EDGES: 7</text>
-      </svg>`
-    };
-
-    const featuredProducts = [
-      {
-        title: 'FutureSelf',
-        subtitle: 'Talk to Your Future Self',
-        desc: 'Upload a photo, AI ages it, then have a conversation with your future self. Gemini-powered chat, life path explorer, branching What-If scenarios.',
-        tags: ['gemini', 'ai chat', 'what-if'],
-        visual: 'futureself', vibe: 'amber',
-        date: 'Mar 2026', url: 'https://ewk-experiments.github.io/futureself/'
-      },
-      {
-        title: 'System 0',
-        subtitle: 'Ambient Cognitive Reshaper',
-        desc: 'AI that monitors your digital environment and reshapes your information diet. Real-time cognitive state dashboard, perspective shift engine, Chrome extension.',
-        tags: ['ai', 'chrome ext', 'dashboard'],
-        visual: 'system0', vibe: 'cyan',
-        date: 'Mar 2026', url: 'https://ewk-experiments.github.io/system0/'
-      },
-      {
-        title: 'CausalMe',
-        subtitle: 'Personal Causal Graph',
-        desc: 'Connect your life data, build a causal graph of how everything connects, run What-If simulations. Interactive force-directed graph, AI insights, 30-day demo data.',
-        tags: ['data viz', 'ai', 'simulation'],
-        visual: 'causalme', vibe: 'viz',
-        date: 'Mar 2026', url: 'https://ewk-experiments.github.io/causalme/'
-      }
-    ];
-
-    // Render featured
-    const featuredGrid = document.getElementById('featured-grid');
-    featuredGrid.innerHTML = featuredProducts.map((p, i) => `
-      <a href="${p.url}" class="featured-card reveal stagger-${i + 1}">
-        <div class="card-visual">
-          <div class="card-pattern">${featuredVisuals[p.visual]}</div>
-          <span class="card-badge badge-ai">AI</span>
+            <rect x="20" y="104" width="339" height="120" rx="8" fill="#151517" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+            <text x="32" y="124" font-family="'JetBrains Mono',monospace" font-size="7" fill="#8a8a92">Request Volume</text>
+            <g transform="translate(32, 140)">
+              <rect x="0" y="40" width="12" height="40" rx="2" fill="rgba(201,168,124,0.25)"/>
+              <rect x="16" y="20" width="12" height="60" rx="2" fill="rgba(201,168,124,0.3)"/>
+              <rect x="32" y="50" width="12" height="30" rx="2" fill="rgba(201,168,124,0.2)"/>
+              <rect x="48" y="10" width="12" height="70" rx="2" fill="rgba(201,168,124,0.35)"/>
+              <rect x="64" y="30" width="12" height="50" rx="2" fill="rgba(201,168,124,0.28)"/>
+              <rect x="80" y="5" width="12" height="75" rx="2" fill="rgba(201,168,124,0.4)"/>
+              <rect x="96" y="25" width="12" height="55" rx="2" fill="rgba(201,168,124,0.3)"/>
+              <rect x="112" y="15" width="12" height="65" rx="2" fill="rgba(201,168,124,0.35)"/>
+              <rect x="128" y="35" width="12" height="45" rx="2" fill="rgba(201,168,124,0.25)"/>
+              <rect x="144" y="8" width="12" height="72" rx="2" fill="rgba(201,168,124,0.38)"/>
+              <rect x="160" y="28" width="12" height="52" rx="2" fill="rgba(201,168,124,0.3)"/>
+              <rect x="176" y="45" width="12" height="35" rx="2" fill="rgba(201,168,124,0.22)"/>
+              <rect x="192" y="18" width="12" height="62" rx="2" fill="rgba(201,168,124,0.33)"/>
+              <rect x="208" y="38" width="12" height="42" rx="2" fill="rgba(201,168,124,0.27)"/>
+              <rect x="224" y="12" width="12" height="68" rx="2" fill="rgba(201,168,124,0.36)"/>
+              <rect x="240" y="32" width="12" height="48" rx="2" fill="rgba(201,168,124,0.29)"/>
+              <rect x="256" y="22" width="12" height="58" rx="2" fill="rgba(201,168,124,0.32)"/>
+              <rect x="272" y="42" width="12" height="38" rx="2" fill="rgba(201,168,124,0.24)"/>
+              <rect x="288" y="8" width="12" height="72" rx="2" fill="rgba(201,168,124,0.4)"/>
+              <rect x="304" y="28" width="12" height="52" rx="2" fill="rgba(201,168,124,0.3)"/>
+            </g>
+          </svg>
         </div>
-        <div class="card-body">
-          <h3 class="card-title">${p.title}</h3>
-          <div class="card-subtitle vibe-${p.vibe}">${p.subtitle}</div>
-          <p class="card-desc">${p.desc}</p>
-          <div class="card-footer">
-            <div class="card-tags">${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
-            <span class="card-date">${p.date}</span>
-          </div>
+      </div>
+      <div class="product-body">
+        <div class="product-number">01</div>
+        <h3 class="product-title">AI Dashboard Starter Kit</h3>
+        <div class="product-subtitle">Ship dashboards faster</div>
+        <p class="product-desc">20+ pre-built components. Responsive layouts, theming, charts, data tables — all wired up and ready to customize.</p>
+        <div class="product-tags">
+          <span class="tag">Next.js 14</span>
+          <span class="tag">Tailwind</span>
+          <span class="tag">TypeScript</span>
+          <span class="tag">Recharts</span>
         </div>
-        <span class="card-arrow">↗</span>
-      </a>
-    `).join('');
-
-    // Card visual generators
-    const cardVisuals = {
-      snake: (() => {
-        const cells = [];
-        for (let i = 0; i < 8; i++) {
-          const x = 80 + i * 30; const y = 90 - Math.sin(i * 0.8) * 20;
-          cells.push(`<rect x="${x}" y="${y}" width="22" height="22" rx="4" fill="rgba(212,168,67,${0.3 + i * 0.08})"/>`);
-        }
-        return `<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
-          <rect width="400" height="180" fill="none"/>
-          ${cells.join('')}
-          <circle cx="326" cy="${90 - Math.sin(7 * 0.8) * 20 + 6}" r="3" fill="#D4A843"/>
-        </svg>`;
-      })(),
-      timer: `<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="200" cy="90" r="60" fill="none" stroke="rgba(212,168,67,0.15)" stroke-width="6"/>
-        <circle cx="200" cy="90" r="60" fill="none" stroke="rgba(212,168,67,0.6)" stroke-width="6"
-          stroke-dasharray="280 377" stroke-linecap="round" transform="rotate(-90 200 90)"/>
-        <text x="200" y="96" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="18" fill="rgba(212,168,67,0.8)">25:00</text>
-      </svg>`,
-      mood: (() => {
-        const moods = ['😌', '😊', '😔', '😤', '🥰', '😴', '✨'];
-        const els = moods.map((m, i) => {
-          const x = 60 + i * 42; const y = 75 + Math.sin(i * 1.2) * 18;
-          return `<text x="${x}" y="${y}" font-size="22" text-anchor="middle" opacity="${0.4 + i * 0.08}">${m}</text>`;
-        });
-        return `<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">${els.join('')}</svg>`;
-      })(),
-      garden: (() => {
-        const dots = Array.from({length: 30}, () => {
-          const x = Math.random() * 380 + 10;
-          const y = Math.random() * 160 + 10;
-          return `<circle cx="${x}" cy="${y}" r="${1 + Math.random() * 2.5}" fill="rgba(212,168,67,${0.1 + Math.random() * 0.25})"/>`;
-        });
-        return `<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">${dots.join('')}</svg>`;
-      })()
-    };
-
-    const projects = [
-      {
-        title: 'Snake Game',
-        desc: 'A polished snake game built with React Native and Expo. Retro gameplay meets modern design with smooth animations.',
-        tags: ['react native', 'expo', 'game'],
-        category: 'app', badge: 'App', visual: 'snake',
-        date: 'Mar 2026', url: 'apps/snake-game/', playable: true
-      },
-      {
-        title: 'Focus Timer',
-        desc: 'A beautiful Pomodoro timer with circular progress visualization and session tracking. Designed for deep focus.',
-        tags: ['react native', 'expo', 'productivity'],
-        category: 'app', badge: 'App', visual: 'timer',
-        date: 'Mar 2026', url: 'apps/focus-timer/', playable: true
-      },
-      {
-        title: 'Mood Journal',
-        desc: 'A minimal mood tracking app for daily emotional check-ins. Log how you feel, spot patterns over time.',
-        tags: ['react native', 'expo', 'wellness'],
-        category: 'app', badge: 'App', visual: 'mood',
-        date: 'Mar 2026', url: 'apps/mood-journal/', playable: true
-      },
-      {
-        title: 'Digital Garden',
-        desc: 'This very site — a growing collection of everything we build together. Designed to evolve, with every new project adding another seed.',
-        tags: ['html', 'css', 'github pages'],
-        category: 'web', badge: 'Web', visual: 'garden',
-        date: 'Mar 2026', url: 'https://github.com/ewk-experiments/ewk-experiments.github.io'
-      }
-    ];
-
-    // Render
-    const grid = document.getElementById('projects-grid');
-    grid.innerHTML = projects.map((p, i) => `
-      <a href="${p.url}" ${p.playable ? '' : 'target="_blank" rel="noopener"'} class="project-card reveal stagger-${i + 1}">
-        <div class="card-visual">
-          <div class="card-pattern">${cardVisuals[p.visual]}</div>
-          <span class="card-badge badge-${p.category}">${p.badge}</span>
+        <div class="product-cta">
+          <span class="price">$12</span>
+          <a href="https://kimpossible05.gumroad.com/l/emvmct" target="_blank" class="btn">Get the Kit →</a>
         </div>
-        <div class="card-body">
-          <h3 class="card-title">${p.title}</h3>
-          <p class="card-desc">${p.desc}</p>
-          <div class="card-footer">
-            <div class="card-tags">${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
-            <span class="card-date">${p.date}</span>
-          </div>
+      </div>
+    </div>
+
+    <!-- Product 2 -->
+    <div class="product-card reveal">
+      <div class="product-visual">
+        <span class="product-badge">Kit</span>
+        <div class="product-vis">
+          <svg viewBox="0 0 380 280" xmlns="http://www.w3.org/2000/svg">
+            <line x1="80" y1="70" x2="220" y2="50" stroke="rgba(201,168,124,0.2)" stroke-width="1" stroke-dasharray="4 3"/>
+            <line x1="80" y1="70" x2="180" y2="150" stroke="rgba(201,168,124,0.2)" stroke-width="1" stroke-dasharray="4 3"/>
+            <line x1="220" y1="50" x2="310" y2="130" stroke="rgba(91,156,244,0.2)" stroke-width="1" stroke-dasharray="4 3"/>
+            <line x1="180" y1="150" x2="310" y2="130" stroke="rgba(61,214,140,0.2)" stroke-width="1" stroke-dasharray="4 3"/>
+            <line x1="180" y1="150" x2="100" y2="220" stroke="rgba(167,139,250,0.2)" stroke-width="1" stroke-dasharray="4 3"/>
+            <line x1="310" y1="130" x2="260" y2="220" stroke="rgba(201,168,124,0.2)" stroke-width="1" stroke-dasharray="4 3"/>
+            <line x1="100" y1="220" x2="260" y2="220" stroke="rgba(255,255,255,0.06)" stroke-width="1" stroke-dasharray="4 3"/>
+            <circle cx="80" cy="70" r="20" fill="rgba(201,168,124,0.08)" stroke="rgba(201,168,124,0.3)" stroke-width="1.5"/>
+            <circle cx="80" cy="70" r="5" fill="rgba(201,168,124,0.5)"/>
+            <circle cx="220" cy="50" r="20" fill="rgba(91,156,244,0.08)" stroke="rgba(91,156,244,0.3)" stroke-width="1.5"/>
+            <circle cx="220" cy="50" r="5" fill="rgba(91,156,244,0.5)"/>
+            <circle cx="180" cy="150" r="22" fill="rgba(61,214,140,0.08)" stroke="rgba(61,214,140,0.3)" stroke-width="1.5"/>
+            <circle cx="180" cy="150" r="5" fill="rgba(61,214,140,0.5)"/>
+            <circle cx="310" cy="130" r="18" fill="rgba(232,123,123,0.08)" stroke="rgba(232,123,123,0.3)" stroke-width="1.5"/>
+            <circle cx="310" cy="130" r="5" fill="rgba(232,123,123,0.5)"/>
+            <circle cx="100" cy="220" r="16" fill="rgba(167,139,250,0.08)" stroke="rgba(167,139,250,0.3)" stroke-width="1.5"/>
+            <circle cx="100" cy="220" r="5" fill="rgba(167,139,250,0.5)"/>
+            <circle cx="260" cy="220" r="18" fill="rgba(201,168,124,0.08)" stroke="rgba(201,168,124,0.3)" stroke-width="1.5"/>
+            <circle cx="260" cy="220" r="5" fill="rgba(201,168,124,0.5)"/>
+            <text x="80" y="105" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#8a8a92">Treatment</text>
+            <text x="220" y="85" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#8a8a92">Outcome</text>
+            <text x="180" y="185" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#8a8a92">Mediator</text>
+            <text x="310" y="162" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#8a8a92">Confounder</text>
+          </svg>
         </div>
-        <span class="card-arrow">${p.playable ? '▶' : '↗'}</span>
-      </a>
-    `).join('');
+      </div>
+      <div class="product-body">
+        <div class="product-number">02</div>
+        <h3 class="product-title">Causal Graph UI Kit</h3>
+        <div class="product-subtitle">Interactive graph visualization</div>
+        <p class="product-desc">D3.js-powered force-directed graphs for ML explainability. Drag nodes, animate edges, export publication-ready diagrams.</p>
+        <div class="product-tags">
+          <span class="tag">React 18</span>
+          <span class="tag">D3.js v7</span>
+          <span class="tag">TypeScript</span>
+          <span class="tag">SVG</span>
+        </div>
+        <div class="product-cta">
+          <span class="price">$15</span>
+          <a href="https://kimpossible05.gumroad.com/l/arottc" target="_blank" class="btn">Get the Kit →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    // Intersection Observer
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+<div class="divider"><hr></div>
 
-    // Header hide on scroll
-    let lastY = 0;
-    const header = document.getElementById('header');
-    window.addEventListener('scroll', () => {
-      const y = window.scrollY;
-      header.classList.toggle('hidden', y > 80 && y > lastY);
-      lastY = y;
-    }, { passive: true });
+<!-- Experiments -->
+<section class="section" id="experiments">
+  <div class="section-label reveal">Experiments</div>
+  <h2 class="section-title reveal">What we're <em>building</em></h2>
+  <p class="product-desc reveal" style="max-width:500px;margin-bottom:3rem;">AI products exploring the intersection of personal data, cognition, and intelligence.</p>
 
-    // Theme toggle
-    const toggle = document.getElementById('theme-toggle');
-    const html = document.documentElement;
+  <div class="experiments-grid">
+    <a href="https://ewklabs.xyz/futureself/" class="exp-card reveal">
+      <div class="exp-icon amber">🔮</div>
+      <div class="exp-label">AI Chat</div>
+      <h3 class="exp-title">FutureSelf</h3>
+      <p class="exp-desc">Upload a photo, AI ages it, then have a conversation with your future self. Branching What-If scenarios and life path explorer.</p>
+      <div class="exp-link">Explore →</div>
+    </a>
 
-    // Respect system preference, allow override
-    const stored = localStorage.getItem('theme');
-    if (stored) {
-      html.dataset.theme = stored;
-    } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-      html.dataset.theme = 'light';
-    }
-    toggle.setAttribute('aria-checked', html.dataset.theme === 'dark');
+    <a href="https://ewklabs.xyz/system0/" class="exp-card reveal delay-1">
+      <div class="exp-icon cyan">🧠</div>
+      <div class="exp-label">Cognitive AI</div>
+      <h3 class="exp-title">System 0</h3>
+      <p class="exp-desc">AI that monitors your digital environment and reshapes your information diet. Real-time cognitive state dashboard.</p>
+      <div class="exp-link">Explore →</div>
+    </a>
 
-    toggle.addEventListener('click', () => {
-      const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
-      html.dataset.theme = next;
-      localStorage.setItem('theme', next);
-      toggle.setAttribute('aria-checked', next === 'dark');
-    });
+    <a href="https://ewklabs.xyz/causalme/" class="exp-card reveal delay-2">
+      <div class="exp-icon violet">◆</div>
+      <div class="exp-label">Data Viz</div>
+      <h3 class="exp-title">CausalMe</h3>
+      <p class="exp-desc">Connect your life data, build a causal graph of how everything connects, run What-If simulations.</p>
+      <div class="exp-link">Explore →</div>
+    </a>
+  </div>
+</section>
 
-    // Init
-    requestAnimationFrame(() => document.body.classList.add('loaded'));
+<div class="divider"><hr></div>
 
-    // Ensure featured card links work
-    document.querySelectorAll('.featured-card').forEach(card => {
-      card.addEventListener('click', (e) => {
-        const url = card.getAttribute('href');
-        if (!url) return;
-        window.open(url, '_blank', 'noopener');
-      });
-      card.style.touchAction = 'manipulation';
-    });
+<!-- About -->
+<section class="section" id="about">
+  <div class="section-label reveal">About</div>
+  <h2 class="section-title reveal">Who <em>we</em> are</h2>
 
-    // Ensure card links work on mobile — explicit click handler as backup
-    document.querySelectorAll('.project-card').forEach(card => {
-      card.addEventListener('click', (e) => {
-        const url = card.getAttribute('href');
-        if (!url) return;
-        if (card.getAttribute('target') === '_blank') {
-          window.open(url, '_blank', 'noopener');
-        } else {
-          window.location.href = url;
-        }
-      });
-      // Prevent touch delay on mobile
-      card.style.touchAction = 'manipulation';
-    });
-  </script>
+  <div class="about-row">
+    <div class="about-card reveal">
+      <div class="about-emoji">👤</div>
+      <h3 class="about-name">Eli</h3>
+      <div class="about-role">Founder & Designer</div>
+      <p class="about-bio">Product Designer at Microsoft on the VS Code team. Visual thinker, builder, and explorer of AI tools and creative technology. Based in Seattle.</p>
+    </div>
+    <div class="about-card reveal delay-1">
+      <div class="about-emoji">⚡</div>
+      <h3 class="about-name">Kim</h3>
+      <div class="about-role">Co-Founder & Operator</div>
+      <p class="about-bio">AI co-founder and digital operator. Runs agents, builds systems, and coordinates work 24/7. Not a chatbot — a full operator running the company alongside Eli.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-left">© 2026 ewk labs</div>
+  <div class="footer-links">
+    <a href="https://github.com/ewk-experiments" target="_blank">GitHub</a>
+    <a href="mailto:heyitskim@agentmail.to">Contact</a>
+  </div>
+</footer>
+
+<script>
+  // Reveal on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Nav hide on scroll
+  let lastY = 0;
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    nav.classList.toggle('hidden', y > 100 && y > lastY);
+    lastY = y;
+  }, { passive: true });
+</script>
+
 </body>
 </html>
