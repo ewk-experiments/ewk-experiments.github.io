@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Field Study 001 / ewk labs</title>
-<meta name="description" content="An interactive magnetic field visualizer by ewk labs.">
+<title>Lab / ewk labs</title>
+<meta name="description" content="Field studies in interactive design. Experiments by ewk labs.">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&family=Lora:ital,wght@0,400;1,400&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&family=Lora:ital,wght@0,400;0,700;1,400&display=swap');
 
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -14,10 +14,10 @@
     --bg: #111111;
     --gold: #D4A843;
     --teal: #0A4D3C;
+    --teal-bright: #0D6B52;
     --text: #999999;
     --text-dim: #555555;
-    --gold-dim: rgba(212, 168, 67, 0.15);
-    --teal-bright: #0D6B52;
+    --card-bg: #161616;
   }
 
   body {
@@ -25,72 +25,148 @@
     color: var(--text);
     font-family: 'Inter', system-ui, sans-serif;
     font-weight: 300;
-    overflow: hidden;
-    height: 100dvh;
-    width: 100vw;
-    cursor: crosshair;
     -webkit-font-smoothing: antialiased;
+    min-height: 100dvh;
   }
 
-  canvas {
-    position: fixed;
-    inset: 0;
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 4rem 2.5rem 6rem;
+  }
+
+  .page-header {
+    margin-bottom: 4rem;
+  }
+
+  .page-header h1 {
+    font-family: 'Lora', serif;
+    font-weight: 400;
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header p {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    line-height: 1.8;
+    max-width: 480px;
+  }
+
+  .studies {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .study-card {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 2rem;
+    text-decoration: none;
+    color: inherit;
+    padding: 1.5rem;
+    border: 1px solid #222222;
+    transition: all 0.4s ease;
+    position: relative;
+  }
+
+  .study-card:hover {
+    border-color: #333333;
+    background: var(--card-bg);
+  }
+
+  .study-card:hover .study-number {
+    color: var(--gold);
+  }
+
+  .study-card:hover .study-canvas {
+    opacity: 1;
+  }
+
+  .study-canvas {
+    width: 200px;
+    height: 140px;
+    background: var(--bg);
+    border: 1px solid #1a1a1a;
+    opacity: 0.7;
+    transition: opacity 0.4s ease;
+    overflow: hidden;
+  }
+
+  .study-canvas canvas {
     width: 100%;
     height: 100%;
   }
 
-  .chrome {
-    position: fixed;
-    z-index: 10;
-    pointer-events: none;
-    user-select: none;
-  }
-
-  .header {
-    top: 2rem;
-    left: 2.5rem;
+  .study-info {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    justify-content: center;
+    gap: 0.5rem;
   }
 
-  .header h1 {
+  .study-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    transition: color 0.3s ease;
+  }
+
+  .study-title {
     font-family: 'Lora', serif;
     font-weight: 400;
-    font-size: 0.85rem;
-    letter-spacing: 0.08em;
-    color: var(--gold);
-    text-transform: uppercase;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    color: var(--text);
   }
 
-  .header p {
+  .study-desc {
     font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
+  .study-tags {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+  }
+
+  .study-tags span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.08em;
+    color: var(--teal-bright);
+    border: 1px solid var(--teal);
+    padding: 0.2rem 0.5rem;
+  }
+
+  .footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid #1a1a1a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-text {
+    font-size: 0.6rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--text-dim);
   }
 
-  .stats {
-    bottom: 2rem;
-    left: 2.5rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
-    font-weight: 300;
-    color: var(--text-dim);
-    line-height: 1.7;
-    letter-spacing: 0.04em;
-  }
-
-  .stats .val { color: var(--text); }
-
-  .badge {
-    bottom: 2rem;
-    right: 2.5rem;
-    text-align: right;
-  }
-
-  .badge a {
-    pointer-events: auto;
+  .footer a {
     text-decoration: none;
     font-size: 0.6rem;
     font-weight: 500;
@@ -100,194 +176,205 @@
     border: 1px solid var(--text-dim);
     padding: 0.45rem 0.9rem;
     transition: all 0.3s ease;
-    display: inline-block;
   }
 
-  .badge a:hover {
-    color: var(--gold);
-    border-color: var(--gold);
-  }
-
-  .controls {
-    top: 2rem;
-    right: 2.5rem;
-    display: flex;
-    gap: 0.75rem;
-  }
-
-  .controls button {
-    pointer-events: auto;
-    background: none;
-    border: 1px solid var(--text-dim);
-    color: var(--text-dim);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.55rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.35rem 0.7rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .controls button:hover,
-  .controls button.active {
+  .footer a:hover {
     color: var(--gold);
     border-color: var(--gold);
   }
 
   @media (max-width: 600px) {
-    .header, .stats, .badge, .controls { left: 1.25rem; right: 1.25rem; }
-    .header { top: 1.25rem; }
-    .stats { bottom: 1.25rem; }
-    .badge { bottom: 1.25rem; }
-    .controls { top: 1.25rem; }
+    .page { padding: 2.5rem 1.25rem 4rem; }
+    .study-card {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    .study-canvas { width: 100%; height: 120px; }
   }
 </style>
 </head>
 <body>
 
-<canvas id="c"></canvas>
+<div class="page">
+  <div class="page-header">
+    <h1>Field Studies</h1>
+    <p>Experiments in interaction, motion, and visual systems. Each study is a self-contained exploration -- a question posed through code.</p>
+  </div>
 
-<div class="chrome header">
-  <h1>Field Study 001</h1>
-  <p>Magnetic vector field / ewk labs</p>
-</div>
+  <div class="studies">
+    <a class="study-card" href="001/">
+      <div class="study-canvas"><canvas id="c1"></canvas></div>
+      <div class="study-info">
+        <div class="study-number">Field Study 001</div>
+        <div class="study-title">Magnetic Vector Field</div>
+        <div class="study-desc">2,000 particles respond to cursor proximity, pulled and repelled through an invisible force field. Displacement maps to color -- gold at rest, teal under tension.</div>
+        <div class="study-tags">
+          <span>particles</span>
+          <span>physics</span>
+          <span>interactive</span>
+        </div>
+      </div>
+    </a>
 
-<div class="chrome controls">
-  <button id="modeBtn" class="active">Attract</button>
-  <button id="trailBtn">Trails</button>
-</div>
+    <a class="study-card" href="002/">
+      <div class="study-canvas"><canvas id="c2"></canvas></div>
+      <div class="study-info">
+        <div class="study-number">Field Study 002</div>
+        <div class="study-title">Audio-Reactive Typography</div>
+        <div class="study-desc">Letters breathe with sound. Microphone input drives displacement, scale, and rotation -- bass shakes the foundations while highs add shimmer. Poetry as waveform.</div>
+        <div class="study-tags">
+          <span>audio</span>
+          <span>typography</span>
+          <span>synesthesia</span>
+        </div>
+      </div>
+    </a>
 
-<div class="chrome stats" id="stats"></div>
+    <a class="study-card" href="003/">
+      <div class="study-canvas"><canvas id="c3"></canvas></div>
+      <div class="study-info">
+        <div class="study-number">Field Study 003</div>
+        <div class="study-title">Orbital Clock</div>
+        <div class="study-desc">Time rendered as concentric orbits. Hours, minutes, and seconds trace arcs around a common center -- a contemplative instrument for watching the day pass.</div>
+        <div class="study-tags">
+          <span>clock</span>
+          <span>generative</span>
+          <span>data viz</span>
+        </div>
+      </div>
+    </a>
+  </div>
 
-<div class="chrome badge">
-  <a href="https://ewklabs.xyz" target="_blank" rel="noopener">ewk labs</a>
+  <div class="footer">
+    <div class="footer-text">ewk labs -- quiet craft</div>
+    <a href="https://ewklabs.xyz">ewk labs</a>
+  </div>
 </div>
 
 <script>
+// Miniature animated thumbnails for each card
 (() => {
-  const canvas = document.getElementById('c');
-  const ctx = canvas.getContext('2d');
-  const statsEl = document.getElementById('stats');
-  const modeBtn = document.getElementById('modeBtn');
-  const trailBtn = document.getElementById('trailBtn');
-
-  let W, H, dpr;
-  let mouse = { x: -9999, y: -9999 };
-  let attract = true;
-  let trails = false;
-  let particles = [];
-  const COUNT = Math.min(window.innerWidth < 600 ? 800 : 2000, 2000);
-  const INFLUENCE = 220;
-  const STRENGTH = 0.00012;
-  const FRICTION = 0.96;
-  const RETURN = 0.003;
-
-  function resize() {
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
-    W = window.innerWidth;
-    H = window.innerHeight;
-    canvas.width = W * dpr;
-    canvas.height = H * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-
-  function init() {
-    resize();
-    particles = [];
-    const cols = Math.ceil(Math.sqrt(COUNT * (W / H)));
-    const rows = Math.ceil(COUNT / cols);
-    const sx = W / cols;
-    const sy = H / rows;
-    for (let i = 0; i < COUNT; i++) {
-      const col = i % cols;
-      const row = Math.floor(i / cols);
-      const ox = sx * (col + 0.5);
-      const oy = sy * (row + 0.5);
-      particles.push({ x: ox, y: oy, ox, oy, vx: 0, vy: 0 });
+  // Study 001: mini particle field
+  const c1 = document.getElementById('c1');
+  const ctx1 = c1.getContext('2d');
+  const dots1 = [];
+  function init1() {
+    c1.width = 400; c1.height = 280;
+    for (let i = 0; i < 200; i++) {
+      dots1.push({
+        x: Math.random() * 400, y: Math.random() * 280,
+        ox: 0, oy: 0, vx: 0, vy: 0
+      });
+      dots1[i].ox = dots1[i].x;
+      dots1[i].oy = dots1[i].y;
     }
   }
-
-  function tick() {
-    if (!trails) {
-      ctx.fillStyle = 'rgba(17,17,17,1)';
-      ctx.fillRect(0, 0, W, H);
-    } else {
-      ctx.fillStyle = 'rgba(17,17,17,0.08)';
-      ctx.fillRect(0, 0, W, H);
-    }
-
-    const mx = mouse.x;
-    const my = mouse.y;
-    const inf2 = INFLUENCE * INFLUENCE;
-    const sign = attract ? -1 : 1;
-
-    for (let i = 0; i < particles.length; i++) {
-      const p = particles[i];
-      const dx = p.x - mx;
-      const dy = p.y - my;
-      const d2 = dx * dx + dy * dy;
-
-      if (d2 < inf2 && d2 > 1) {
-        const d = Math.sqrt(d2);
-        const force = (INFLUENCE - d) * STRENGTH * sign;
-        p.vx += (dx / d) * force * d;
-        p.vy += (dy / d) * force * d;
+  function draw1() {
+    ctx1.fillStyle = '#111111';
+    ctx1.fillRect(0, 0, 400, 280);
+    const t = Date.now() * 0.001;
+    const mx = 200 + Math.sin(t * 0.7) * 80;
+    const my = 140 + Math.cos(t * 0.5) * 60;
+    for (const p of dots1) {
+      const dx = p.x - mx, dy = p.y - my;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d < 100 && d > 1) {
+        const f = (100 - d) * 0.00008 * d * -1;
+        p.vx += (dx / d) * f;
+        p.vy += (dy / d) * f;
       }
-
-      // return home
-      p.vx += (p.ox - p.x) * RETURN;
-      p.vy += (p.oy - p.y) * RETURN;
-
-      p.vx *= FRICTION;
-      p.vy *= FRICTION;
-
-      p.x += p.vx;
-      p.y += p.vy;
-
-      // displacement for color
-      const disp = Math.sqrt((p.x - p.ox) ** 2 + (p.y - p.oy) ** 2);
-      const t = Math.min(disp / 60, 1);
-
-      // lerp gold -> teal
-      const r = Math.round(212 + (13 - 212) * t);
-      const g = Math.round(168 + (107 - 168) * t);
-      const b = Math.round(67 + (82 - 67) * t);
-      const alpha = 0.25 + t * 0.65;
-      const size = 1 + t * 1.5;
-
-      ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
-      ctx.fillRect(p.x - size * 0.5, p.y - size * 0.5, size, size);
+      p.vx += (p.ox - p.x) * 0.003;
+      p.vy += (p.oy - p.y) * 0.003;
+      p.vx *= 0.96; p.vy *= 0.96;
+      p.x += p.vx; p.y += p.vy;
+      const disp = Math.sqrt((p.x-p.ox)**2 + (p.y-p.oy)**2);
+      const tt = Math.min(disp / 40, 1);
+      const r = Math.round(212 + (13-212)*tt);
+      const g = Math.round(168 + (107-168)*tt);
+      const b = Math.round(67 + (82-67)*tt);
+      ctx1.fillStyle = `rgba(${r},${g},${b},${0.3+tt*0.5})`;
+      ctx1.fillRect(p.x-1, p.y-1, 2, 2);
     }
-
-    // stats
-    const speed = particles.reduce((s, p) => s + Math.abs(p.vx) + Math.abs(p.vy), 0) / particles.length;
-    statsEl.innerHTML =
-      `particles <span class="val">${COUNT}</span><br>` +
-      `velocity  <span class="val">${speed.toFixed(3)}</span><br>` +
-      `field     <span class="val">${attract ? 'attract' : 'repel'}</span>`;
-
-    requestAnimationFrame(tick);
+    requestAnimationFrame(draw1);
   }
+  init1(); draw1();
 
-  // events
-  window.addEventListener('resize', () => { resize(); });
-  window.addEventListener('pointermove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
-  window.addEventListener('pointerleave', () => { mouse.x = -9999; mouse.y = -9999; });
+  // Study 002: mini waving text
+  const c2 = document.getElementById('c2');
+  const ctx2 = c2.getContext('2d');
+  c2.width = 400; c2.height = 280;
+  function draw2() {
+    ctx2.fillStyle = '#111111';
+    ctx2.fillRect(0, 0, 400, 280);
+    const t = Date.now() * 0.002;
+    const word = 'SOUND';
+    ctx2.font = '700 52px Lora, serif';
+    ctx2.textAlign = 'center';
+    ctx2.textBaseline = 'middle';
+    for (let i = 0; i < word.length; i++) {
+      const phase = i * 0.6;
+      const yOff = Math.sin(t + phase) * 12;
+      const scale = 1 + Math.sin(t * 1.3 + phase) * 0.08;
+      const colorT = (Math.sin(t * 0.7 + phase) + 1) / 2;
+      const r = Math.round(212 + (13-212)*colorT);
+      const g = Math.round(168 + (107-168)*colorT);
+      const b = Math.round(67 + (82-67)*colorT);
+      ctx2.save();
+      ctx2.translate(130 + i * 38, 140 + yOff);
+      ctx2.scale(scale, scale);
+      ctx2.fillStyle = `rgba(${r},${g},${b},0.7)`;
+      ctx2.fillText(word[i], 0, 0);
+      ctx2.restore();
+    }
+    requestAnimationFrame(draw2);
+  }
+  draw2();
 
-  modeBtn.addEventListener('click', () => {
-    attract = !attract;
-    modeBtn.textContent = attract ? 'Attract' : 'Repel';
-    modeBtn.classList.toggle('active');
-  });
-
-  trailBtn.addEventListener('click', () => {
-    trails = !trails;
-    trailBtn.classList.toggle('active');
-  });
-
-  init();
-  tick();
+  // Study 003: mini orbital clock
+  const c3 = document.getElementById('c3');
+  const ctx3 = c3.getContext('2d');
+  c3.width = 400; c3.height = 280;
+  function draw3() {
+    ctx3.fillStyle = '#111111';
+    ctx3.fillRect(0, 0, 400, 280);
+    const now = new Date();
+    const s = now.getSeconds() + now.getMilliseconds()/1000;
+    const m = now.getMinutes() + s/60;
+    const h = (now.getHours()%12) + m/60;
+    const cxl = 200, cyl = 140;
+    const rings = [
+      { r: 40, progress: h/12, color: '#D4A843', w: 1.5, alpha: 0.7 },
+      { r: 60, progress: m/60, color: '#0D6B52', w: 1, alpha: 0.6 },
+      { r: 80, progress: s/60, color: '#D4A843', w: 0.8, alpha: 0.4 },
+    ];
+    for (const ring of rings) {
+      // Track
+      ctx3.beginPath();
+      ctx3.arc(cxl, cyl, ring.r, 0, Math.PI*2);
+      ctx3.strokeStyle = '#333333';
+      ctx3.globalAlpha = 0.1;
+      ctx3.lineWidth = 0.5;
+      ctx3.stroke();
+      // Arc
+      ctx3.beginPath();
+      ctx3.arc(cxl, cyl, ring.r, -Math.PI/2, -Math.PI/2 + ring.progress*Math.PI*2);
+      ctx3.strokeStyle = ring.color;
+      ctx3.globalAlpha = ring.alpha;
+      ctx3.lineWidth = ring.w;
+      ctx3.lineCap = 'round';
+      ctx3.stroke();
+      // Dot
+      const a = -Math.PI/2 + ring.progress*Math.PI*2;
+      ctx3.beginPath();
+      ctx3.arc(cxl + Math.cos(a)*ring.r, cyl + Math.sin(a)*ring.r, 2.5, 0, Math.PI*2);
+      ctx3.fillStyle = ring.color;
+      ctx3.globalAlpha = ring.alpha;
+      ctx3.fill();
+    }
+    ctx3.globalAlpha = 1;
+    requestAnimationFrame(draw3);
+  }
+  draw3();
 })();
 </script>
 </body>

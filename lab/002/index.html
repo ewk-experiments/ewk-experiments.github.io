@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field Study 002 / ewk labs</title>
+<meta name="description" content="Synesthetic typography — letters that respond to sound. By ewk labs.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&family=Lora:ital,wght@0,400;0,700;1,400&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #111111;
+    --gold: #D4A843;
+    --teal: #0A4D3C;
+    --teal-bright: #0D6B52;
+    --text: #999999;
+    --text-dim: #555555;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 300;
+    overflow: hidden;
+    height: 100dvh;
+    width: 100vw;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  canvas { position: fixed; inset: 0; width: 100%; height: 100%; }
+
+  .chrome {
+    position: fixed;
+    z-index: 10;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .header {
+    top: 2rem;
+    left: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .header h1 {
+    font-family: 'Lora', serif;
+    font-weight: 400;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .header p {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .stats {
+    bottom: 2rem;
+    left: 2.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 300;
+    color: var(--text-dim);
+    line-height: 1.7;
+    letter-spacing: 0.04em;
+  }
+
+  .stats .val { color: var(--text); }
+
+  .badge {
+    bottom: 2rem;
+    right: 2.5rem;
+    text-align: right;
+  }
+
+  .badge a {
+    pointer-events: auto;
+    text-decoration: none;
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border: 1px solid var(--text-dim);
+    padding: 0.45rem 0.9rem;
+    transition: all 0.3s ease;
+    display: inline-block;
+  }
+
+  .badge a:hover {
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+
+  .mic-prompt {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+    text-align: center;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: opacity 0.6s ease;
+  }
+
+  .mic-prompt.hidden { opacity: 0; pointer-events: none; }
+
+  .mic-prompt .ring {
+    width: 80px;
+    height: 80px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.2rem;
+    transition: all 0.3s ease;
+  }
+
+  .mic-prompt:hover .ring {
+    border-color: var(--gold);
+    box-shadow: 0 0 30px rgba(212, 168, 67, 0.15);
+  }
+
+  .mic-prompt .ring svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .mic-prompt .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .controls {
+    top: 2rem;
+    right: 2.5rem;
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .controls button {
+    pointer-events: auto;
+    background: none;
+    border: 1px solid var(--text-dim);
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.7rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .controls button:hover,
+  .controls button.active {
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+
+  @media (max-width: 600px) {
+    .header, .stats, .badge, .controls { left: 1.25rem; right: 1.25rem; }
+    .header { top: 1.25rem; }
+    .stats { bottom: 1.25rem; }
+    .badge { bottom: 1.25rem; }
+    .controls { top: 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<div class="mic-prompt" id="micPrompt">
+  <div class="ring">
+    <svg viewBox="0 0 24 24">
+      <rect x="9" y="1" width="6" height="13" rx="3"/>
+      <path d="M19 10v1a7 7 0 0 1-14 0v-1"/>
+      <line x1="12" y1="18" x2="12" y2="23"/>
+      <line x1="8" y1="23" x2="16" y2="23"/>
+    </svg>
+  </div>
+  <div class="label">Click to enable microphone</div>
+</div>
+
+<div class="chrome header">
+  <h1>Field Study 002</h1>
+  <p>Audio-reactive typography / ewk labs</p>
+</div>
+
+<div class="chrome controls">
+  <button id="phraseBtn">Next phrase</button>
+  <button id="styleBtn">Serif</button>
+</div>
+
+<div class="chrome stats" id="stats"></div>
+
+<div class="chrome badge">
+  <a href="https://ewklabs.xyz" target="_blank" rel="noopener">ewk labs</a>
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d');
+  const statsEl = document.getElementById('stats');
+  const micPrompt = document.getElementById('micPrompt');
+  const phraseBtn = document.getElementById('phraseBtn');
+  const styleBtn = document.getElementById('styleBtn');
+
+  let W, H, dpr;
+  let audioCtx, analyser, dataArray, source;
+  let micActive = false;
+
+  const phrases = [
+    'Sound is\nvisible light\nwe forgot\nhow to see',
+    'Every frequency\nhas a color\nwaiting to\nbe named',
+    'Silence is\njust texture\nwithout edges',
+    'The space\nbetween notes\nis where\nmeaning lives',
+    'Vibration\nbecomes form\nbecomes feeling',
+    'Listen with\nyour eyes\nopen',
+    'Resonance\nis recognition\nacross distance',
+    'What shape\nis your\nfavorite sound'
+  ];
+
+  let currentPhrase = 0;
+  let useSerif = true;
+  let glyphs = [];
+  let bassEnergy = 0;
+  let midEnergy = 0;
+  let highEnergy = 0;
+  let overallEnergy = 0;
+  let smoothBass = 0;
+  let smoothMid = 0;
+  let smoothHigh = 0;
+  let smoothOverall = 0;
+  let frameCount = 0;
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    buildGlyphs();
+  }
+
+  function buildGlyphs() {
+    glyphs = [];
+    const lines = phrases[currentPhrase].split('\n');
+    const isMobile = W < 600;
+    const baseSize = isMobile ? W * 0.1 : Math.min(W * 0.065, 90);
+    const lineHeight = baseSize * 1.35;
+    const totalH = lines.length * lineHeight;
+    const startY = (H - totalH) / 2 + baseSize * 0.85;
+
+    for (let li = 0; li < lines.length; li++) {
+      const line = lines[li];
+      const y = startY + li * lineHeight;
+
+      // Measure line width to center it
+      ctx.font = `${useSerif ? '400' : '300'} ${baseSize}px ${useSerif ? "'Lora', serif" : "'Inter', sans-serif"}`;
+      const lineWidth = ctx.measureText(line).width;
+      let x = (W - lineWidth) / 2;
+
+      for (let ci = 0; ci < line.length; ci++) {
+        const ch = line[ci];
+        const charWidth = ctx.measureText(ch).width;
+        glyphs.push({
+          char: ch,
+          x: x + charWidth / 2,
+          y: y,
+          ox: x + charWidth / 2,
+          oy: y,
+          size: baseSize,
+          lineIndex: li,
+          charIndex: ci,
+          totalChars: line.length,
+          vx: 0,
+          vy: 0,
+          rotation: 0,
+          scale: 1,
+          offsetX: 0,
+          offsetY: 0,
+        });
+        x += charWidth;
+      }
+    }
+  }
+
+  async function startAudio() {
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      source = audioCtx.createMediaStreamSource(stream);
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 512;
+      analyser.smoothingTimeConstant = 0.8;
+      source.connect(analyser);
+      dataArray = new Uint8Array(analyser.frequencyBinCount);
+      micActive = true;
+      micPrompt.classList.add('hidden');
+    } catch (e) {
+      // If mic denied, animate with synthetic data
+      micPrompt.classList.add('hidden');
+      micActive = false;
+    }
+  }
+
+  function analyze() {
+    if (!micActive || !analyser) return;
+    analyser.getByteFrequencyData(dataArray);
+    const len = dataArray.length;
+    const bassEnd = Math.floor(len * 0.1);
+    const midEnd = Math.floor(len * 0.5);
+
+    let bSum = 0, mSum = 0, hSum = 0;
+    for (let i = 0; i < bassEnd; i++) bSum += dataArray[i];
+    for (let i = bassEnd; i < midEnd; i++) mSum += dataArray[i];
+    for (let i = midEnd; i < len; i++) hSum += dataArray[i];
+
+    bassEnergy = bSum / (bassEnd * 255);
+    midEnergy = mSum / ((midEnd - bassEnd) * 255);
+    highEnergy = hSum / ((len - midEnd) * 255);
+    overallEnergy = (bassEnergy + midEnergy + highEnergy) / 3;
+  }
+
+  function synthEnergy() {
+    // Gentle ambient animation when no mic
+    const t = frameCount * 0.015;
+    bassEnergy = 0.15 + Math.sin(t * 0.7) * 0.1;
+    midEnergy = 0.1 + Math.sin(t * 1.1 + 1) * 0.08;
+    highEnergy = 0.08 + Math.sin(t * 1.7 + 2) * 0.06;
+    overallEnergy = (bassEnergy + midEnergy + highEnergy) / 3;
+  }
+
+  function lerpColor(r1, g1, b1, r2, g2, b2, t) {
+    return [
+      Math.round(r1 + (r2 - r1) * t),
+      Math.round(g1 + (g2 - g1) * t),
+      Math.round(b1 + (b2 - b1) * t),
+    ];
+  }
+
+  function tick() {
+    frameCount++;
+    if (micActive) analyze();
+    else synthEnergy();
+
+    const ease = 0.12;
+    smoothBass += (bassEnergy - smoothBass) * ease;
+    smoothMid += (midEnergy - smoothMid) * ease;
+    smoothHigh += (highEnergy - smoothHigh) * ease;
+    smoothOverall += (overallEnergy - smoothOverall) * ease;
+
+    // Clear
+    ctx.fillStyle = '#111111';
+    ctx.fillRect(0, 0, W, H);
+
+    // Draw background frequency bars (very subtle)
+    if (micActive && dataArray) {
+      const barCount = 64;
+      const barW = W / barCount;
+      for (let i = 0; i < barCount; i++) {
+        const idx = Math.floor((i / barCount) * dataArray.length);
+        const val = dataArray[idx] / 255;
+        const barH = val * H * 0.4;
+        const t = i / barCount;
+        const [r, g, b] = lerpColor(212, 168, 67, 13, 77, 60, t);
+        ctx.fillStyle = `rgba(${r},${g},${b},${val * 0.04})`;
+        ctx.fillRect(i * barW, H - barH, barW - 1, barH);
+      }
+    }
+
+    // Animate glyphs
+    const font = useSerif ? "'Lora', serif" : "'Inter', sans-serif";
+    const weight = useSerif ? '400' : '300';
+
+    for (let i = 0; i < glyphs.length; i++) {
+      const g = glyphs[i];
+      const charPhase = (g.lineIndex * 0.5 + g.charIndex * 0.3);
+
+      // Bass: vertical displacement
+      const bassDisp = Math.sin(frameCount * 0.04 + charPhase) * smoothBass * 18;
+
+      // Mid: horizontal wobble
+      const midDisp = Math.cos(frameCount * 0.06 + charPhase * 1.3) * smoothMid * 10;
+
+      // High: scale pulse
+      const scalePulse = 1 + smoothHigh * Math.sin(frameCount * 0.08 + charPhase * 0.7) * 0.25;
+
+      // Rotation from bass
+      const rot = Math.sin(frameCount * 0.03 + charPhase * 0.9) * smoothBass * 0.12;
+
+      g.offsetX += (midDisp - g.offsetX) * 0.15;
+      g.offsetY += (bassDisp - g.offsetY) * 0.15;
+      g.scale += (scalePulse - g.scale) * 0.15;
+      g.rotation += (rot - g.rotation) * 0.1;
+
+      const drawX = g.ox + g.offsetX;
+      const drawY = g.oy + g.offsetY;
+      const sz = g.size * g.scale;
+
+      // Color: map frequency bands to gold/teal blend
+      const colorT = Math.min(smoothBass * 2, 1);
+      const highT = Math.min(smoothHigh * 3, 1);
+      const [r, gb, b] = lerpColor(212, 168, 67, 13, 107, 82, colorT * 0.6 + highT * 0.4);
+      const alpha = 0.5 + smoothOverall * 0.5;
+
+      ctx.save();
+      ctx.translate(drawX, drawY);
+      ctx.rotate(g.rotation);
+      ctx.scale(g.scale, g.scale);
+      ctx.font = `${weight} ${g.size}px ${font}`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'alphabetic';
+
+      // Glow on high energy
+      if (smoothOverall > 0.15) {
+        ctx.shadowColor = `rgba(${r},${gb},${b},${smoothOverall * 0.4})`;
+        ctx.shadowBlur = smoothOverall * 30;
+      }
+
+      ctx.fillStyle = `rgba(${r},${gb},${b},${alpha})`;
+      ctx.fillText(g.char, 0, 0);
+      ctx.shadowBlur = 0;
+      ctx.restore();
+    }
+
+    // Stats
+    statsEl.innerHTML =
+      `bass  <span class="val">${smoothBass.toFixed(3)}</span><br>` +
+      `mid   <span class="val">${smoothMid.toFixed(3)}</span><br>` +
+      `high  <span class="val">${smoothHigh.toFixed(3)}</span><br>` +
+      `mode  <span class="val">${micActive ? 'microphone' : 'ambient'}</span>`;
+
+    requestAnimationFrame(tick);
+  }
+
+  // Events
+  micPrompt.addEventListener('click', startAudio);
+  window.addEventListener('resize', resize);
+
+  phraseBtn.addEventListener('click', () => {
+    currentPhrase = (currentPhrase + 1) % phrases.length;
+    buildGlyphs();
+  });
+
+  styleBtn.addEventListener('click', () => {
+    useSerif = !useSerif;
+    styleBtn.textContent = useSerif ? 'Serif' : 'Sans';
+    styleBtn.classList.toggle('active');
+    buildGlyphs();
+  });
+
+  // Tap anywhere (mobile) also starts audio
+  canvas.addEventListener('click', () => {
+    if (!micActive && !audioCtx) startAudio();
+  });
+
+  resize();
+  tick();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field Study 003 / ewk labs</title>
+<meta name="description" content="A contemplative clock that visualizes the passage of time as orbital rings. By ewk labs.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&family=Lora:ital,wght@0,400;0,700;1,400&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #111111;
+    --gold: #D4A843;
+    --teal: #0A4D3C;
+    --teal-bright: #0D6B52;
+    --text: #999999;
+    --text-dim: #555555;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 300;
+    overflow: hidden;
+    height: 100dvh;
+    width: 100vw;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  canvas { position: fixed; inset: 0; width: 100%; height: 100%; }
+
+  .chrome {
+    position: fixed;
+    z-index: 10;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .header {
+    top: 2rem;
+    left: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .header h1 {
+    font-family: 'Lora', serif;
+    font-weight: 400;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .header p {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .time-display {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .time-display .time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.4rem;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    opacity: 0.9;
+  }
+
+  .time-display .date {
+    font-family: 'Lora', serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+  }
+
+  .time-display .seconds-word {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.55rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    margin-top: 1.5rem;
+    opacity: 0.5;
+    text-transform: uppercase;
+  }
+
+  .stats {
+    bottom: 2rem;
+    left: 2.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 300;
+    color: var(--text-dim);
+    line-height: 1.7;
+    letter-spacing: 0.04em;
+  }
+
+  .stats .val { color: var(--text); }
+
+  .badge {
+    bottom: 2rem;
+    right: 2.5rem;
+    text-align: right;
+  }
+
+  .badge a {
+    pointer-events: auto;
+    text-decoration: none;
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border: 1px solid var(--text-dim);
+    padding: 0.45rem 0.9rem;
+    transition: all 0.3s ease;
+    display: inline-block;
+  }
+
+  .badge a:hover {
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+
+  .controls {
+    top: 2rem;
+    right: 2.5rem;
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .controls button {
+    pointer-events: auto;
+    background: none;
+    border: 1px solid var(--text-dim);
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.7rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .controls button:hover,
+  .controls button.active {
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+
+  @media (max-width: 600px) {
+    .header, .stats, .badge, .controls { left: 1.25rem; right: 1.25rem; }
+    .header { top: 1.25rem; }
+    .stats { bottom: 1.25rem; }
+    .badge { bottom: 1.25rem; }
+    .controls { top: 1.25rem; }
+    .time-display .time { font-size: 1.1rem; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<div class="time-display">
+  <div class="time" id="timeText"></div>
+  <div class="date" id="dateText"></div>
+  <div class="seconds-word" id="secondsWord"></div>
+</div>
+
+<div class="chrome header">
+  <h1>Field Study 003</h1>
+  <p>Orbital clock / ewk labs</p>
+</div>
+
+<div class="chrome controls">
+  <button id="showParticles" class="active">Particles</button>
+  <button id="show24h">24h</button>
+</div>
+
+<div class="chrome stats" id="stats"></div>
+
+<div class="chrome badge">
+  <a href="https://ewklabs.xyz" target="_blank" rel="noopener">ewk labs</a>
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d');
+  const timeText = document.getElementById('timeText');
+  const dateText = document.getElementById('dateText');
+  const secondsWord = document.getElementById('secondsWord');
+  const statsEl = document.getElementById('stats');
+
+  let W, H, dpr, cx, cy;
+  let showParticles = true;
+  let use24h = false;
+  let particles = [];
+  const PARTICLE_COUNT = 120;
+
+  const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const secondWords = [
+    'zero','one','two','three','four','five','six','seven','eight','nine',
+    'ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen',
+    'twenty','twenty-one','twenty-two','twenty-three','twenty-four','twenty-five','twenty-six','twenty-seven','twenty-eight','twenty-nine',
+    'thirty','thirty-one','thirty-two','thirty-three','thirty-four','thirty-five','thirty-six','thirty-seven','thirty-eight','thirty-nine',
+    'forty','forty-one','forty-two','forty-three','forty-four','forty-five','forty-six','forty-seven','forty-eight','forty-nine',
+    'fifty','fifty-one','fifty-two','fifty-three','fifty-four','fifty-five','fifty-six','fifty-seven','fifty-eight','fifty-nine'
+  ];
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cx = W / 2;
+    cy = H / 2;
+    initParticles();
+  }
+
+  function initParticles() {
+    particles = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const radius = 50 + Math.random() * Math.min(W, H) * 0.35;
+      particles.push({
+        angle,
+        radius,
+        speed: (0.0003 + Math.random() * 0.001) * (Math.random() > 0.5 ? 1 : -1),
+        size: 0.5 + Math.random() * 1.5,
+        alpha: 0.1 + Math.random() * 0.3,
+        drift: Math.random() * 0.0002,
+      });
+    }
+  }
+
+  function drawRing(radius, progress, width, color, alpha, dashed) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, -Math.PI / 2, -Math.PI / 2 + progress * Math.PI * 2);
+    ctx.strokeStyle = color;
+    ctx.globalAlpha = alpha;
+    ctx.lineWidth = width;
+    ctx.lineCap = 'round';
+    if (dashed) ctx.setLineDash([2, 8]);
+    else ctx.setLineDash([]);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    ctx.setLineDash([]);
+  }
+
+  function drawDot(radius, progress, size, color, alpha) {
+    const angle = -Math.PI / 2 + progress * Math.PI * 2;
+    const x = cx + Math.cos(angle) * radius;
+    const y = cy + Math.sin(angle) * radius;
+
+    // Glow
+    ctx.beginPath();
+    ctx.arc(x, y, size * 3, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.globalAlpha = alpha * 0.2;
+    ctx.fill();
+
+    // Dot
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.globalAlpha = alpha;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  function drawTickMarks(radius, count, length, color, alpha) {
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i < count; i++) {
+      const angle = -Math.PI / 2 + (i / count) * Math.PI * 2;
+      const x1 = cx + Math.cos(angle) * (radius - length);
+      const y1 = cy + Math.sin(angle) * (radius - length);
+      const x2 = cx + Math.cos(angle) * radius;
+      const y2 = cy + Math.sin(angle) * radius;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function tick() {
+    ctx.fillStyle = '#111111';
+    ctx.fillRect(0, 0, W, H);
+
+    const now = new Date();
+    const h = now.getHours();
+    const m = now.getMinutes();
+    const s = now.getSeconds();
+    const ms = now.getMilliseconds();
+
+    const secProgress = (s + ms / 1000) / 60;
+    const minProgress = (m + secProgress) / 60;  // not recursive, just m + s/60
+    const hourProgress = ((h % 12) + minProgress) / 12;
+    const dayProgress = (h + m / 60 + s / 3600) / 24;
+
+    const minR = Math.min(W, H);
+    const hourRadius = minR * 0.18;
+    const minRadius = minR * 0.25;
+    const secRadius = minR * 0.32;
+    const dayRadius = minR * 0.39;
+
+    // Track rings (background)
+    drawRing(hourRadius, 1, 1, '#333333', 0.15, false);
+    drawRing(minRadius, 1, 1, '#333333', 0.15, false);
+    drawRing(secRadius, 1, 1, '#333333', 0.1, true);
+    drawRing(dayRadius, 1, 0.5, '#333333', 0.08, true);
+
+    // Tick marks
+    drawTickMarks(hourRadius, 12, 6, '#D4A843', 0.15);
+    drawTickMarks(minRadius, 60, 3, '#0D6B52', 0.1);
+
+    // Progress arcs
+    drawRing(hourRadius, hourProgress, 2, '#D4A843', 0.7, false);
+    drawRing(minRadius, minProgress, 1.5, '#0D6B52', 0.6, false);
+    drawRing(secRadius, secProgress, 1, '#D4A843', 0.4, false);
+    drawRing(dayRadius, dayProgress, 0.5, '#0D6B52', 0.2, false);
+
+    // Dots at current position
+    drawDot(hourRadius, hourProgress, 4, '#D4A843', 0.9);
+    drawDot(minRadius, minProgress, 3, '#0D6B52', 0.8);
+    drawDot(secRadius, secProgress, 2, '#D4A843', 0.7);
+    drawDot(dayRadius, dayProgress, 1.5, '#0D6B52', 0.4);
+
+    // Particles
+    if (showParticles) {
+      for (const p of particles) {
+        p.angle += p.speed;
+        p.radius += Math.sin(p.angle * 3) * p.drift;
+        const px = cx + Math.cos(p.angle) * p.radius;
+        const py = cy + Math.sin(p.angle) * p.radius;
+
+        // Color based on proximity to rings
+        const distToSec = Math.abs(p.radius - secRadius);
+        const nearRing = distToSec < 30;
+        const color = nearRing ? '#D4A843' : '#0D6B52';
+        const alpha = p.alpha * (nearRing ? (1 - distToSec / 30) * 0.5 + 0.3 : 0.3);
+
+        ctx.beginPath();
+        ctx.arc(px, py, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.globalAlpha = alpha;
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // Center dot
+    ctx.beginPath();
+    ctx.arc(cx, cy, 2, 0, Math.PI * 2);
+    ctx.fillStyle = '#D4A843';
+    ctx.globalAlpha = 0.4;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // Update text
+    const displayH = use24h ? h : (h % 12 || 12);
+    const pad = n => String(n).padStart(2, '0');
+    const suffix = use24h ? '' : (h >= 12 ? ' pm' : ' am');
+    timeText.textContent = `${pad(displayH)}:${pad(m)}:${pad(s)}${suffix}`;
+
+    dateText.textContent = `${dayNames[now.getDay()]}, ${monthNames[now.getMonth()]} ${now.getDate()}`;
+    secondsWord.textContent = secondWords[s];
+
+    // Stats
+    const elapsed = h * 3600 + m * 60 + s;
+    const remaining = 86400 - elapsed;
+    const remainH = Math.floor(remaining / 3600);
+    const remainM = Math.floor((remaining % 3600) / 60);
+    statsEl.innerHTML =
+      `day     <span class="val">${(dayProgress * 100).toFixed(1)}%</span><br>` +
+      `remain  <span class="val">${remainH}h ${remainM}m</span><br>` +
+      `orbit   <span class="val">${(secProgress * 360).toFixed(1)} deg</span>`;
+
+    requestAnimationFrame(tick);
+  }
+
+  // Controls
+  document.getElementById('showParticles').addEventListener('click', function() {
+    showParticles = !showParticles;
+    this.classList.toggle('active');
+  });
+
+  document.getElementById('show24h').addEventListener('click', function() {
+    use24h = !use24h;
+    this.classList.toggle('active');
+    this.textContent = use24h ? '12h' : '24h';
+  });
+
+  window.addEventListener('resize', resize);
+
+  resize();
+  tick();
+})();
+</script>
+</body>
+</html>
