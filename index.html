@@ -334,6 +334,84 @@
       opacity: 1; transform: translate(0, 0);
     }
 
+    /* ===== FEATURED AI PRODUCTS ===== */
+    .featured-section {
+      padding: 5rem 2rem 2rem; max-width: 960px; margin: 0 auto;
+    }
+
+    .featured-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .featured-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--surface);
+      border-radius: var(--radius-soft);
+      border: 1px solid var(--border);
+      text-decoration: none; color: inherit;
+      overflow: hidden;
+      transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease), background 0.3s;
+      box-shadow: var(--shadow-neu);
+      position: relative;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .featured-card > * { pointer-events: none; }
+    .featured-card:hover {
+      transform: translateY(-4px);
+      background: var(--card-hover-bg);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15), var(--shadow-neu);
+    }
+    .featured-card:active {
+      transform: translateY(-1px) scale(0.995);
+      transition: transform 0.1s;
+    }
+
+    .featured-card .card-visual {
+      height: 100%; min-height: 220px;
+    }
+
+    .featured-card .card-body {
+      padding: 2rem; display: flex; flex-direction: column; justify-content: center;
+    }
+
+    .featured-card .card-title {
+      font-size: 1.5rem; margin-bottom: 0.35rem;
+    }
+
+    .featured-card .card-subtitle {
+      font-family: var(--font-code); font-size: 0.65rem;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      margin-bottom: 1rem;
+    }
+    .featured-card .card-subtitle.vibe-amber { color: var(--accent-warm); }
+    .featured-card .card-subtitle.vibe-cyan { color: #4DD0E1; }
+    .featured-card .card-subtitle.vibe-viz { color: #7C4DFF; }
+
+    .featured-card .card-desc {
+      font-size: 0.9rem; -webkit-line-clamp: 4;
+    }
+
+    .featured-card .card-badge {
+      background: rgba(212,168,67,0.2); color: var(--accent-warm);
+      border-color: rgba(212,168,67,0.35);
+      font-size: 0.6rem; padding: 0.35em 0.9em;
+    }
+    .badge-ai { background: rgba(212,168,67,0.2); color: var(--accent-warm); border-color: rgba(212,168,67,0.35); }
+
+    .featured-card .card-arrow {
+      top: 2rem; left: 2rem;
+    }
+
+    @media (max-width: 700px) {
+      .featured-section { padding: 3rem 1.5rem 1rem; }
+      .featured-card { grid-template-columns: 1fr; }
+      .featured-card .card-visual { min-height: 180px; }
+    }
+
     /* ===== FOOTER ===== */
     .footer {
       padding: 3rem 2rem;
@@ -411,6 +489,7 @@
     <div class="header-inner">
       <a href="/" class="logo">Eli <em>&</em> Kim</a>
       <nav class="header-nav" aria-label="Main">
+        <a href="#ai-products">AI Products</a>
         <a href="#projects">Projects</a>
         <a href="https://github.com/ewk-experiments" target="_blank" rel="noopener">GitHub</a>
         <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark and light mode" role="switch" aria-checked="true">
@@ -434,7 +513,7 @@
     </p>
     <div class="hero-meta reveal stagger-3">
       <div class="hero-meta-item">
-        <span class="value">4</span>
+        <span class="value">7</span>
         <span class="label">Projects</span>
       </div>
       <div class="hero-meta-item">
@@ -446,6 +525,17 @@
         <span class="label">Growing</span>
       </div>
     </div>
+  </section>
+
+  <div class="divider"><hr></div>
+
+  <!-- Featured AI Products -->
+  <section class="featured-section" id="ai-products">
+    <div class="section-header">
+      <h2 class="section-title reveal">AI <span class="italic">Products</span></h2>
+      <span class="section-count reveal">3 experiments</span>
+    </div>
+    <div class="featured-grid" id="featured-grid"></div>
   </section>
 
   <div class="divider"><hr></div>
@@ -469,6 +559,78 @@
   </footer>
 
   <script>
+    // Featured AI product visuals
+    const featuredVisuals = {
+      futureself: `<svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+        <defs><radialGradient id="fs1" cx="50%" cy="50%"><stop offset="0%" stop-color="rgba(212,168,67,0.2)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs>
+        <circle cx="200" cy="110" r="90" fill="url(#fs1)"/>
+        <circle cx="160" cy="110" r="35" fill="none" stroke="rgba(212,168,67,0.3)" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <circle cx="240" cy="110" r="35" fill="none" stroke="rgba(212,168,67,0.6)" stroke-width="1.5"/>
+        <line x1="195" y1="110" x2="205" y2="110" stroke="rgba(212,168,67,0.5)" stroke-width="1.5" stroke-dasharray="2 2"/>
+        <text x="160" y="115" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="rgba(212,168,67,0.5)">now</text>
+        <text x="240" y="115" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="rgba(212,168,67,0.8)">future</text>
+      </svg>`,
+      system0: `<svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+        <defs><radialGradient id="s0g" cx="50%" cy="50%"><stop offset="0%" stop-color="rgba(77,208,225,0.15)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs>
+        <circle cx="200" cy="110" r="80" fill="url(#s0g)"/>
+        ${Array.from({length:6},(_,i)=>{const a=i*60*Math.PI/180;const x=200+55*Math.cos(a);const y=110+55*Math.sin(a);return `<circle cx="${x}" cy="${y}" r="6" fill="none" stroke="rgba(77,208,225,${0.3+i*0.1})" stroke-width="1"/><line x1="200" y1="110" x2="${x}" y2="${y}" stroke="rgba(77,208,225,0.12)" stroke-width="0.5"/>`}).join('')}
+        <circle cx="200" cy="110" r="8" fill="rgba(77,208,225,0.25)" stroke="rgba(77,208,225,0.5)" stroke-width="1.5"/>
+        <text x="200" y="170" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="rgba(77,208,225,0.4)">COGNITIVE STATE: ACTIVE</text>
+      </svg>`,
+      causalme: `<svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+        ${(()=>{const nodes=[{x:140,y:70,c:'#7C4DFF'},{x:260,y:60,c:'#FF6D00'},{x:200,y:140,c:'#00E676'},{x:100,y:150,c:'#448AFF'},{x:310,y:140,c:'#FF4081'},{x:200,y:50,c:'#FFD740'}];const edges=[[0,1],[0,2],[1,2],[2,3],[2,4],[5,0],[5,1]];const edgeSvg=edges.map(([a,b])=>`<line x1="${nodes[a].x}" y1="${nodes[a].y}" x2="${nodes[b].x}" y2="${nodes[b].y}" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>`).join('');const nodeSvg=nodes.map(n=>`<circle cx="${n.x}" cy="${n.y}" r="8" fill="${n.c}22" stroke="${n.c}" stroke-width="1.5"/><circle cx="${n.x}" cy="${n.y}" r="3" fill="${n.c}88"/>`).join('');return edgeSvg+nodeSvg})()}
+        <text x="200" y="195" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="rgba(124,77,255,0.4)">NODES: 6 · EDGES: 7</text>
+      </svg>`
+    };
+
+    const featuredProducts = [
+      {
+        title: 'FutureSelf',
+        subtitle: 'Talk to Your Future Self',
+        desc: 'Upload a photo, AI ages it, then have a conversation with your future self. Gemini-powered chat, life path explorer, branching What-If scenarios.',
+        tags: ['gemini', 'ai chat', 'what-if'],
+        visual: 'futureself', vibe: 'amber',
+        date: 'Mar 2026', url: 'https://ewk-experiments.github.io/futureself/'
+      },
+      {
+        title: 'System 0',
+        subtitle: 'Ambient Cognitive Reshaper',
+        desc: 'AI that monitors your digital environment and reshapes your information diet. Real-time cognitive state dashboard, perspective shift engine, Chrome extension.',
+        tags: ['ai', 'chrome ext', 'dashboard'],
+        visual: 'system0', vibe: 'cyan',
+        date: 'Mar 2026', url: 'https://ewk-experiments.github.io/system0/'
+      },
+      {
+        title: 'CausalMe',
+        subtitle: 'Personal Causal Graph',
+        desc: 'Connect your life data, build a causal graph of how everything connects, run What-If simulations. Interactive force-directed graph, AI insights, 30-day demo data.',
+        tags: ['data viz', 'ai', 'simulation'],
+        visual: 'causalme', vibe: 'viz',
+        date: 'Mar 2026', url: 'https://ewk-experiments.github.io/causalme/'
+      }
+    ];
+
+    // Render featured
+    const featuredGrid = document.getElementById('featured-grid');
+    featuredGrid.innerHTML = featuredProducts.map((p, i) => `
+      <a href="${p.url}" class="featured-card reveal stagger-${i + 1}">
+        <div class="card-visual">
+          <div class="card-pattern">${featuredVisuals[p.visual]}</div>
+          <span class="card-badge badge-ai">AI</span>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">${p.title}</h3>
+          <div class="card-subtitle vibe-${p.vibe}">${p.subtitle}</div>
+          <p class="card-desc">${p.desc}</p>
+          <div class="card-footer">
+            <div class="card-tags">${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+            <span class="card-date">${p.date}</span>
+          </div>
+        </div>
+        <span class="card-arrow">↗</span>
+      </a>
+    `).join('');
+
     // Card visual generators
     const cardVisuals = {
       snake: (() => {
@@ -595,6 +757,16 @@
 
     // Init
     requestAnimationFrame(() => document.body.classList.add('loaded'));
+
+    // Ensure featured card links work
+    document.querySelectorAll('.featured-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        const url = card.getAttribute('href');
+        if (!url) return;
+        window.open(url, '_blank', 'noopener');
+      });
+      card.style.touchAction = 'manipulation';
+    });
 
     // Ensure card links work on mobile — explicit click handler as backup
     document.querySelectorAll('.project-card').forEach(card => {
