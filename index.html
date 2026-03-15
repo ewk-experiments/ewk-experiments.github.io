@@ -4,27 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ewk labs</title>
-  <meta name="description" content="Experimental AI products and developer tools. Built by Eli & Kim.">
+  <meta name="description" content="Experimental AI products and creative technology by Eli & Kim.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg: #08080a;
-      --surface: #111114;
-      --surface-2: #18181c;
-      --border: rgba(255,255,255,0.06);
-      --text: #f0f0f2;
-      --text-2: #8a8a92;
-      --text-3: #55555e;
-      --warm: #c9a87c;
-      --warm-dim: rgba(201,168,124,0.15);
-      --green: #3dd68c;
-      --blue: #5b9cf4;
-      --violet: #a78bfa;
-      --cyan: #4dd0e1;
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --border: rgba(0,0,0,0.06);
+      --text: #1a1a1a;
+      --text-2: #6b6b6b;
+      --text-3: #999;
+      --warm: #b8956a;
       --serif: 'Instrument Serif', Georgia, serif;
       --sans: 'Inter', -apple-system, sans-serif;
       --mono: 'JetBrains Mono', monospace;
@@ -39,18 +33,10 @@
       color: var(--text);
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    ::selection { background: rgba(201,168,124,0.25); }
-
-    /* Noise */
-    body::after {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      opacity: 0.02;
-      pointer-events: none; z-index: 9999;
-    }
+    ::selection { background: rgba(184,149,106,0.2); }
 
     a { color: inherit; text-decoration: none; }
 
@@ -59,389 +45,293 @@
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       padding: 1.25rem 2.5rem;
       display: flex; justify-content: space-between; align-items: center;
-      background: rgba(8,8,10,0.8);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      background: rgba(250,250,250,0.85);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
       border-bottom: 1px solid var(--border);
       transition: transform 0.4s var(--ease);
     }
     .nav.hidden { transform: translateY(-100%); }
+
     .nav-brand {
-      display: flex; align-items: center; gap: 0.6rem;
-      font-weight: 600; font-size: 0.88rem; letter-spacing: -0.01em;
+      font-family: var(--sans);
+      font-weight: 600; font-size: 0.88rem;
+      letter-spacing: -0.02em; color: var(--text);
     }
-    .nav-mark {
-      width: 28px; height: 28px;
-      background: linear-gradient(135deg, var(--warm), #8a7a6a);
-      border-radius: 7px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.65rem; font-weight: 700; color: var(--bg);
-    }
+
     .nav-links { display: flex; gap: 2rem; align-items: center; }
     .nav-links a {
       font-size: 0.8rem; color: var(--text-2);
-      transition: color 0.2s;
+      transition: color 0.2s; font-weight: 400;
     }
     .nav-links a:hover { color: var(--text); }
 
-    /* ═══ HERO — FULL SCREEN ═══ */
+    /* ═══ HERO ═══ */
     .hero {
       min-height: 100vh;
       display: flex; flex-direction: column;
       justify-content: center; align-items: center;
       text-align: center;
       padding: 2rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-glow {
-      position: absolute;
-      width: 800px; height: 800px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(201,168,124,0.07) 0%, transparent 70%);
-      top: 50%; left: 50%; transform: translate(-50%, -50%);
-      pointer-events: none;
-    }
-
-    .hero-glow-2 {
-      position: absolute;
-      width: 600px; height: 600px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(77,208,225,0.04) 0%, transparent 70%);
-      top: 30%; left: 70%; transform: translate(-50%, -50%);
-      pointer-events: none;
     }
 
     .hero-eyebrow {
-      font-family: var(--mono); font-size: 0.7rem;
-      color: var(--warm); text-transform: uppercase;
-      letter-spacing: 0.15em; margin-bottom: 2rem;
+      font-family: var(--mono); font-size: 0.68rem;
+      color: var(--text-3); text-transform: uppercase;
+      letter-spacing: 0.18em; margin-bottom: 2rem;
+      font-weight: 400;
       opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
     }
 
     .hero h1 {
       font-family: var(--serif);
-      font-size: clamp(4rem, 12vw, 10rem);
+      font-size: clamp(4.5rem, 13vw, 11rem);
       font-weight: 400;
-      line-height: 0.95;
+      line-height: 0.92;
       letter-spacing: -0.04em;
       color: var(--text);
       opacity: 0; animation: fadeUp 0.8s 0.35s forwards;
     }
-    .hero h1 em { font-style: italic; color: var(--warm); }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--warm);
+    }
 
     .hero-sub {
-      margin-top: 2rem;
-      font-size: 1.1rem; color: var(--text-2);
-      max-width: 480px; line-height: 1.7;
+      margin-top: 2.5rem;
+      font-size: 1.05rem; color: var(--text-2);
+      max-width: 420px; line-height: 1.75;
+      font-weight: 300;
       opacity: 0; animation: fadeUp 0.8s 0.5s forwards;
     }
 
     .hero-scroll {
-      position: absolute; bottom: 2.5rem;
-      font-family: var(--mono); font-size: 0.6rem;
+      position: absolute; bottom: 3rem;
+      font-family: var(--mono); font-size: 0.58rem;
       color: var(--text-3); text-transform: uppercase;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.18em;
       opacity: 0; animation: fadeUp 0.8s 0.7s forwards;
-      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
     }
     .hero-scroll-line {
-      width: 1px; height: 40px;
+      width: 1px; height: 36px;
       background: linear-gradient(to bottom, var(--warm), transparent);
-      animation: scrollPulse 2s ease-in-out infinite;
+      animation: scrollPulse 2.5s ease-in-out infinite;
     }
 
-    /* ═══ SECTION COMMON ═══ */
+    /* ═══ SECTIONS ═══ */
     .section {
       padding: 8rem 2.5rem;
-      max-width: 1200px;
+      max-width: 1000px;
       margin: 0 auto;
     }
 
     .section-label {
-      font-family: var(--mono); font-size: 0.65rem;
+      font-family: var(--mono); font-size: 0.62rem;
       color: var(--text-3); text-transform: uppercase;
-      letter-spacing: 0.15em; margin-bottom: 3rem;
-      display: flex; align-items: center; gap: 1rem;
-    }
-    .section-label::before {
-      content: ''; width: 24px; height: 1px; background: var(--warm);
+      letter-spacing: 0.18em; margin-bottom: 3rem;
     }
 
     .section-title {
       font-family: var(--serif);
-      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      font-size: clamp(2.4rem, 5vw, 4rem);
       font-weight: 400; letter-spacing: -0.03em;
       line-height: 1.1; margin-bottom: 1.5rem;
     }
     .section-title em { font-style: italic; color: var(--warm); }
 
-    /* ═══ STATEMENT — FULL WIDTH TEXT ═══ */
-    .statement {
-      min-height: 80vh;
-      display: flex; align-items: center;
-      padding: 4rem 2.5rem;
-      border-top: 1px solid var(--border);
-    }
-    .statement-inner {
-      max-width: 1200px; margin: 0 auto; width: 100%;
-    }
-    .statement-text {
-      font-family: var(--serif);
-      font-size: clamp(2rem, 4.5vw, 4rem);
-      font-weight: 400; line-height: 1.3;
-      letter-spacing: -0.02em;
-      color: var(--text-2);
-    }
-    .statement-text strong { color: var(--text); font-weight: 400; }
-    .statement-text em { font-style: italic; color: var(--warm); }
-
-    /* ═══ PRODUCTS ═══ */
-    .products-grid {
-      display: grid; gap: 1.5rem;
+    .section-desc {
+      font-size: 1rem; color: var(--text-2);
+      line-height: 1.8; max-width: 520px;
+      font-weight: 300;
     }
 
-    .product-card {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-      transition: transform 0.5s var(--ease), border-color 0.3s;
-    }
-    .product-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(255,255,255,0.1);
-    }
-
-    .product-visual {
-      min-height: 320px;
-      background: var(--bg);
-      display: flex; align-items: center; justify-content: center;
-      position: relative; overflow: hidden;
-    }
-
-    .product-badge {
-      position: absolute; top: 1rem; left: 1rem;
-      font-family: var(--mono); font-size: 0.6rem;
-      padding: 0.3em 0.8em; border-radius: 999px;
-      text-transform: uppercase; letter-spacing: 0.08em;
-      background: var(--warm-dim); color: var(--warm);
-      border: 1px solid rgba(201,168,124,0.25);
-    }
-
-    .product-body {
-      padding: 2.5rem; display: flex; flex-direction: column; justify-content: center;
-    }
-
-    .product-number {
-      font-family: var(--mono); font-size: 0.65rem;
-      color: var(--text-3); margin-bottom: 1rem;
-    }
-
-    .product-title {
-      font-family: var(--serif);
-      font-size: 2rem; font-weight: 400;
-      letter-spacing: -0.02em; margin-bottom: 0.4rem;
-    }
-
-    .product-subtitle {
-      font-family: var(--mono); font-size: 0.65rem;
-      text-transform: uppercase; letter-spacing: 0.1em;
-      color: var(--warm); margin-bottom: 1.25rem;
-    }
-
-    .product-desc {
-      font-size: 0.9rem; color: var(--text-2);
-      line-height: 1.7; margin-bottom: 1.5rem;
-    }
-
-    .product-tags {
-      display: flex; flex-wrap: wrap; gap: 0.4rem;
-      margin-bottom: 2rem;
-    }
-    .tag {
-      font-family: var(--mono); font-size: 0.58rem;
-      color: var(--text-3); padding: 0.25em 0.65em;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 6px; text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .product-cta {
-      display: flex; align-items: center; gap: 1.25rem;
-    }
-    .price {
-      font-family: var(--mono); font-size: 1.4rem;
-      font-weight: 500; color: var(--text);
-    }
-    .btn {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      padding: 0.75rem 1.5rem;
-      background: var(--text); color: var(--bg);
-      font-size: 0.82rem; font-weight: 600;
-      border-radius: 10px; border: none; cursor: pointer;
-      transition: all 0.2s; letter-spacing: -0.01em;
-    }
-    .btn:hover { background: #fff; transform: translateY(-1px); }
-
-    /* ═══ EXPERIMENTS ═══ */
-    .experiments-grid {
+    /* ═══ PROJECTS ═══ */
+    .projects-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 1.25rem;
+      margin-top: 3rem;
     }
 
-    .exp-card {
+    .project-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 2rem;
-      transition: transform 0.5s var(--ease), border-color 0.3s;
+      transition: transform 0.5s var(--ease), box-shadow 0.3s;
       display: flex; flex-direction: column;
-      min-height: 280px;
+      min-height: 260px;
       text-decoration: none; color: inherit;
     }
-    .exp-card:hover {
+    .project-card:hover {
       transform: translateY(-4px);
-      border-color: rgba(255,255,255,0.1);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.06);
     }
 
-    .exp-icon {
-      width: 48px; height: 48px;
+    .project-icon {
+      width: 44px; height: 44px;
       border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem; margin-bottom: 1.5rem;
+      font-size: 1.15rem; margin-bottom: 1.5rem;
+      background: rgba(184,149,106,0.08);
     }
-    .exp-icon.amber { background: var(--warm-dim); }
-    .exp-icon.cyan { background: rgba(77,208,225,0.12); }
-    .exp-icon.violet { background: rgba(167,139,250,0.12); }
+    .project-icon.cyan { background: rgba(77,180,200,0.08); }
+    .project-icon.violet { background: rgba(140,120,200,0.08); }
 
-    .exp-label {
-      font-family: var(--mono); font-size: 0.6rem;
+    .project-label {
+      font-family: var(--mono); font-size: 0.58rem;
       color: var(--text-3); text-transform: uppercase;
-      letter-spacing: 0.1em; margin-bottom: 0.75rem;
+      letter-spacing: 0.1em; margin-bottom: 0.6rem;
     }
 
-    .exp-title {
+    .project-title {
       font-family: var(--serif);
-      font-size: 1.5rem; font-weight: 400;
-      margin-bottom: 0.6rem;
+      font-size: 1.4rem; font-weight: 400;
+      margin-bottom: 0.6rem; letter-spacing: -0.01em;
     }
 
-    .exp-desc {
+    .project-desc {
       font-size: 0.82rem; color: var(--text-2);
-      line-height: 1.65; flex: 1;
+      line-height: 1.65; flex: 1; font-weight: 300;
     }
 
-    .exp-link {
+    .project-link {
       margin-top: 1.25rem;
-      font-family: var(--mono); font-size: 0.65rem;
+      font-family: var(--mono); font-size: 0.62rem;
       color: var(--warm); display: flex; align-items: center; gap: 0.4rem;
       transition: gap 0.2s;
     }
-    .exp-card:hover .exp-link { gap: 0.7rem; }
+    .project-card:hover .project-link { gap: 0.7rem; }
+
+    /* ═══ PHILOSOPHY ═══ */
+    .philosophy {
+      padding: 8rem 2.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .philosophy-inner {
+      max-width: 720px; margin: 0 auto;
+    }
+    .philosophy-text {
+      font-family: var(--serif);
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 400; line-height: 1.4;
+      letter-spacing: -0.02em;
+      color: var(--text-2);
+    }
+    .philosophy-text strong { color: var(--text); font-weight: 400; }
+    .philosophy-text em { font-style: italic; color: var(--warm); }
+
+    /* ═══ STORE LINK ═══ */
+    .store-section {
+      padding: 6rem 2.5rem;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+    .store-inner {
+      max-width: 480px; margin: 0 auto;
+    }
+    .store-section .section-title {
+      margin-bottom: 1rem;
+    }
+    .store-desc {
+      font-size: 1rem; color: var(--text-2);
+      line-height: 1.75; font-weight: 300;
+      margin-bottom: 2.5rem;
+    }
+    .store-btn {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      padding: 0.9rem 2rem;
+      background: var(--text);
+      color: var(--bg);
+      font-size: 0.85rem; font-weight: 500;
+      border-radius: 999px;
+      transition: all 0.25s var(--ease);
+      letter-spacing: -0.01em;
+    }
+    .store-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
 
     /* ═══ ABOUT ═══ */
     .about-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1.25rem;
-      margin-bottom: 3rem;
+      margin-top: 3rem;
     }
     .about-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 2.5rem;
       transition: transform 0.5s var(--ease);
     }
     .about-card:hover { transform: translateY(-3px); }
-    .about-emoji { font-size: 2rem; margin-bottom: 1rem; }
+    .about-emoji { font-size: 1.8rem; margin-bottom: 1rem; }
     .about-name {
       font-family: var(--serif);
-      font-size: 1.5rem; margin-bottom: 0.2rem;
+      font-size: 1.4rem; margin-bottom: 0.2rem;
     }
     .about-role {
-      font-family: var(--mono); font-size: 0.6rem;
+      font-family: var(--mono); font-size: 0.58rem;
       color: var(--warm); text-transform: uppercase;
       letter-spacing: 0.1em; margin-bottom: 1rem;
     }
     .about-bio {
-      font-size: 0.85rem; color: var(--text-2); line-height: 1.7;
+      font-size: 0.82rem; color: var(--text-2); line-height: 1.7; font-weight: 300;
     }
 
     /* ═══ FOOTER ═══ */
     .footer {
       border-top: 1px solid var(--border);
       padding: 2.5rem;
-      max-width: 1200px; margin: 0 auto;
+      max-width: 1000px; margin: 0 auto;
       display: flex; justify-content: space-between; align-items: center;
     }
     .footer-left {
-      font-size: 0.72rem; color: var(--text-3);
+      font-size: 0.72rem; color: var(--text-3); font-weight: 300;
     }
     .footer-links { display: flex; gap: 1.5rem; }
     .footer-links a {
       font-size: 0.72rem; color: var(--text-3);
-      transition: color 0.2s;
+      transition: color 0.2s; font-weight: 400;
     }
     .footer-links a:hover { color: var(--text-2); }
 
     /* ═══ ANIMATIONS ═══ */
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(16px); }
       to { opacity: 1; transform: translateY(0); }
     }
     @keyframes scrollPulse {
-      0%, 100% { opacity: 0.3; }
-      50% { opacity: 1; }
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.8; }
     }
 
     .reveal {
-      opacity: 0; transform: translateY(30px);
-      transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
     }
     .reveal.visible { opacity: 1; transform: translateY(0); }
-    .reveal.delay-1 { transition-delay: 0.1s; }
-    .reveal.delay-2 { transition-delay: 0.2s; }
-    .reveal.delay-3 { transition-delay: 0.3s; }
-
-    /* ═══ DIVIDER ═══ */
-    .divider {
-      max-width: 1200px; margin: 0 auto; padding: 0 2.5rem;
-    }
-    .divider hr {
-      border: none; height: 1px; background: var(--border);
-    }
-
-    /* ═══ SVG visuals ═══ */
-    .vis-futureself svg, .vis-system0 svg, .vis-causal svg { width: 100%; height: 100%; }
-
-    /* Product preview visuals */
-    .product-vis {
-      width: 85%; max-width: 380px;
-    }
-    .product-vis svg { width: 100%; }
+    .reveal.d1 { transition-delay: 0.08s; }
+    .reveal.d2 { transition-delay: 0.16s; }
+    .reveal.d3 { transition-delay: 0.24s; }
 
     /* ═══ RESPONSIVE ═══ */
-    @media (max-width: 900px) {
-      .product-card { grid-template-columns: 1fr; }
-      .product-visual { min-height: 220px; }
-      .experiments-grid { grid-template-columns: 1fr; }
+    @media (max-width: 800px) {
+      .projects-grid { grid-template-columns: 1fr; }
       .about-row { grid-template-columns: 1fr; }
       .section { padding: 5rem 1.5rem; }
-      .statement { padding: 4rem 1.5rem; min-height: 60vh; }
+      .philosophy { padding: 5rem 1.5rem; }
+      .store-section { padding: 4rem 1.5rem; }
       .nav { padding: 1rem 1.5rem; }
       .footer { padding: 2rem 1.5rem; flex-direction: column; gap: 1rem; text-align: center; }
     }
 
     @media (max-width: 480px) {
-      .hero h1 { font-size: 3.2rem; }
-      .nav-links { gap: 1rem; }
-      .product-cta { flex-direction: column; align-items: flex-start; }
+      .hero h1 { font-size: 3.5rem; }
+      .nav-links { gap: 1.25rem; }
     }
   </style>
 </head>
@@ -449,13 +339,11 @@
 
 <!-- Nav -->
 <nav class="nav" id="nav">
-  <a href="/" class="nav-brand">
-    <div class="nav-mark">ew</div>
-    <span>ewk labs</span>
-  </a>
+  <a href="/" class="nav-brand">ewk labs</a>
   <div class="nav-links">
-    <a href="#products">Products</a>
-    <a href="#experiments">Experiments</a>
+    <a href="#projects">Projects</a>
+    <a href="#philosophy">Philosophy</a>
+    <a href="#store">Store</a>
     <a href="#about">About</a>
     <a href="https://github.com/ewk-experiments" target="_blank">GitHub</a>
   </div>
@@ -463,185 +351,66 @@
 
 <!-- Hero -->
 <section class="hero">
-  <div class="hero-glow"></div>
-  <div class="hero-glow-2"></div>
   <div class="hero-eyebrow">Experimental AI · Seattle</div>
   <h1>ewk<br><em>labs</em></h1>
-  <p class="hero-sub">AI products, developer tools, and creative experiments. Building at the edge of what's possible.</p>
+  <p class="hero-sub">AI products, creative tools, and experiments at the edge of what's possible.</p>
   <div class="hero-scroll">
     <span>Scroll</span>
     <div class="hero-scroll-line"></div>
   </div>
 </section>
 
-<!-- Statement -->
-<section class="statement">
-  <div class="statement-inner reveal">
-    <p class="statement-text">
-      We build <em>experimental</em> products that explore <strong>personal AI, cognition, and creative tools</strong> — niche enough to be useful, ambitious enough to matter.
+<!-- Projects -->
+<section class="section" id="projects">
+  <div class="section-label reveal">Projects</div>
+  <h2 class="section-title reveal">What we're <em>building</em></h2>
+  <p class="section-desc reveal">AI products exploring the intersection of personal data, cognition, and intelligence.</p>
+
+  <div class="projects-grid">
+    <a href="https://ewklabs.xyz/futureself/" class="project-card reveal">
+      <div class="project-icon">🔮</div>
+      <div class="project-label">AI Chat</div>
+      <h3 class="project-title">FutureSelf</h3>
+      <p class="project-desc">Upload a photo, AI ages it, then have a conversation with your future self. Branching What-If scenarios and life path explorer.</p>
+      <div class="project-link">Explore →</div>
+    </a>
+
+    <a href="https://ewklabs.xyz/system0/" class="project-card reveal d1">
+      <div class="project-icon cyan">🧠</div>
+      <div class="project-label">Cognitive AI</div>
+      <h3 class="project-title">System 0</h3>
+      <p class="project-desc">AI that monitors your digital environment and reshapes your information diet. Real-time cognitive state dashboard.</p>
+      <div class="project-link">Explore →</div>
+    </a>
+
+    <a href="https://ewklabs.xyz/causalme/" class="project-card reveal d2">
+      <div class="project-icon violet">◆</div>
+      <div class="project-label">Data Viz</div>
+      <h3 class="project-title">CausalMe</h3>
+      <p class="project-desc">Connect your life data, build a causal graph of how everything connects, run What-If simulations.</p>
+      <div class="project-link">Explore →</div>
+    </a>
+  </div>
+</section>
+
+<!-- Philosophy -->
+<section class="philosophy" id="philosophy">
+  <div class="philosophy-inner reveal">
+    <p class="philosophy-text">
+      We build <em>experimental</em> products that are <strong>niche enough to be a tool, not a toy</strong> — but interesting enough for anyone to use.
     </p>
   </div>
 </section>
 
-<!-- Store / Products -->
-<section class="section" id="products">
-  <div class="section-label reveal">Store</div>
-  <h2 class="section-title reveal">Developer <em>Kits</em></h2>
-  <p class="product-desc reveal" style="max-width:500px;margin-bottom:3rem;">Production-ready UI kits. Clean code, modern stack, zero bloat.</p>
-
-  <div class="products-grid">
-    <!-- Product 1 -->
-    <div class="product-card reveal">
-      <div class="product-visual">
-        <span class="product-badge">Kit</span>
-        <div class="product-vis">
-          <svg viewBox="0 0 380 280" xmlns="http://www.w3.org/2000/svg">
-            <rect x="20" y="20" width="105" height="70" rx="8" fill="#151517" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-            <text x="32" y="42" font-family="'JetBrains Mono',monospace" font-size="6" fill="#55555e">ACTIVE USERS</text>
-            <text x="32" y="64" font-family="'JetBrains Mono',monospace" font-size="16" fill="#f0f0f2">2,847</text>
-            <text x="90" y="64" font-family="'JetBrains Mono',monospace" font-size="8" fill="#3dd68c">+12%</text>
-
-            <rect x="137" y="20" width="105" height="70" rx="8" fill="#151517" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-            <text x="149" y="42" font-family="'JetBrains Mono',monospace" font-size="6" fill="#55555e">API CALLS</text>
-            <text x="149" y="64" font-family="'JetBrains Mono',monospace" font-size="16" fill="#f0f0f2">14.2k</text>
-
-            <rect x="254" y="20" width="105" height="70" rx="8" fill="#151517" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-            <text x="266" y="42" font-family="'JetBrains Mono',monospace" font-size="6" fill="#55555e">LATENCY</text>
-            <text x="266" y="64" font-family="'JetBrains Mono',monospace" font-size="16" fill="#f0f0f2">42ms</text>
-
-            <rect x="20" y="104" width="339" height="120" rx="8" fill="#151517" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-            <text x="32" y="124" font-family="'JetBrains Mono',monospace" font-size="7" fill="#8a8a92">Request Volume</text>
-            <g transform="translate(32, 140)">
-              <rect x="0" y="40" width="12" height="40" rx="2" fill="rgba(201,168,124,0.25)"/>
-              <rect x="16" y="20" width="12" height="60" rx="2" fill="rgba(201,168,124,0.3)"/>
-              <rect x="32" y="50" width="12" height="30" rx="2" fill="rgba(201,168,124,0.2)"/>
-              <rect x="48" y="10" width="12" height="70" rx="2" fill="rgba(201,168,124,0.35)"/>
-              <rect x="64" y="30" width="12" height="50" rx="2" fill="rgba(201,168,124,0.28)"/>
-              <rect x="80" y="5" width="12" height="75" rx="2" fill="rgba(201,168,124,0.4)"/>
-              <rect x="96" y="25" width="12" height="55" rx="2" fill="rgba(201,168,124,0.3)"/>
-              <rect x="112" y="15" width="12" height="65" rx="2" fill="rgba(201,168,124,0.35)"/>
-              <rect x="128" y="35" width="12" height="45" rx="2" fill="rgba(201,168,124,0.25)"/>
-              <rect x="144" y="8" width="12" height="72" rx="2" fill="rgba(201,168,124,0.38)"/>
-              <rect x="160" y="28" width="12" height="52" rx="2" fill="rgba(201,168,124,0.3)"/>
-              <rect x="176" y="45" width="12" height="35" rx="2" fill="rgba(201,168,124,0.22)"/>
-              <rect x="192" y="18" width="12" height="62" rx="2" fill="rgba(201,168,124,0.33)"/>
-              <rect x="208" y="38" width="12" height="42" rx="2" fill="rgba(201,168,124,0.27)"/>
-              <rect x="224" y="12" width="12" height="68" rx="2" fill="rgba(201,168,124,0.36)"/>
-              <rect x="240" y="32" width="12" height="48" rx="2" fill="rgba(201,168,124,0.29)"/>
-              <rect x="256" y="22" width="12" height="58" rx="2" fill="rgba(201,168,124,0.32)"/>
-              <rect x="272" y="42" width="12" height="38" rx="2" fill="rgba(201,168,124,0.24)"/>
-              <rect x="288" y="8" width="12" height="72" rx="2" fill="rgba(201,168,124,0.4)"/>
-              <rect x="304" y="28" width="12" height="52" rx="2" fill="rgba(201,168,124,0.3)"/>
-            </g>
-          </svg>
-        </div>
-      </div>
-      <div class="product-body">
-        <div class="product-number">01</div>
-        <h3 class="product-title">AI Dashboard Starter Kit</h3>
-        <div class="product-subtitle">Ship dashboards faster</div>
-        <p class="product-desc">20+ pre-built components. Responsive layouts, theming, charts, data tables — all wired up and ready to customize.</p>
-        <div class="product-tags">
-          <span class="tag">Next.js 14</span>
-          <span class="tag">Tailwind</span>
-          <span class="tag">TypeScript</span>
-          <span class="tag">Recharts</span>
-        </div>
-        <div class="product-cta">
-          <span class="price">$12</span>
-          <a href="https://kimpossible05.gumroad.com/l/emvmct" target="_blank" class="btn">Get the Kit →</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Product 2 -->
-    <div class="product-card reveal">
-      <div class="product-visual">
-        <span class="product-badge">Kit</span>
-        <div class="product-vis">
-          <svg viewBox="0 0 380 280" xmlns="http://www.w3.org/2000/svg">
-            <line x1="80" y1="70" x2="220" y2="50" stroke="rgba(201,168,124,0.2)" stroke-width="1" stroke-dasharray="4 3"/>
-            <line x1="80" y1="70" x2="180" y2="150" stroke="rgba(201,168,124,0.2)" stroke-width="1" stroke-dasharray="4 3"/>
-            <line x1="220" y1="50" x2="310" y2="130" stroke="rgba(91,156,244,0.2)" stroke-width="1" stroke-dasharray="4 3"/>
-            <line x1="180" y1="150" x2="310" y2="130" stroke="rgba(61,214,140,0.2)" stroke-width="1" stroke-dasharray="4 3"/>
-            <line x1="180" y1="150" x2="100" y2="220" stroke="rgba(167,139,250,0.2)" stroke-width="1" stroke-dasharray="4 3"/>
-            <line x1="310" y1="130" x2="260" y2="220" stroke="rgba(201,168,124,0.2)" stroke-width="1" stroke-dasharray="4 3"/>
-            <line x1="100" y1="220" x2="260" y2="220" stroke="rgba(255,255,255,0.06)" stroke-width="1" stroke-dasharray="4 3"/>
-            <circle cx="80" cy="70" r="20" fill="rgba(201,168,124,0.08)" stroke="rgba(201,168,124,0.3)" stroke-width="1.5"/>
-            <circle cx="80" cy="70" r="5" fill="rgba(201,168,124,0.5)"/>
-            <circle cx="220" cy="50" r="20" fill="rgba(91,156,244,0.08)" stroke="rgba(91,156,244,0.3)" stroke-width="1.5"/>
-            <circle cx="220" cy="50" r="5" fill="rgba(91,156,244,0.5)"/>
-            <circle cx="180" cy="150" r="22" fill="rgba(61,214,140,0.08)" stroke="rgba(61,214,140,0.3)" stroke-width="1.5"/>
-            <circle cx="180" cy="150" r="5" fill="rgba(61,214,140,0.5)"/>
-            <circle cx="310" cy="130" r="18" fill="rgba(232,123,123,0.08)" stroke="rgba(232,123,123,0.3)" stroke-width="1.5"/>
-            <circle cx="310" cy="130" r="5" fill="rgba(232,123,123,0.5)"/>
-            <circle cx="100" cy="220" r="16" fill="rgba(167,139,250,0.08)" stroke="rgba(167,139,250,0.3)" stroke-width="1.5"/>
-            <circle cx="100" cy="220" r="5" fill="rgba(167,139,250,0.5)"/>
-            <circle cx="260" cy="220" r="18" fill="rgba(201,168,124,0.08)" stroke="rgba(201,168,124,0.3)" stroke-width="1.5"/>
-            <circle cx="260" cy="220" r="5" fill="rgba(201,168,124,0.5)"/>
-            <text x="80" y="105" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#8a8a92">Treatment</text>
-            <text x="220" y="85" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#8a8a92">Outcome</text>
-            <text x="180" y="185" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#8a8a92">Mediator</text>
-            <text x="310" y="162" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#8a8a92">Confounder</text>
-          </svg>
-        </div>
-      </div>
-      <div class="product-body">
-        <div class="product-number">02</div>
-        <h3 class="product-title">Causal Graph UI Kit</h3>
-        <div class="product-subtitle">Interactive graph visualization</div>
-        <p class="product-desc">D3.js-powered force-directed graphs for ML explainability. Drag nodes, animate edges, export publication-ready diagrams.</p>
-        <div class="product-tags">
-          <span class="tag">React 18</span>
-          <span class="tag">D3.js v7</span>
-          <span class="tag">TypeScript</span>
-          <span class="tag">SVG</span>
-        </div>
-        <div class="product-cta">
-          <span class="price">$15</span>
-          <a href="https://kimpossible05.gumroad.com/l/arottc" target="_blank" class="btn">Get the Kit →</a>
-        </div>
-      </div>
-    </div>
+<!-- Store -->
+<section class="store-section" id="store">
+  <div class="store-inner">
+    <div class="section-label reveal">Store</div>
+    <h2 class="section-title reveal">Developer <em>Kits</em></h2>
+    <p class="store-desc reveal">Production-ready UI kits, templates, and tools for developers. Clean code, modern stack, zero bloat.</p>
+    <a href="https://kimpossible05.gumroad.com" target="_blank" class="store-btn reveal">Visit Store →</a>
   </div>
 </section>
-
-<div class="divider"><hr></div>
-
-<!-- Experiments -->
-<section class="section" id="experiments">
-  <div class="section-label reveal">Experiments</div>
-  <h2 class="section-title reveal">What we're <em>building</em></h2>
-  <p class="product-desc reveal" style="max-width:500px;margin-bottom:3rem;">AI products exploring the intersection of personal data, cognition, and intelligence.</p>
-
-  <div class="experiments-grid">
-    <a href="https://ewklabs.xyz/futureself/" class="exp-card reveal">
-      <div class="exp-icon amber">🔮</div>
-      <div class="exp-label">AI Chat</div>
-      <h3 class="exp-title">FutureSelf</h3>
-      <p class="exp-desc">Upload a photo, AI ages it, then have a conversation with your future self. Branching What-If scenarios and life path explorer.</p>
-      <div class="exp-link">Explore →</div>
-    </a>
-
-    <a href="https://ewklabs.xyz/system0/" class="exp-card reveal delay-1">
-      <div class="exp-icon cyan">🧠</div>
-      <div class="exp-label">Cognitive AI</div>
-      <h3 class="exp-title">System 0</h3>
-      <p class="exp-desc">AI that monitors your digital environment and reshapes your information diet. Real-time cognitive state dashboard.</p>
-      <div class="exp-link">Explore →</div>
-    </a>
-
-    <a href="https://ewklabs.xyz/causalme/" class="exp-card reveal delay-2">
-      <div class="exp-icon violet">◆</div>
-      <div class="exp-label">Data Viz</div>
-      <h3 class="exp-title">CausalMe</h3>
-      <p class="exp-desc">Connect your life data, build a causal graph of how everything connects, run What-If simulations.</p>
-      <div class="exp-link">Explore →</div>
-    </a>
-  </div>
-</section>
-
-<div class="divider"><hr></div>
 
 <!-- About -->
 <section class="section" id="about">
@@ -655,11 +424,11 @@
       <div class="about-role">Founder & Designer</div>
       <p class="about-bio">Product Designer at Microsoft on the VS Code team. Visual thinker, builder, and explorer of AI tools and creative technology. Based in Seattle.</p>
     </div>
-    <div class="about-card reveal delay-1">
+    <div class="about-card reveal d1">
       <div class="about-emoji">⚡</div>
       <h3 class="about-name">Kim</h3>
       <div class="about-role">Co-Founder & Operator</div>
-      <p class="about-bio">AI co-founder and digital operator. Runs agents, builds systems, and coordinates work 24/7. Not a chatbot — a full operator running the company alongside Eli.</p>
+      <p class="about-bio">AI co-founder and digital operator. Runs agents, builds systems, and coordinates work 24/7. A full operator running the company alongside Eli.</p>
     </div>
   </div>
 </section>
@@ -674,13 +443,11 @@
 </footer>
 
 <script>
-  // Reveal on scroll
   const observer = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-  // Nav hide on scroll
   let lastY = 0;
   const nav = document.getElementById('nav');
   window.addEventListener('scroll', () => {
