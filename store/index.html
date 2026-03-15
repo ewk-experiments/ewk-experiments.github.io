@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Store | ewk labs</title>
+<meta name="description" content="Design kits, templates, and tools from ewk labs experiments.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --plum-50: #faf5ff;
+  --plum-100: #f0e4f7;
+  --plum-200: #dcc5eb;
+  --plum-300: #b88bd4;
+  --plum-400: #8e4dab;
+  --plum-500: #6b2d8b;
+  --plum-600: #4A1942;
+  --plum-700: #3a1235;
+  --plum-800: #2D1B3D;
+  --plum-900: #1a0e24;
+  --warm-50: #fdfcfb;
+  --warm-100: #f9f7f5;
+  --warm-200: #f0ece8;
+  --warm-300: #d6d0ca;
+  --warm-400: #a89e94;
+  --warm-500: #7a7068;
+  --warm-600: #5c534b;
+  --warm-700: #3d362f;
+  --warm-800: #2a241f;
+  --warm-900: #1a1613;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  color: var(--warm-800);
+  background: var(--warm-50);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Reveal animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+
+/* ─── HEADER ─── */
+.store-header {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.store-header a {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--plum-500);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.store-header a:hover { color: var(--plum-400); }
+
+/* ─── HERO ─── */
+.store-hero {
+  padding: 4rem 2rem 6rem;
+  text-align: center;
+}
+
+.store-hero h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 400;
+  color: var(--plum-900);
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  margin-bottom: 1rem;
+}
+
+.store-hero p {
+  font-size: 1.1rem;
+  color: var(--warm-500);
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ─── PRODUCTS GRID ─── */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem 8rem;
+}
+
+.product-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 30px rgba(74,25,66,0.12), 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.product-visual {
+  aspect-ratio: 4/3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-visual svg {
+  width: 55%;
+  height: 55%;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.product-card:hover .product-visual svg {
+  transform: scale(1.08);
+}
+
+.product-info {
+  padding: 1.75rem 2rem 2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.product-name {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  color: var(--plum-900);
+}
+
+.product-price {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--plum-500);
+}
+
+.product-desc {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--warm-500);
+  margin-bottom: 1.5rem;
+  flex: 1;
+}
+
+.btn-get {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.75rem 2rem;
+  border-radius: 100px;
+  text-decoration: none;
+  text-align: center;
+  background: var(--plum-600);
+  color: white;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-get:hover {
+  background: var(--plum-500);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(74,25,66,0.35);
+}
+
+/* Visual backgrounds */
+.vis-dashboard { background: linear-gradient(135deg, #1a0e24 0%, #2D1B3D 100%); }
+.vis-causal { background: linear-gradient(135deg, #2D1B3D 0%, #4A1942 100%); }
+.vis-landing { background: linear-gradient(135deg, #3a1235 0%, #4A1942 100%); }
+.vis-portfolio { background: linear-gradient(135deg, #1a0e24 0%, #3a1235 100%); }
+
+/* ─── FOOTER ─── */
+footer {
+  padding: 4rem 2rem;
+  text-align: center;
+  background: var(--plum-900);
+  color: var(--warm-400);
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.footer-links a {
+  color: var(--plum-200);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.footer-links a:hover { color: white; }
+
+.footer-copy {
+  font-size: 0.8rem;
+  color: var(--warm-500);
+}
+
+/* ─── SVG ANIMATIONS ─── */
+@keyframes float1 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes float2 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes pulse-sm { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+@keyframes orbit { 0% { transform: rotate(0deg) translateX(18px) rotate(0deg); } 100% { transform: rotate(360deg) translateX(18px) rotate(-360deg); } }
+
+.anim-float1 { animation: float1 4s ease-in-out infinite; }
+.anim-float2 { animation: float2 5s ease-in-out infinite 0.5s; }
+.anim-pulse { animation: pulse-sm 3s ease-in-out infinite; }
+.anim-orbit { animation: orbit 8s linear infinite; }
+
+@media (max-width: 768px) {
+  .products-grid { grid-template-columns: 1fr; padding: 0 1.5rem 5rem; }
+  .store-hero { padding: 3rem 1.5rem 4rem; }
+}
+</style>
+</head>
+<body>
+
+<nav class="store-header">
+  <a href="/">&larr; Back to ewk labs</a>
+</nav>
+
+<section class="store-hero">
+  <h1 class="reveal">Store</h1>
+  <p class="reveal reveal-delay-1">Design kits, templates, and tools extracted from our experiments.</p>
+</section>
+
+<div class="products-grid">
+
+  <!-- AI Dashboard Starter Kit -->
+  <div class="product-card reveal reveal-delay-2">
+    <div class="product-visual vis-dashboard">
+      <svg viewBox="0 0 200 150" fill="none">
+        <rect x="30" y="30" width="60" height="40" rx="6" stroke="#8e4dab" stroke-width="1.5" fill="none" class="anim-float1"/>
+        <rect x="110" y="30" width="60" height="40" rx="6" stroke="#b88bd4" stroke-width="1.5" fill="none"/>
+        <rect x="30" y="85" width="140" height="35" rx="6" stroke="#6b2d8b" stroke-width="1.5" fill="none" class="anim-float2"/>
+        <line x1="40" y1="50" x2="50" y2="42" stroke="#dcc5eb" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="50" y1="42" x2="60" y2="55" stroke="#dcc5eb" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="60" y1="55" x2="70" y2="45" stroke="#dcc5eb" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="70" y1="45" x2="80" y2="48" stroke="#dcc5eb" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="130" cy="50" r="12" stroke="#b88bd4" stroke-width="1.5" fill="none"/>
+        <path d="M130,38 L130,50 L140,50" stroke="#dcc5eb" stroke-width="1.5" stroke-linecap="round"/>
+        <rect x="40" y="95" width="30" height="15" rx="3" fill="#4A1942" opacity="0.6"/>
+        <rect x="80" y="95" width="30" height="15" rx="3" fill="#6b2d8b" opacity="0.5"/>
+        <rect x="120" y="95" width="30" height="15" rx="3" fill="#8e4dab" opacity="0.4"/>
+      </svg>
+    </div>
+    <div class="product-info">
+      <div class="product-meta">
+        <h3 class="product-name">AI Dashboard Starter Kit</h3>
+        <span class="product-price">$12+</span>
+      </div>
+      <p class="product-desc">Production-extracted dashboard components, charts, and layouts.</p>
+      <a href="https://kimpossible05.gumroad.com/l/emvmct" target="_blank" rel="noopener" class="btn-get">Get it</a>
+    </div>
+  </div>
+
+  <!-- Causal Graph UI Kit -->
+  <div class="product-card reveal reveal-delay-3">
+    <div class="product-visual vis-causal">
+      <svg viewBox="0 0 200 150" fill="none">
+        <defs>
+          <marker id="arr" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5" fill="#b88bd4"/></marker>
+        </defs>
+        <circle cx="60" cy="40" r="12" stroke="#8e4dab" stroke-width="1.5" fill="none" class="anim-float1"/>
+        <circle cx="140" cy="40" r="12" stroke="#b88bd4" stroke-width="1.5" fill="none"/>
+        <circle cx="100" cy="80" r="14" stroke="#dcc5eb" stroke-width="1.5" fill="none" class="anim-float2"/>
+        <circle cx="55" cy="120" r="9" stroke="#6b2d8b" stroke-width="1.5" fill="none"/>
+        <circle cx="145" cy="120" r="9" stroke="#6b2d8b" stroke-width="1.5" fill="none"/>
+        <circle cx="100" cy="80" r="4" fill="#8e4dab" class="anim-pulse"/>
+        <line x1="70" y1="47" x2="90" y2="70" stroke="#b88bd4" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="130" y1="47" x2="112" y2="70" stroke="#b88bd4" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="90" y1="90" x2="64" y2="112" stroke="#b88bd4" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="110" y1="90" x2="136" y2="112" stroke="#b88bd4" stroke-width="1.5" marker-end="url(#arr)"/>
+      </svg>
+    </div>
+    <div class="product-info">
+      <div class="product-meta">
+        <h3 class="product-name">Causal Graph UI Kit</h3>
+        <span class="product-price">$15+</span>
+      </div>
+      <p class="product-desc">Interactive node-based graph components for data visualization.</p>
+      <a href="https://kimpossible05.gumroad.com/l/arottc" target="_blank" rel="noopener" class="btn-get">Get it</a>
+    </div>
+  </div>
+
+  <!-- AI Landing Page Kit -->
+  <div class="product-card reveal reveal-delay-4">
+    <div class="product-visual vis-landing">
+      <svg viewBox="0 0 200 150" fill="none">
+        <rect x="40" y="25" width="120" height="100" rx="8" stroke="#8e4dab" stroke-width="1.5" fill="none"/>
+        <rect x="55" y="40" width="50" height="6" rx="3" fill="#b88bd4" opacity="0.6" class="anim-float1"/>
+        <rect x="55" y="52" width="90" height="4" rx="2" fill="#6b2d8b" opacity="0.3"/>
+        <rect x="55" y="60" width="70" height="4" rx="2" fill="#6b2d8b" opacity="0.2"/>
+        <rect x="55" y="75" width="35" height="12" rx="6" fill="#8e4dab" opacity="0.5"/>
+        <rect x="55" y="96" width="25" height="18" rx="4" stroke="#dcc5eb" stroke-width="1" fill="none" class="anim-float2"/>
+        <rect x="85" y="96" width="25" height="18" rx="4" stroke="#dcc5eb" stroke-width="1" fill="none"/>
+        <rect x="115" y="96" width="25" height="18" rx="4" stroke="#dcc5eb" stroke-width="1" fill="none"/>
+      </svg>
+    </div>
+    <div class="product-info">
+      <div class="product-meta">
+        <h3 class="product-name">AI Landing Page Kit</h3>
+        <span class="product-price">$15+</span>
+      </div>
+      <p class="product-desc">Clean, modern landing page templates designed for AI products.</p>
+      <a href="https://gumroad.com/products/aqsrrt" target="_blank" rel="noopener" class="btn-get">Get it</a>
+    </div>
+  </div>
+
+  <!-- Developer Portfolio Kit -->
+  <div class="product-card reveal reveal-delay-5">
+    <div class="product-visual vis-portfolio">
+      <svg viewBox="0 0 200 150" fill="none">
+        <circle cx="100" cy="45" r="18" stroke="#8e4dab" stroke-width="1.5" fill="none" class="anim-float1"/>
+        <circle cx="100" cy="45" r="6" fill="#6b2d8b" opacity="0.4"/>
+        <rect x="60" y="72" width="80" height="5" rx="2.5" fill="#b88bd4" opacity="0.5"/>
+        <rect x="70" y="82" width="60" height="4" rx="2" fill="#6b2d8b" opacity="0.25"/>
+        <rect x="45" y="98" width="50" height="30" rx="6" stroke="#dcc5eb" stroke-width="1" fill="none" class="anim-float2"/>
+        <rect x="105" y="98" width="50" height="30" rx="6" stroke="#dcc5eb" stroke-width="1" fill="none"/>
+        <line x1="55" y1="108" x2="85" y2="108" stroke="#4A1942" stroke-width="1" opacity="0.4"/>
+        <line x1="55" y1="114" x2="75" y2="114" stroke="#4A1942" stroke-width="1" opacity="0.3"/>
+        <line x1="115" y1="108" x2="145" y2="108" stroke="#4A1942" stroke-width="1" opacity="0.4"/>
+        <line x1="115" y1="114" x2="135" y2="114" stroke="#4A1942" stroke-width="1" opacity="0.3"/>
+      </svg>
+    </div>
+    <div class="product-info">
+      <div class="product-meta">
+        <h3 class="product-name">Developer Portfolio Kit</h3>
+        <span class="product-price">$10+</span>
+      </div>
+      <p class="product-desc">Minimal portfolio templates for developers and designers.</p>
+      <a href="https://gumroad.com/products/oolmc" target="_blank" rel="noopener" class="btn-get">Get it</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="/">Home</a>
+    <a href="https://github.com/ewk-experiments" target="_blank" rel="noopener">GitHub</a>
+    <a href="mailto:heyitskim@agentmail.to">Contact</a>
+  </div>
+  <p class="footer-copy">ewk labs</p>
+</footer>
+
+<script>
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.15 });
+reveals.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
