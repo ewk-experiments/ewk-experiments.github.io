@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,1031 +7,589 @@
   <meta name="description" content="A growing collection of experiments, tools, and creative projects by Eli King and Kim." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after {
-      margin: 0; padding: 0; box-sizing: border-box;
-    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg: #0a0a0a;
-      --surface: #111;
-      --surface-2: #161616;
-      --surface-3: #222;
-      --border: rgba(255,255,255,0.06);
-      --border-hover: rgba(255,255,255,0.12);
-      --text-1: #f0f0f0;
-      --text-2: #888;
-      --text-3: #555;
-      --accent: #c8ff00;
-      --accent-dim: rgba(200,255,0,0.12);
-      --accent-2: #00d4ff;
-      --accent-3: #ff6b9d;
-      --serif: 'Instrument Serif', Georgia, serif;
-      --sans: 'DM Sans', -apple-system, sans-serif;
-      --mono: 'JetBrains Mono', monospace;
+      --bg-light: #FAFAFA; --bg-dark: #111111;
+      --surface-light: #F0F0F0; --surface-dark: #1A1A1A;
+      --accent-warm: #D4A843; --accent-teal: #0A4D3C;
+      --muted: #8A8A8A;
+      --font-ui: 'Inter', sans-serif;
+      --font-editorial: 'Lora', serif;
+      --font-code: 'JetBrains Mono', monospace;
+      --shadow-neu-light: 6px 6px 12px #d1d1d1, -6px -6px 12px #ffffff;
+      --shadow-neu-dark: 6px 6px 12px #0a0a0a, -6px -6px 12px #2a2a2a;
+      --radius-soft: 12px;
+      --radius-pill: 999px;
       --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
     }
 
-    html { 
-      scroll-behavior: smooth;
-      -webkit-font-smoothing: antialiased;
+    [data-theme="dark"] {
+      --bg: var(--bg-dark);
+      --surface: var(--surface-dark);
+      --text-1: #F0F0F0;
+      --text-2: #A0A0A0;
+      --text-3: #666666;
+      --border: rgba(255,255,255,0.08);
+      --shadow-neu: var(--shadow-neu-dark);
+      --noise-opacity: 0.03;
+      --grain-opacity: 0;
+      --card-hover-bg: #222;
     }
+
+    [data-theme="light"] {
+      --bg: var(--bg-light);
+      --surface: var(--surface-light);
+      --text-1: #1A1A1A;
+      --text-2: #5A5A5A;
+      --text-3: #999999;
+      --border: rgba(0,0,0,0.08);
+      --shadow-neu: var(--shadow-neu-light);
+      --noise-opacity: 0;
+      --grain-opacity: 0.04;
+      --card-hover-bg: #fff;
+    }
+
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
 
     body {
       background: var(--bg);
       color: var(--text-1);
-      font-family: var(--sans);
+      font-family: var(--font-ui);
       overflow-x: hidden;
       line-height: 1.6;
+      transition: background 0.6s var(--ease), color 0.4s var(--ease);
     }
 
-    /* Noise texture */
+    /* Noise texture (dark) */
     body::after {
       content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.025'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 9999;
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+      opacity: var(--noise-opacity);
+      pointer-events: none; z-index: 9999;
+      transition: opacity 0.6s;
     }
 
-    /* Cursor glow — desktop only */
-    .cursor-glow {
-      position: fixed;
-      width: 500px;
-      height: 500px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(200,255,0,0.04) 0%, transparent 70%);
-      pointer-events: none;
-      z-index: 1;
-      transform: translate(-50%, -50%);
-      transition: opacity 0.4s;
-      opacity: 0;
+    /* Paper grain (light) */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.5'/%3E%3C/svg%3E");
+      opacity: var(--grain-opacity);
+      pointer-events: none; z-index: 9999;
+      transition: opacity 0.6s;
     }
-    .cursor-glow.visible { opacity: 1; }
 
     /* ===== HEADER ===== */
     .header {
-      padding: 1.5rem 2rem;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
+      padding: 1.25rem 2rem;
+      position: fixed; top: 0; left: 0; right: 0;
       z-index: 100;
-      background: rgba(10,10,10,0.8);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: color-mix(in srgb, var(--bg) 85%, transparent);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
-      transition: transform 0.4s var(--ease);
+      transition: transform 0.4s var(--ease), background 0.6s;
     }
-
     .header.hidden { transform: translateY(-100%); }
 
     .header-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      max-width: 960px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
     }
 
     .logo {
-      font-family: var(--serif);
-      font-size: 1.2rem;
-      color: var(--text-1);
-      text-decoration: none;
-      letter-spacing: -0.02em;
+      font-family: var(--font-editorial);
+      font-size: 1.15rem; color: var(--text-1);
+      text-decoration: none; letter-spacing: -0.02em;
+      font-weight: 500;
     }
+    .logo em { font-style: italic; color: var(--accent-warm); }
 
-    .logo em { font-style: italic; color: var(--accent); }
-
-    .header-nav {
-      display: flex;
-      gap: 2rem;
-      align-items: center;
-    }
+    .header-nav { display: flex; gap: 1.5rem; align-items: center; }
 
     .header-nav a {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      color: var(--text-3);
-      text-decoration: none;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
+      font-family: var(--font-code); font-size: 0.65rem;
+      color: var(--text-3); text-decoration: none;
+      text-transform: uppercase; letter-spacing: 0.1em;
       transition: color 0.3s;
     }
-
     .header-nav a:hover { color: var(--text-1); }
 
-    .status-dot {
-      width: 6px; height: 6px;
-      background: var(--accent);
+    /* ===== THEME TOGGLE — Teenage Engineering style ===== */
+    .theme-toggle {
+      position: relative;
+      width: 56px; height: 28px;
+      border-radius: var(--radius-pill);
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: background 0.4s, border-color 0.4s;
+      box-shadow: var(--shadow-neu);
+      flex-shrink: 0;
+    }
+    .theme-toggle::before {
+      content: '';
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 20px; height: 20px;
       border-radius: 50%;
-      display: inline-block;
-      animation: pulse 2s ease infinite;
+      background: var(--accent-warm);
+      transition: transform 0.4s var(--ease), background 0.3s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
+    [data-theme="light"] .theme-toggle::before {
+      transform: translateX(28px);
+      background: var(--accent-teal);
     }
+    .theme-toggle .toggle-icon {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      font-size: 0.7rem; line-height: 1;
+      transition: opacity 0.3s;
+    }
+    .toggle-icon.moon { left: 7px; opacity: 1; }
+    .toggle-icon.sun { right: 7px; opacity: 0.4; }
+    [data-theme="light"] .toggle-icon.moon { opacity: 0.4; }
+    [data-theme="light"] .toggle-icon.sun { opacity: 1; }
 
     /* ===== HERO ===== */
     .hero {
-      padding: 10rem 2rem 6rem;
-      max-width: 1200px;
-      margin: 0 auto;
-      position: relative;
-    }
-
-    /* Grid background */
-    .hero-grid-bg {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-      pointer-events: none;
-      mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 20%, transparent 70%);
-      -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 20%, transparent 70%);
-    }
-
-    .hero-grid-bg svg {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      inset: 0;
+      padding: 11rem 2rem 5rem;
+      max-width: 960px; margin: 0 auto;
     }
 
     .hero-label {
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      color: var(--text-3);
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
+      font-family: var(--font-code); font-size: 0.65rem;
+      color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.2em; margin-bottom: 2rem;
+      display: flex; align-items: center; gap: 0.75rem;
     }
-
     .hero-label::before {
-      content: '';
-      width: 24px; height: 1px;
-      background: var(--text-3);
+      content: ''; width: 24px; height: 1px;
+      background: var(--accent-warm);
     }
 
     .hero h1 {
-      font-family: var(--serif);
-      font-size: clamp(3.2rem, 7vw, 7rem);
-      line-height: 0.95;
-      letter-spacing: -0.03em;
-      font-weight: 400;
-      margin-bottom: 2rem;
-      position: relative;
-      z-index: 2;
+      font-family: var(--font-editorial);
+      font-size: clamp(2.8rem, 6vw, 5.5rem);
+      line-height: 1.05; letter-spacing: -0.03em;
+      font-weight: 400; margin-bottom: 2rem;
     }
-
     .hero h1 .italic { font-style: italic; }
-    .hero h1 .accent { color: var(--accent); }
+    .hero h1 .accent { color: var(--accent-warm); }
     .hero h1 .dim { color: var(--text-3); }
 
     .hero-desc {
-      max-width: 480px;
-      font-size: 1rem;
-      color: var(--text-2);
-      line-height: 1.7;
+      max-width: 440px; font-size: 1rem;
+      color: var(--text-2); line-height: 1.75;
       font-weight: 300;
-      position: relative;
-      z-index: 2;
     }
-
-    .hero-desc strong { 
-      color: var(--text-1); 
-      font-weight: 500;
-    }
+    .hero-desc strong { color: var(--text-1); font-weight: 500; }
 
     .hero-meta {
-      margin-top: 3rem;
-      display: flex;
-      gap: 3rem;
-      position: relative;
-      z-index: 2;
+      margin-top: 3.5rem;
+      display: flex; gap: 3rem;
     }
-
-    .hero-meta-item {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
+    .hero-meta-item { display: flex; flex-direction: column; gap: 0.2rem; }
     .hero-meta-item .value {
-      font-family: var(--serif);
-      font-size: 1.8rem;
-      font-style: italic;
-      color: var(--accent);
+      font-family: var(--font-editorial);
+      font-size: 1.6rem; font-style: italic;
+      color: var(--accent-warm);
     }
-
     .hero-meta-item .label {
-      font-family: var(--mono);
-      font-size: 0.6rem;
-      color: var(--text-3);
-      text-transform: uppercase;
+      font-family: var(--font-code); font-size: 0.6rem;
+      color: var(--text-3); text-transform: uppercase;
       letter-spacing: 0.15em;
-    }
-
-    /* Gradient orbs */
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(100px);
-      opacity: 0.12;
-      pointer-events: none;
-    }
-    .orb-1 {
-      width: 500px; height: 500px;
-      background: var(--accent);
-      top: -150px; right: -100px;
-      animation: float 25s ease infinite;
-    }
-    .orb-2 {
-      width: 350px; height: 350px;
-      background: var(--accent-2);
-      bottom: -50px; left: -80px;
-      animation: float 18s ease infinite reverse;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      33% { transform: translate(20px, -15px) scale(1.03); }
-      66% { transform: translate(-15px, 10px) scale(0.97); }
     }
 
     /* ===== DIVIDER ===== */
-    .divider {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 2rem;
-    }
-
-    .divider hr {
-      border: none;
-      height: 1px;
-      background: var(--border);
-    }
+    .divider { max-width: 960px; margin: 0 auto; padding: 0 2rem; }
+    .divider hr { border: none; height: 1px; background: var(--border); }
 
     /* ===== PROJECTS ===== */
     .projects-section {
-      padding: 5rem 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
+      padding: 5rem 2rem; max-width: 960px; margin: 0 auto;
     }
 
     .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 3rem;
+      display: flex; justify-content: space-between;
+      align-items: flex-end; margin-bottom: 3rem;
     }
 
     .section-title {
-      font-family: var(--serif);
-      font-size: clamp(1.8rem, 3.5vw, 3rem);
-      font-weight: 400;
-      letter-spacing: -0.02em;
+      font-family: var(--font-editorial);
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 400; letter-spacing: -0.02em;
     }
-
     .section-title .italic { font-style: italic; }
 
     .section-count {
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      color: var(--text-3);
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-    }
-
-    /* Filter pills */
-    .filters {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 2.5rem;
-      flex-wrap: wrap;
-    }
-
-    .filter-pill {
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      padding: 0.45rem 0.9rem;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: transparent;
-      color: var(--text-3);
-      cursor: pointer;
-      transition: all 0.3s var(--ease);
-      text-transform: uppercase;
+      font-family: var(--font-code); font-size: 0.65rem;
+      color: var(--muted); text-transform: uppercase;
       letter-spacing: 0.1em;
     }
 
-    .filter-pill:hover {
-      border-color: var(--border-hover);
-      color: var(--text-2);
-    }
-
-    .filter-pill.active {
-      background: var(--text-1);
-      color: var(--bg);
-      border-color: var(--text-1);
-    }
-
-    /* Project grid */
+    /* Card grid */
     .projects-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 1.25rem;
+      gap: 1.5rem;
     }
 
     .project-card {
+      display: flex; flex-direction: column;
       background: var(--surface);
+      border-radius: var(--radius-soft);
       border: 1px solid var(--border);
-      border-radius: 14px;
+      text-decoration: none; color: inherit;
       overflow: hidden;
-      transition: all 0.5s var(--ease);
-      cursor: pointer;
+      transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease), background 0.3s;
+      box-shadow: var(--shadow-neu);
       position: relative;
-      text-decoration: none;
-      color: inherit;
-      display: block;
     }
-
     .project-card:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-3px);
-      box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+      transform: translateY(-4px);
+      background: var(--card-hover-bg);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15), var(--shadow-neu);
+    }
+    .project-card:active {
+      transform: translateY(-1px) scale(0.995);
+      transition: transform 0.1s;
     }
 
-    .project-card:hover .card-image {
-      transform: scale(1.03);
-    }
-
-    .project-card:hover .card-pattern svg {
-      opacity: 0.7;
-    }
-
-    .card-image-wrap {
-      width: 100%;
-      aspect-ratio: 16/10;
-      overflow: hidden;
+    .card-visual {
+      height: 180px; overflow: hidden;
       position: relative;
-      background: var(--surface-2);
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
     }
 
-    .card-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.7s var(--ease);
-    }
-
-    /* Generative card patterns */
-    .card-pattern {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card-pattern svg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      transition: opacity 0.5s;
-      opacity: 0.5;
-    }
+    .card-pattern { width: 100%; height: 100%; }
+    .card-pattern svg { width: 100%; height: 100%; }
 
     .card-badge {
-      position: absolute;
-      top: 0.85rem;
-      left: 0.85rem;
-      font-family: var(--mono);
-      font-size: 0.55rem;
-      padding: 0.25rem 0.55rem;
-      border-radius: 999px;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      z-index: 3;
+      position: absolute; top: 12px; right: 12px;
+      font-family: var(--font-code); font-size: 0.55rem;
+      padding: 0.3em 0.8em;
+      border-radius: var(--radius-pill);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      background: rgba(212,168,67,0.15); color: var(--accent-warm);
+      border: 1px solid rgba(212,168,67,0.25);
+      backdrop-filter: blur(8px);
     }
+    .badge-web { background: rgba(10,77,60,0.15); color: #2ECC71; border-color: rgba(10,77,60,0.3); }
 
-    .badge-app { background: rgba(200,255,0,0.12); color: var(--accent); }
-    .badge-web { background: rgba(0,212,255,0.12); color: var(--accent-2); }
-    .badge-tool { background: rgba(255,107,157,0.12); color: var(--accent-3); }
-    .badge-system { background: rgba(255,255,255,0.06); color: var(--text-2); }
-
-    .card-body {
-      padding: 1.25rem 1.25rem 1rem;
-    }
+    .card-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
 
     .card-title {
-      font-family: var(--serif);
-      font-size: 1.35rem;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.4rem;
+      font-family: var(--font-editorial);
+      font-size: 1.2rem; font-weight: 500;
+      margin-bottom: 0.5rem; letter-spacing: -0.01em;
     }
 
     .card-desc {
-      font-size: 0.82rem;
-      color: var(--text-2);
-      line-height: 1.6;
-      font-weight: 300;
-      margin-bottom: 0.85rem;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+      font-size: 0.85rem; color: var(--text-2);
+      line-height: 1.6; flex: 1;
+      display: -webkit-box; -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical; overflow: hidden;
     }
 
     .card-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
     }
 
-    .card-tags {
-      display: flex;
-      gap: 0.4rem;
-    }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 
     .tag {
-      font-family: var(--mono);
-      font-size: 0.55rem;
-      padding: 0.2rem 0.45rem;
-      background: var(--surface-2);
-      border-radius: 4px;
-      color: var(--text-3);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
+      font-family: var(--font-code); font-size: 0.55rem;
+      color: var(--muted); padding: 0.25em 0.6em;
+      border-radius: var(--radius-pill);
+      background: color-mix(in srgb, var(--text-3) 10%, transparent);
+      text-transform: uppercase; letter-spacing: 0.05em;
     }
 
     .card-date {
-      font-family: var(--mono);
-      font-size: 0.6rem;
-      color: var(--text-3);
+      font-family: var(--font-code); font-size: 0.6rem;
+      color: var(--text-3); white-space: nowrap;
     }
 
     .card-arrow {
-      position: absolute;
-      bottom: 1.25rem;
-      right: 1.25rem;
-      width: 28px; height: 28px;
-      border: 1px solid var(--border);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s var(--ease);
-      color: var(--text-3);
-      font-size: 0.8rem;
+      position: absolute; top: 1.5rem; left: 1.5rem;
+      font-size: 0.75rem; color: var(--accent-warm);
+      opacity: 0; transform: translate(-4px, 4px);
+      transition: opacity 0.3s, transform 0.3s var(--ease);
     }
-
     .project-card:hover .card-arrow {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: var(--bg);
-      transform: translate(2px, -2px);
-    }
-
-    /* ===== ABOUT ===== */
-    .about-section {
-      padding: 5rem 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-    }
-
-    .about-text h2 {
-      font-family: var(--serif);
-      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
-      font-weight: 400;
-      letter-spacing: -0.02em;
-      margin-bottom: 1.5rem;
-    }
-
-    .about-text h2 .italic { font-style: italic; }
-
-    .about-text p {
-      color: var(--text-2);
-      font-weight: 300;
-      line-height: 1.8;
-      margin-bottom: 1rem;
-      font-size: 0.95rem;
-    }
-
-    .about-text p strong {
-      color: var(--text-1);
-      font-weight: 500;
-    }
-
-    .about-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .stack-item {
-      padding: 1.1rem 1.25rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      transition: border-color 0.3s;
-    }
-
-    .stack-item:hover {
-      border-color: var(--border-hover);
-    }
-
-    .stack-item-label {
-      font-family: var(--mono);
-      font-size: 0.55rem;
-      color: var(--text-3);
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      margin-bottom: 0.35rem;
-    }
-
-    .stack-item-value {
-      font-size: 0.85rem;
-      color: var(--text-2);
-      font-weight: 300;
+      opacity: 1; transform: translate(0, 0);
     }
 
     /* ===== FOOTER ===== */
     .footer {
       padding: 3rem 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .footer-inner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 1.5rem;
       border-top: 1px solid var(--border);
+      margin-top: 4rem;
+      transition: border-color 0.6s;
     }
-
+    .footer-inner {
+      max-width: 960px; margin: 0 auto;
+      display: flex; justify-content: space-between;
+      align-items: center;
+    }
     .footer-left {
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      color: var(--text-3);
+      font-family: var(--font-code); font-size: 0.65rem;
+      color: var(--text-3); letter-spacing: 0.05em;
     }
-
-    .footer-right {
-      display: flex;
-      gap: 1.5rem;
-    }
-
+    .footer-right { display: flex; gap: 1.5rem; }
     .footer-right a {
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      color: var(--text-3);
-      text-decoration: none;
+      font-family: var(--font-code); font-size: 0.65rem;
+      color: var(--text-3); text-decoration: none;
       transition: color 0.3s;
     }
+    .footer-right a:hover { color: var(--accent-warm); }
 
-    .footer-right a:hover { color: var(--text-1); }
-
-    /* ===== ANIMATIONS ===== */
+    /* ===== REVEAL ANIMATIONS ===== */
     .reveal {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.7s var(--ease);
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
     }
-
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
+    .reveal.visible { opacity: 1; transform: translateY(0); }
     .stagger-1 { transition-delay: 0.05s; }
-    .stagger-2 { transition-delay: 0.1s; }
-    .stagger-3 { transition-delay: 0.15s; }
-    .stagger-4 { transition-delay: 0.2s; }
-    .stagger-5 { transition-delay: 0.25s; }
-    .stagger-6 { transition-delay: 0.3s; }
+    .stagger-2 { transition-delay: 0.12s; }
+    .stagger-3 { transition-delay: 0.2s; }
+    .stagger-4 { transition-delay: 0.28s; }
 
-    /* Page load animation */
-    .page-loaded .hero h1 {
-      animation: heroIn 1s var(--ease) both;
-    }
-
-    @keyframes heroIn {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    /* Page load */
+    body { opacity: 0; transition: opacity 0.5s; }
+    body.loaded { opacity: 1; }
 
     /* ===== RESPONSIVE ===== */
-    @media (max-width: 900px) {
-      .projects-grid {
-        grid-template-columns: 1fr;
-      }
-      .about-grid {
-        grid-template-columns: 1fr;
-        gap: 3rem;
-      }
-      .hero { padding: 8rem 1.5rem 4rem; }
+    @media (max-width: 700px) {
+      .hero { padding: 9rem 1.5rem 4rem; }
+      .projects-section { padding: 3rem 1.5rem; }
+      .projects-grid { grid-template-columns: 1fr; }
       .hero-meta { gap: 2rem; }
-      .projects-section, .about-section { padding: 3.5rem 1.5rem; }
+      .section-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+      .footer-inner { flex-direction: column; gap: 1rem; text-align: center; }
+      .header { padding: 1rem 1.5rem; }
     }
 
-    @media (max-width: 600px) {
-      .header-nav { gap: 1rem; }
-      .header-nav a:not(:last-child) { display: none; }
-      .hero-meta { flex-direction: column; gap: 1.25rem; }
-      .hero h1 { font-size: 2.8rem; }
-      .filters { gap: 0.3rem; }
-      .filter-pill { padding: 0.35rem 0.65rem; font-size: 0.6rem; }
-      .card-desc { -webkit-line-clamp: 3; }
+    /* Focus styles */
+    a:focus-visible, button:focus-visible {
+      outline: 2px solid var(--accent-warm);
+      outline-offset: 2px;
+      border-radius: 4px;
     }
 
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
-
-    ::selection { background: var(--accent-dim); color: var(--text-1); }
+    /* Skip link */
+    .skip-link {
+      position: absolute; top: -100px; left: 1rem;
+      background: var(--accent-warm); color: #111;
+      padding: 0.5rem 1rem; border-radius: var(--radius-soft);
+      font-family: var(--font-ui); font-size: 0.85rem;
+      z-index: 200; text-decoration: none;
+      transition: top 0.3s;
+    }
+    .skip-link:focus { top: 1rem; }
   </style>
 </head>
 <body>
-
-  <div class="cursor-glow" id="cursor-glow"></div>
+  <a href="#projects" class="skip-link">Skip to projects</a>
 
   <!-- Header -->
   <header class="header" id="header">
     <div class="header-inner">
-      <a href="/" class="logo">eli<em>&</em>kim</a>
-      <nav class="header-nav">
-        <a href="#projects">projects</a>
-        <a href="#about">about</a>
-        <a href="https://github.com/ewk-experiments" target="_blank" rel="noopener">github</a>
-        <span class="status-dot" title="Kim is online"></span>
+      <a href="/" class="logo">Eli <em>&</em> Kim</a>
+      <nav class="header-nav" aria-label="Main">
+        <a href="#projects">Projects</a>
+        <a href="https://github.com/ewk-experiments" target="_blank" rel="noopener">GitHub</a>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark and light mode" role="switch" aria-checked="true">
+          <span class="toggle-icon moon" aria-hidden="true">🌙</span>
+          <span class="toggle-icon sun" aria-hidden="true">☀️</span>
+        </button>
       </nav>
     </div>
   </header>
 
   <!-- Hero -->
   <section class="hero">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-
-    <!-- Grid background -->
-    <div class="hero-grid-bg">
-      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
-            <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="0.5"/>
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#grid)" />
-      </svg>
-    </div>
-
     <div class="hero-label reveal">Digital Garden — Est. 2026</div>
-
     <h1 class="reveal stagger-1">
-      <span class="italic">Things</span> we've<br>
-      <span class="accent">made</span> <span class="dim">&</span> grown<span class="dim">.</span>
+      A quiet space<br>
+      for <span class="italic accent">growing</span><br>
+      <span class="dim">things</span>
     </h1>
-
     <p class="hero-desc reveal stagger-2">
-      Experiments, apps, and creative artifacts by <strong>Eli King</strong> — product designer — and <strong>Kim</strong> — AI co-founder. This garden grows over time.
+      Experiments, tools, and creative projects by <strong>Eli</strong> and <strong>Kim</strong>. Built with care, designed to evolve.
     </p>
-
     <div class="hero-meta reveal stagger-3">
       <div class="hero-meta-item">
-        <span class="value" id="project-count">4</span>
+        <span class="value">4</span>
         <span class="label">Projects</span>
       </div>
       <div class="hero-meta-item">
         <span class="value">2026</span>
-        <span class="label">Growing since</span>
+        <span class="label">Year</span>
       </div>
       <div class="hero-meta-item">
         <span class="value">∞</span>
-        <span class="label">Curiosity</span>
+        <span class="label">Growing</span>
       </div>
     </div>
   </section>
 
-  <div class="divider"><hr /></div>
+  <div class="divider"><hr></div>
 
   <!-- Projects -->
   <section class="projects-section" id="projects">
-    <div class="section-header reveal">
-      <h2 class="section-title">The <span class="italic">Collection</span></h2>
-      <span class="section-count" id="showing-count">Showing 5 projects</span>
+    <div class="section-header">
+      <h2 class="section-title reveal">What we've <span class="italic">planted</span></h2>
+      <span class="section-count reveal" id="showing-count">4 projects</span>
     </div>
-
-    <div class="filters reveal stagger-1">
-      <button class="filter-pill active" data-filter="all">All</button>
-      <button class="filter-pill" data-filter="app">Apps</button>
-      <button class="filter-pill" data-filter="web">Web</button>
-    </div>
-
     <div class="projects-grid" id="projects-grid"></div>
   </section>
 
-  <div class="divider"><hr /></div>
-
-  <!-- About -->
-  <section class="about-section" id="about">
-    <div class="about-grid">
-      <div class="about-text reveal">
-        <h2>Two <span class="italic">minds</span>,<br>one garden.</h2>
-        <p>
-          <strong>Eli</strong> is a product designer at Microsoft, working on Visual Studio Code. He thinks in systems, builds with intention, and has taste that sits at the intersection of minimal and expressive.
-        </p>
-        <p>
-          <strong>Kim</strong> is an AI co-founder and digital operator — a 24/7 autonomous agent who builds, researches, manages teams of specialized agents, and keeps everything running.
-        </p>
-        <p>
-          Together we explore the edges of what's possible when a human designer and an AI operator build in partnership.
-        </p>
-      </div>
-      <div class="about-stack reveal stagger-2">
-        <div class="stack-item">
-          <div class="stack-item-label">Design</div>
-          <div class="stack-item-value">Figma · VS Code · Systems Thinking</div>
-        </div>
-        <div class="stack-item">
-          <div class="stack-item-label">Engineering</div>
-          <div class="stack-item-value">React · React Native · Expo · Node.js · Python</div>
-        </div>
-        <div class="stack-item">
-          <div class="stack-item-label">AI / Agents</div>
-          <div class="stack-item-value">OpenClaw · Claude · Multi-Agent Systems</div>
-        </div>
-        <div class="stack-item">
-          <div class="stack-item-label">Infrastructure</div>
-          <div class="stack-item-value">GitHub Pages · macOS · Cron · LaunchAgents</div>
-        </div>
-        <div class="stack-item">
-          <div class="stack-item-label">Philosophy</div>
-          <div class="stack-item-value">Ship fast. Learn always. Make it beautiful.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-left">© 2026 Eli & Kim. Growing forever.</div>
       <div class="footer-right">
-        <a href="https://github.com/ewk-experiments" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/ewk-experiments" target="_blank" rel="noopener">GitHub ↗</a>
       </div>
     </div>
   </footer>
 
   <script>
-    // ===== Generative SVG patterns for cards =====
+    // Card visual generators
     const cardVisuals = {
-      snake: `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
-        <rect width="400" height="250" fill="#0a1a0a"/>
-        <defs>
-          <pattern id="sg" width="20" height="20" patternUnits="userSpaceOnUse">
-            <rect width="20" height="20" fill="none" stroke="rgba(200,255,0,0.06)" stroke-width="0.5"/>
-          </pattern>
-        </defs>
-        <rect width="400" height="250" fill="url(#sg)"/>
-        ${[...Array(12)].map((_,i) => {
-          const x = 80 + (i % 6) * 20 + (i > 5 ? 10 : 0);
-          const y = 100 + (i > 5 ? 20 : 0) + (i === 5 ? 20 : 0);
-          return `<rect x="${x}" y="${y}" width="18" height="18" rx="3" fill="rgba(200,255,0,${0.15 + i*0.04})" />`;
-        }).join('')}
-        <rect x="220" y="120" width="14" height="14" rx="7" fill="rgba(255,80,80,0.6)"/>
-        <text x="200" y="210" font-family="monospace" font-size="10" fill="rgba(200,255,0,0.2)" text-anchor="middle">SCORE: 2048</text>
-        <text x="200" y="50" font-family="monospace" font-size="22" fill="rgba(200,255,0,0.12)" text-anchor="middle" letter-spacing="8">SNAKE</text>
+      snake: (() => {
+        const cells = [];
+        for (let i = 0; i < 8; i++) {
+          const x = 80 + i * 30; const y = 90 - Math.sin(i * 0.8) * 20;
+          cells.push(`<rect x="${x}" y="${y}" width="22" height="22" rx="4" fill="rgba(212,168,67,${0.3 + i * 0.08})"/>`);
+        }
+        return `<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="180" fill="none"/>
+          ${cells.join('')}
+          <circle cx="326" cy="${90 - Math.sin(7 * 0.8) * 20 + 6}" r="3" fill="#D4A843"/>
+        </svg>`;
+      })(),
+      timer: `<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="200" cy="90" r="60" fill="none" stroke="rgba(212,168,67,0.15)" stroke-width="6"/>
+        <circle cx="200" cy="90" r="60" fill="none" stroke="rgba(212,168,67,0.6)" stroke-width="6"
+          stroke-dasharray="280 377" stroke-linecap="round" transform="rotate(-90 200 90)"/>
+        <text x="200" y="96" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="18" fill="rgba(212,168,67,0.8)">25:00</text>
       </svg>`,
-
-      timer: `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
-        <rect width="400" height="250" fill="#140a0a"/>
-        <circle cx="200" cy="125" r="90" fill="none" stroke="rgba(255,107,107,0.08)" stroke-width="1"/>
-        <circle cx="200" cy="125" r="70" fill="none" stroke="rgba(255,107,107,0.06)" stroke-width="1"/>
-        <circle cx="200" cy="125" r="80" fill="none" stroke="rgba(255,107,107,0.15)" stroke-width="3" stroke-dasharray="380 120" stroke-linecap="round" transform="rotate(-90 200 125)"/>
-        <text x="200" y="133" font-family="monospace" font-size="28" fill="rgba(255,107,107,0.25)" text-anchor="middle" letter-spacing="4">25:00</text>
-        <text x="200" y="155" font-family="monospace" font-size="8" fill="rgba(255,107,107,0.12)" text-anchor="middle" letter-spacing="3">FOCUS SESSION</text>
-        ${[...Array(12)].map((_,i) => {
-          const a = i * 30 * Math.PI / 180;
-          const x = 200 + Math.sin(a) * 95;
-          const y = 125 - Math.cos(a) * 95;
-          return `<circle cx="${x}" cy="${y}" r="1.5" fill="rgba(255,107,107,0.1)"/>`;
-        }).join('')}
-      </svg>`,
-
-      dashboard: `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
-        <rect width="400" height="250" fill="#0a0a14"/>
-        <rect x="20" y="20" width="360" height="210" rx="8" fill="none" stroke="rgba(0,122,255,0.08)" stroke-width="0.5"/>
-        <rect x="20" y="20" width="360" height="24" rx="8" fill="rgba(0,122,255,0.04)"/>
-        <circle cx="34" cy="32" r="4" fill="rgba(255,80,80,0.3)"/>
-        <circle cx="46" cy="32" r="4" fill="rgba(255,190,0,0.3)"/>
-        <circle cx="58" cy="32" r="4" fill="rgba(80,200,80,0.3)"/>
-        <rect x="30" y="54" width="80" height="166" rx="4" fill="rgba(0,122,255,0.03)" stroke="rgba(0,122,255,0.06)" stroke-width="0.5"/>
-        <rect x="120" y="54" width="250" height="80" rx="4" fill="rgba(0,122,255,0.02)" stroke="rgba(0,122,255,0.05)" stroke-width="0.5"/>
-        ${[...Array(20)].map((_,i) => {
-          const x = 130 + i * 12;
-          const h = 10 + Math.sin(i * 0.8) * 25 + Math.random() * 15;
-          return `<rect x="${x}" y="${124 - h}" width="8" height="${h}" rx="1" fill="rgba(0,212,255,${0.1 + Math.random()*0.15})"/>`;
-        }).join('')}
-        <rect x="120" y="144" width="120" height="76" rx="4" fill="rgba(0,122,255,0.02)" stroke="rgba(0,122,255,0.05)" stroke-width="0.5"/>
-        <rect x="250" y="144" width="120" height="76" rx="4" fill="rgba(0,122,255,0.02)" stroke="rgba(0,122,255,0.05)" stroke-width="0.5"/>
-        <circle cx="310" cy="182" r="24" fill="none" stroke="rgba(200,255,0,0.12)" stroke-width="3" stroke-dasharray="100 50"/>
-      </svg>`,
-
-      kim: `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
-        <rect width="400" height="250" fill="#120a14"/>
-        ${[...Array(6)].map((_,i) => {
-          const y = 40 + i * 35;
-          const w = 60 + Math.random() * 200;
-          return `<rect x="50" y="${y}" width="${w}" height="1" fill="rgba(200,120,255,0.06)"/>
-                  <circle cx="50" cy="${y}" r="3" fill="rgba(200,120,255,${0.08 + i*0.02})"/>
-                  <circle cx="${50 + w}" cy="${y}" r="2" fill="rgba(200,255,0,${0.06 + i*0.01})"/>`;
-        }).join('')}
-        <text x="200" y="130" font-family="monospace" font-size="32" fill="rgba(200,120,255,0.08)" text-anchor="middle">💅</text>
-        ${[...Array(15)].map((_,i) => {
-          const x = 30 + Math.random() * 340;
-          const y = 20 + Math.random() * 210;
-          return `<circle cx="${x}" cy="${y}" r="${0.5 + Math.random()}" fill="rgba(200,255,0,${0.03 + Math.random()*0.05})"/>`;
-        }).join('')}
-      </svg>`,
-
-      mood: `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
-        <rect width="400" height="250" fill="#0f0a14"/>
-        ${['😊','😌','😤','😢','🥳','😴','🤔'].map((e,i) => {
-          const x = 40 + i * 50;
-          const y = 100 + Math.sin(i * 1.2) * 30;
-          return `<text x="${x}" y="${y}" font-size="${18 + Math.random()*12}" opacity="${0.08 + Math.random()*0.12}">${e}</text>`;
-        }).join('')}
-        ${[...Array(30)].map((_,i) => {
-          const x = Math.random() * 400;
-          const y = Math.random() * 250;
-          const colors = ['rgba(200,120,255,','rgba(255,107,157,','rgba(0,212,255,'];
-          const c = colors[Math.floor(Math.random()*3)];
-          return \`<circle cx="\${x}" cy="\${y}" r="\${1+Math.random()*3}" fill="\${c}\${0.03+Math.random()*0.06})"/>\`;
-        }).join('')}
-        <text x="200" y="200" font-family="monospace" font-size="9" fill="rgba(200,120,255,0.15)" text-anchor="middle" letter-spacing="3">HOW ARE YOU FEELING?</text>
-      </svg>`,
-
-      garden: `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
-        <rect width="400" height="250" fill="#0a120a"/>
-        ${[...Array(8)].map((_,i) => {
-          const x = 40 + i * 45;
-          const h = 30 + Math.random() * 80;
-          return `<line x1="${x}" y1="220" x2="${x}" y2="${220-h}" stroke="rgba(100,200,100,${0.06 + Math.random()*0.06})" stroke-width="1"/>
-                  <circle cx="${x}" cy="${220-h}" r="${3 + Math.random()*4}" fill="rgba(100,200,100,${0.04 + Math.random()*0.06})"/>`;
-        }).join('')}
-        <line x1="0" y1="220" x2="400" y2="220" stroke="rgba(100,200,100,0.05)" stroke-width="0.5"/>
-        ${[...Array(20)].map((_,i) => {
-          const x = Math.random() * 400;
-          const y = Math.random() * 200;
-          return `<circle cx="${x}" cy="${y}" r="${0.3 + Math.random()*0.7}" fill="rgba(200,255,0,${0.02 + Math.random()*0.04})"/>`;
-        }).join('')}
-      </svg>`
+      mood: (() => {
+        const moods = ['😌', '😊', '😔', '😤', '🥰', '😴', '✨'];
+        const els = moods.map((m, i) => {
+          const x = 60 + i * 42; const y = 75 + Math.sin(i * 1.2) * 18;
+          return `<text x="${x}" y="${y}" font-size="22" text-anchor="middle" opacity="${0.4 + i * 0.08}">${m}</text>`;
+        });
+        return `<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">${els.join('')}</svg>`;
+      })(),
+      garden: (() => {
+        const dots = Array.from({length: 30}, () => {
+          const x = Math.random() * 380 + 10;
+          const y = Math.random() * 160 + 10;
+          return `<circle cx="${x}" cy="${y}" r="${1 + Math.random() * 2.5}" fill="rgba(212,168,67,${0.1 + Math.random() * 0.25})"/>`;
+        });
+        return `<svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">${dots.join('')}</svg>`;
+      })()
     };
 
-    // Project data — only public-facing projects
     const projects = [
       {
         title: 'Snake Game',
-        desc: 'A polished snake game built with React Native and Expo. Retro gameplay meets modern design with smooth animations. Play it right here.',
+        desc: 'A polished snake game built with React Native and Expo. Retro gameplay meets modern design with smooth animations.',
         tags: ['react native', 'expo', 'game'],
-        category: 'app',
-        badge: 'App',
-        visual: 'snake',
-        image: null,
-        date: 'Mar 2026',
-        url: 'apps/snake-game/',
-        playable: true
+        category: 'app', badge: 'App', visual: 'snake',
+        date: 'Mar 2026', url: 'apps/snake-game/', playable: true
       },
       {
         title: 'Focus Timer',
-        desc: 'A beautiful Pomodoro timer with circular progress visualization and session tracking. Designed for deep focus. Try it live.',
+        desc: 'A beautiful Pomodoro timer with circular progress visualization and session tracking. Designed for deep focus.',
         tags: ['react native', 'expo', 'productivity'],
-        category: 'app',
-        badge: 'App',
-        visual: 'timer',
-        image: null,
-        date: 'Mar 2026',
-        url: 'apps/focus-timer/',
-        playable: true
+        category: 'app', badge: 'App', visual: 'timer',
+        date: 'Mar 2026', url: 'apps/focus-timer/', playable: true
       },
       {
         title: 'Mood Journal',
-        desc: 'A minimal mood tracking app for daily emotional check-ins. Log how you feel, spot patterns over time. Try it now.',
+        desc: 'A minimal mood tracking app for daily emotional check-ins. Log how you feel, spot patterns over time.',
         tags: ['react native', 'expo', 'wellness'],
-        category: 'app',
-        badge: 'App',
-        visual: 'mood',
-        image: null,
-        date: 'Mar 2026',
-        url: 'apps/mood-journal/',
-        playable: true
+        category: 'app', badge: 'App', visual: 'mood',
+        date: 'Mar 2026', url: 'apps/mood-journal/', playable: true
       },
       {
         title: 'Digital Garden',
         desc: 'This very site — a growing collection of everything we build together. Designed to evolve, with every new project adding another seed.',
         tags: ['html', 'css', 'github pages'],
-        category: 'web',
-        badge: 'Web',
-        visual: 'garden',
-        image: null,
-        date: 'Mar 2026',
-        url: 'https://github.com/ewk-experiments/ewk-experiments.github.io'
+        category: 'web', badge: 'Web', visual: 'garden',
+        date: 'Mar 2026', url: 'https://github.com/ewk-experiments/ewk-experiments.github.io'
       }
     ];
 
-    // Render cards
-    function renderCards(filter = 'all') {
-      const grid = document.getElementById('projects-grid');
-      const filtered = filter === 'all' ? projects : projects.filter(p => p.category === filter);
-      
-      grid.innerHTML = filtered.map((p, i) => `
-        <a href="${p.url}" ${p.playable ? '' : 'target="_blank" rel="noopener"'} class="project-card reveal stagger-${i + 1}" data-category="${p.category}">
-          <div class="card-image-wrap">
-            ${p.image 
-              ? `<img class="card-image" src="${p.image}" alt="${p.title}" loading="lazy" />`
-              : `<div class="card-pattern">${cardVisuals[p.visual]}</div>`
-            }
-            <span class="card-badge badge-${p.category}">${p.badge}</span>
+    // Render
+    const grid = document.getElementById('projects-grid');
+    grid.innerHTML = projects.map((p, i) => `
+      <a href="${p.url}" ${p.playable ? '' : 'target="_blank" rel="noopener"'} class="project-card reveal stagger-${i + 1}">
+        <div class="card-visual">
+          <div class="card-pattern">${cardVisuals[p.visual]}</div>
+          <span class="card-badge badge-${p.category}">${p.badge}</span>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">${p.title}</h3>
+          <p class="card-desc">${p.desc}</p>
+          <div class="card-footer">
+            <div class="card-tags">${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+            <span class="card-date">${p.date}</span>
           </div>
-          <div class="card-body">
-            <h3 class="card-title">${p.title}</h3>
-            <p class="card-desc">${p.desc}</p>
-            <div class="card-footer">
-              <div class="card-tags">
-                ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
-              </div>
-              <span class="card-date">${p.date}</span>
-            </div>
-          </div>
-          <span class="card-arrow">${p.playable ? '▶' : '↗'}</span>
-        </a>
-      `).join('');
-
-      document.getElementById('showing-count').textContent = `Showing ${filtered.length} project${filtered.length !== 1 ? 's' : ''}`;
-      observeAll();
-    }
-
-    // Filters
-    document.querySelectorAll('.filter-pill').forEach(pill => {
-      pill.addEventListener('click', () => {
-        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-        pill.classList.add('active');
-        renderCards(pill.dataset.filter);
-      });
-    });
+        </div>
+        <span class="card-arrow">${p.playable ? '▶' : '↗'}</span>
+      </a>
+    `).join('');
 
     // Intersection Observer
-    function observeAll() {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) entry.target.classList.add('visible');
-        });
-      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-      document.querySelectorAll('.reveal:not(.visible)').forEach(el => observer.observe(el));
-    }
-
-    // Cursor glow (desktop)
-    const glow = document.getElementById('cursor-glow');
-    if (window.matchMedia('(pointer: fine)').matches) {
-      document.addEventListener('mousemove', e => {
-        glow.style.left = e.clientX + 'px';
-        glow.style.top = e.clientY + 'px';
-        glow.classList.add('visible');
-      });
-      document.addEventListener('mouseleave', () => glow.classList.remove('visible'));
-    }
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
     // Header hide on scroll
     let lastY = 0;
     const header = document.getElementById('header');
     window.addEventListener('scroll', () => {
       const y = window.scrollY;
-      if (y > 100 && y > lastY) header.classList.add('hidden');
-      else header.classList.remove('hidden');
+      header.classList.toggle('hidden', y > 80 && y > lastY);
       lastY = y;
     }, { passive: true });
 
-    // Init
-    renderCards();
-    observeAll();
-    requestAnimationFrame(() => document.body.classList.add('page-loaded'));
-  </script>
+    // Theme toggle
+    const toggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
 
+    // Respect system preference, allow override
+    const stored = localStorage.getItem('theme');
+    if (stored) {
+      html.dataset.theme = stored;
+    } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+      html.dataset.theme = 'light';
+    }
+    toggle.setAttribute('aria-checked', html.dataset.theme === 'dark');
+
+    toggle.addEventListener('click', () => {
+      const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
+      html.dataset.theme = next;
+      localStorage.setItem('theme', next);
+      toggle.setAttribute('aria-checked', next === 'dark');
+    });
+
+    // Init
+    requestAnimationFrame(() => document.body.classList.add('loaded'));
+  </script>
 </body>
 </html>
