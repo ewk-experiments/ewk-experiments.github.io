@@ -7,1885 +7,1263 @@
 <meta name="description" content="ewk labs is an experimental AI studio based in Seattle. We build niche, interesting products at the intersection of AI and design.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --bg: #111111;
-  --surface: #1A1A1A;
-  --surface-raised: #222222;
-  --text-primary: #F0F0F0;
-  --text-secondary: #8A8A8A;
-  --text-dim: #555555;
-  --accent-warm: #D4A843;
-  --accent-warm-dim: rgba(212, 168, 67, 0.15);
-  --accent-teal: #0A4D3C;
-  --accent-teal-bright: #0D6B52;
-  --font-ui: 'Inter', -apple-system, sans-serif;
-  --font-editorial: 'Lora', Georgia, serif;
+  --blue-400: #00AAFF;
+  --blue-500: #0088FF;
+  --blue-600: #0066FF;
+  --blue-700: #0044DD;
+  --blue-glow: rgba(0, 102, 255, 0.4);
+  --blue-glow-soft: rgba(0, 136, 255, 0.15);
+  --dark-950: #08090c;
+  --dark-900: #0d0f14;
+  --dark-800: #13161d;
+  --dark-700: #1a1e28;
+  --dark-600: #232836;
+  --dark-500: #3a4050;
+  --dark-400: #555d70;
+  --dark-300: #7a8394;
+  --dark-200: #a0a8b8;
+  --dark-100: #c8cdd8;
+  --dark-50: #e8ebf0;
+  --light-50: #f8f9fc;
+  --light-100: #f0f2f7;
+  --light-200: #e4e7ef;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --radius: 12px;
-  --radius-lg: 20px;
-  --shadow-soft: 0 4px 24px rgba(0,0,0,0.3);
-  --shadow-glow: 0 0 40px rgba(212, 168, 67, 0.08);
 }
 
-html {
-  scroll-behavior: smooth;
-  font-size: 16px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--text-dim) transparent;
-}
+html { scroll-behavior: smooth; }
 
 body {
-  font-family: var(--font-ui);
-  background: var(--bg);
-  color: var(--text-primary);
-  line-height: 1.6;
+  font-family: var(--font-sans);
+  color: var(--dark-100);
+  background: var(--dark-950);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Scroll Progress ── */
-.scroll-progress {
+/* Progress bar */
+#progress {
   position: fixed;
-  top: 0;
   left: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--accent-warm), var(--accent-teal-bright));
-  width: 0%;
+  top: 0;
+  width: 3px;
+  height: 0%;
+  background: linear-gradient(180deg, var(--blue-400), var(--blue-600));
   z-index: 1000;
-  transition: width 0.1s linear;
+  transition: height 0.1s linear;
+  box-shadow: 0 0 12px var(--blue-glow);
 }
 
-/* ── Section Progress Dots ── */
-.section-nav {
-  position: fixed;
-  right: 32px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 100;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.section-nav a {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--text-dim);
-  display: block;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
-}
-
-.section-nav a.active {
-  background: var(--accent-warm);
-  box-shadow: 0 0 12px rgba(212, 168, 67, 0.4);
-  transform: scale(1.3);
-}
-
-.section-nav a::before {
-  content: attr(data-label);
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 11px;
-  font-family: var(--font-mono);
-  color: var(--text-secondary);
-  white-space: nowrap;
-  opacity: 0;
-  transition: opacity 0.3s;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.section-nav a:hover::before { opacity: 1; }
-
-/* ── Navigation ── */
-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 500;
-  padding: 24px 48px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  backdrop-filter: blur(20px) saturate(1.5);
-  -webkit-backdrop-filter: blur(20px) saturate(1.5);
-  background: rgba(17, 17, 17, 0.7);
-  border-bottom: 1px solid rgba(240, 240, 240, 0.04);
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-nav.scrolled {
-  padding: 16px 48px;
-  background: rgba(17, 17, 17, 0.9);
-}
-
-.nav-logo {
-  font-family: var(--font-mono);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  color: var(--text-primary);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logo-mark {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, var(--accent-warm), var(--accent-teal-bright));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--bg);
-  position: relative;
-  overflow: hidden;
-}
-
-.logo-mark::after {
-  content: '';
-  position: absolute;
-  inset: 2px;
-  border-radius: 6px;
-  background: var(--bg);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.nav-logo:hover .logo-mark::after { opacity: 0.3; }
-
-.nav-links {
-  display: flex;
-  gap: 32px;
-  align-items: center;
-}
-
-.nav-links a {
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--text-secondary);
-  text-decoration: none;
-  letter-spacing: 0.04em;
-  transition: color 0.3s;
-  position: relative;
-}
-
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-  width: 0;
-  height: 1px;
-  background: var(--accent-warm);
-  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.nav-links a:hover { color: var(--text-primary); }
-.nav-links a:hover::after { width: 100%; }
-
-.nav-store {
-  font-family: var(--font-mono) !important;
-  font-size: 12px !important;
-  padding: 8px 20px;
-  background: var(--accent-warm-dim);
-  border: 1px solid rgba(212, 168, 67, 0.2);
-  border-radius: 100px;
-  color: var(--accent-warm) !important;
-  transition: all 0.3s !important;
-}
-
-.nav-store:hover {
-  background: rgba(212, 168, 67, 0.25) !important;
-  border-color: rgba(212, 168, 67, 0.4) !important;
-}
-
-.nav-store::after { display: none !important; }
-
-/* ── Reveal Animation ── */
+/* Reveal animation */
 .reveal {
   opacity: 0;
   transform: translateY(40px);
   transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
 
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.reveal-stagger { transition-delay: var(--delay, 0ms); }
-
-/* ── Section base ── */
-section {
-  position: relative;
-  overflow: hidden;
-  transition: background-color 0.8s ease;
-}
-
-/* ── HERO ── */
-.hero {
+/* ─── HERO ─── */
+#hero {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 0 48px;
-  background: var(--bg);
+  align-items: center;
+  text-align: center;
+  background: var(--dark-950);
   position: relative;
+  overflow: hidden;
 }
 
-.hero-grid {
+#hero-canvas {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(240, 240, 240, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(240, 240, 240, 0.02) 1px, transparent 1px);
-  background-size: 80px 80px;
-  mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, black, transparent);
-  -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, black, transparent);
-}
-
-.hero-glow {
-  position: absolute;
-  top: 20%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 800px;
-  height: 600px;
-  background: radial-gradient(ellipse, rgba(212, 168, 67, 0.06) 0%, transparent 70%);
+  width: 100%;
+  height: 100%;
   pointer-events: none;
 }
 
+/* CSS fallback for when WebGL fails */
+.hero-css-fallback {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.hero-css-fallback .orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0;
+  animation: css-orb-float 8s ease-in-out infinite;
+}
+.hero-css-fallback .orb:nth-child(1) {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(0,102,255,0.3), transparent 70%);
+  top: 20%; left: 15%;
+  animation-delay: 0s;
+}
+.hero-css-fallback .orb:nth-child(2) {
+  width: 250px; height: 250px;
+  background: radial-gradient(circle, rgba(0,170,255,0.25), transparent 70%);
+  top: 40%; right: 10%;
+  animation-delay: -2s;
+}
+.hero-css-fallback .orb:nth-child(3) {
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(0,68,221,0.3), transparent 70%);
+  bottom: 20%; left: 40%;
+  animation-delay: -4s;
+}
+.hero-css-fallback .orb:nth-child(4) {
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(0,136,255,0.2), transparent 70%);
+  top: 60%; left: 5%;
+  animation-delay: -6s;
+}
+@keyframes css-orb-float {
+  0%, 100% { opacity: 0.4; transform: translateY(0) scale(1); }
+  50% { opacity: 0.8; transform: translateY(-30px) scale(1.1); }
+}
+
 .hero-content {
-  max-width: 900px;
   position: relative;
   z-index: 2;
 }
 
-.hero-label {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--accent-warm);
-  margin-bottom: 32px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.hero-label::before {
-  content: '';
-  width: 24px;
-  height: 1px;
-  background: var(--accent-warm);
-}
-
-.hero h1 {
-  font-family: var(--font-editorial);
-  font-size: clamp(48px, 7vw, 96px);
+.hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(4rem, 12vw, 10rem);
   font-weight: 400;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  color: var(--text-primary);
-  margin-bottom: 32px;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  color: #fff;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 80px rgba(0, 102, 255, 0.3), 0 2px 4px rgba(0,0,0,0.5);
 }
 
-.hero h1 em {
-  font-style: italic;
-  color: var(--accent-warm);
-}
-
-.hero-sub {
-  font-size: 18px;
-  font-weight: 300;
-  color: var(--text-secondary);
-  max-width: 520px;
-  line-height: 1.7;
-  margin-bottom: 48px;
-}
-
-.hero-actions {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-}
-
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 32px;
-  background: var(--accent-warm);
-  color: var(--bg);
-  font-family: var(--font-ui);
-  font-size: 14px;
-  font-weight: 600;
-  border: none;
-  border-radius: 100px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.2));
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(212, 168, 67, 0.3); }
-.btn-primary:hover::before { opacity: 1; }
-
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 32px;
-  background: transparent;
-  color: var(--text-secondary);
-  font-family: var(--font-ui);
-  font-size: 14px;
-  font-weight: 400;
-  border: 1px solid var(--text-dim);
-  border-radius: 100px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.btn-ghost:hover { border-color: var(--text-secondary); color: var(--text-primary); }
-
-.hero-meta {
-  position: absolute;
-  bottom: 48px;
-  left: 48px;
-  right: 48px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-}
-
-.hero-scroll {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.hero-subtitle {
   font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-dim);
-  letter-spacing: 0.1em;
+  font-size: clamp(0.75rem, 1.5vw, 1rem);
+  font-weight: 400;
+  color: var(--dark-300);
+  letter-spacing: 0.15em;
   text-transform: uppercase;
 }
 
-.scroll-line {
-  width: 1px;
-  height: 48px;
-  background: linear-gradient(to bottom, var(--accent-warm), transparent);
-  animation: scrollPulse 2s ease-in-out infinite;
-}
-
-@keyframes scrollPulse {
-  0%, 100% { opacity: 0.3; transform: scaleY(0.6); }
-  50% { opacity: 1; transform: scaleY(1); }
-}
-
-.hero-coords {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-dim);
-  letter-spacing: 0.05em;
-}
-
-/* ── PROJECTS ── */
-.projects {
-  background: var(--surface);
-  padding: 160px 48px;
-  position: relative;
-}
-
-.projects::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 48px;
-  right: 48px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(240, 240, 240, 0.06), transparent);
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 80px;
-}
-
+/* ─── SECTION TITLES ─── */
 .section-label {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 0.75rem;
+  font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--accent-warm);
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.section-label::before {
-  content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent-warm);
-  display: inline-block;
+  color: var(--blue-500);
+  margin-bottom: 1rem;
 }
 
 .section-title {
-  font-family: var(--font-editorial);
-  font-size: clamp(36px, 4vw, 56px);
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 400;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
+  color: #fff;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
-.section-count {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--text-dim);
-  letter-spacing: 0.05em;
+/* ─── PROJECTS ─── */
+#projects-ai, #projects-apps {
+  padding: 8rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-top: 4rem;
 }
 
+/* ─── GLASS CARD ─── */
 .project-card {
-  background: var(--surface-raised);
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(240, 240, 240, 0.04);
+  background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+  border-radius: 20px;
   overflow: hidden;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
-  cursor: pointer;
-  group: true;
-}
-
-.project-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(212, 168, 67, 0.15);
-  box-shadow: var(--shadow-glow);
-}
-
-.project-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, rgba(212, 168, 67, 0.03), transparent);
-  opacity: 0;
-  transition: opacity 0.5s;
-  pointer-events: none;
-}
-
-.project-card:hover::after { opacity: 1; }
-
-.project-preview {
-  aspect-ratio: 16/10;
-  background: var(--bg);
-  position: relative;
-  overflow: hidden;
-}
-
-.project-preview-inner {
-  position: absolute;
-  inset: 24px;
-  border-radius: 8px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Abstract project visuals */
-.preview-viz {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-.preview-viz.dashboard {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 8px;
-  padding: 16px;
-}
-
-.dash-block {
-  border-radius: 6px;
-  background: rgba(212, 168, 67, 0.08);
-  border: 1px solid rgba(212, 168, 67, 0.1);
-  position: relative;
-  overflow: hidden;
-}
-
-.dash-block::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: var(--h, 40%);
-  background: linear-gradient(to top, rgba(212, 168, 67, 0.15), transparent);
-  border-radius: 0 0 6px 6px;
-}
-
-.dash-block:nth-child(1) { grid-column: span 2; --h: 60%; }
-.dash-block:nth-child(4) { --h: 80%; }
-.dash-block:nth-child(5) { --h: 30%; }
-
-.preview-viz.graph {
-  background: linear-gradient(135deg, #0a1a15, #0d2818);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-
-.graph-nodes {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-.g-node {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--accent-teal-bright);
-  box-shadow: 0 0 16px rgba(13, 107, 82, 0.4);
-}
-
-.g-node:nth-child(1) { top: 20%; left: 30%; }
-.g-node:nth-child(2) { top: 50%; left: 60%; width: 16px; height: 16px; }
-.g-node:nth-child(3) { top: 70%; left: 25%; width: 10px; height: 10px; }
-.g-node:nth-child(4) { top: 30%; left: 75%; }
-.g-node:nth-child(5) { top: 65%; left: 70%; width: 14px; height: 14px; }
-
-.g-line {
-  position: absolute;
-  height: 1px;
-  background: rgba(13, 107, 82, 0.3);
-  transform-origin: left center;
-}
-
-.preview-viz.landing {
-  background: linear-gradient(135deg, #1a1a1a, #222);
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  gap: 12px;
-}
-
-.landing-block {
-  border-radius: 6px;
-  background: rgba(240, 240, 240, 0.04);
-}
-
-.landing-block:nth-child(1) { height: 12px; width: 40%; }
-.landing-block:nth-child(2) { height: 8px; width: 70%; background: rgba(212, 168, 67, 0.1); }
-.landing-block:nth-child(3) { flex: 1; border: 1px solid rgba(240, 240, 240, 0.06); }
-.landing-block:nth-child(4) { height: 32px; width: 30%; border-radius: 100px; background: rgba(212, 168, 67, 0.12); }
-
-.preview-viz.portfolio {
-  background: linear-gradient(135deg, #111, #1a1a1a);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  padding: 16px;
-}
-
-.port-block {
-  border-radius: 8px;
-  background: rgba(240, 240, 240, 0.03);
-  border: 1px solid rgba(240, 240, 240, 0.05);
-  aspect-ratio: 1;
-}
-
-.port-block:first-child { grid-column: span 2; aspect-ratio: 2/1; }
-
-.project-info {
-  padding: 28px;
-}
-
-.project-tag {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--accent-warm);
-  margin-bottom: 12px;
-}
-
-.project-name {
-  font-family: var(--font-editorial);
-  font-size: 22px;
-  font-weight: 500;
-  margin-bottom: 8px;
-  line-height: 1.3;
-}
-
-.project-desc {
-  font-size: 14px;
-  color: var(--text-secondary);
-  line-height: 1.6;
-}
-
-.project-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 28px 24px;
-}
-
-.project-tech {
-  display: flex;
-  gap: 6px;
-}
-
-.tech-pill {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  padding: 4px 10px;
-  border-radius: 100px;
-  background: rgba(240, 240, 240, 0.04);
-  color: var(--text-dim);
-  border: 1px solid rgba(240, 240, 240, 0.06);
-}
-
-.project-arrow {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(240, 240, 240, 0.04);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-  color: var(--text-dim);
-  font-size: 14px;
-}
-
-.project-card:hover .project-arrow {
-  background: var(--accent-warm-dim);
-  color: var(--accent-warm);
-}
-
-/* ── LAB ── */
-.lab {
-  padding: 160px 48px;
-  background: var(--bg);
-  position: relative;
-}
-
-.lab::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 48px;
-  right: 48px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(240, 240, 240, 0.06), transparent);
-}
-
-.lab-desc {
-  font-size: 16px;
-  color: var(--text-secondary);
-  max-width: 480px;
-  line-height: 1.7;
-  margin-top: 16px;
-}
-
-.lab-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-
-.lab-card {
-  background: var(--surface-raised);
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(240, 240, 240, 0.04);
-  overflow: hidden;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
-  cursor: pointer;
   text-decoration: none;
   color: inherit;
   display: block;
+  position: relative;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.06) inset,
+    0 4px 24px rgba(0,0,0,0.3),
+    0 1px 3px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
-.lab-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(212, 168, 67, 0.15);
-  box-shadow: var(--shadow-glow);
-}
-
-.lab-card::after {
+.project-card::before {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, rgba(212, 168, 67, 0.03), transparent);
+  border-radius: 20px;
+  background: radial-gradient(ellipse at 30% 0%, rgba(0,136,255,0.08) 0%, transparent 60%);
+  pointer-events: none;
   opacity: 0;
   transition: opacity 0.5s;
-  pointer-events: none;
 }
 
-.lab-card:hover::after { opacity: 1; }
+.project-card:hover::before { opacity: 1; }
 
-.lab-card-visual {
-  aspect-ratio: 16/10;
-  background: var(--bg);
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Lab 001: Magnetic Field viz */
-.lab-viz-magnetic {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  background: linear-gradient(135deg, #0a0a1a, #111128);
-}
-
-.mag-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  border-radius: 50%;
-  border: 1px solid rgba(212, 168, 67, 0.15);
-  transform: translate(-50%, -50%);
-  animation: magPulse 4s ease-in-out infinite;
-}
-
-.mag-ring:nth-child(1) { width: 40px; height: 40px; animation-delay: 0s; border-color: rgba(212, 168, 67, 0.3); }
-.mag-ring:nth-child(2) { width: 80px; height: 80px; animation-delay: 0.4s; }
-.mag-ring:nth-child(3) { width: 120px; height: 120px; animation-delay: 0.8s; }
-.mag-ring:nth-child(4) { width: 160px; height: 160px; animation-delay: 1.2s; border-color: rgba(13, 107, 82, 0.15); }
-.mag-ring:nth-child(5) { width: 200px; height: 200px; animation-delay: 1.6s; border-color: rgba(13, 107, 82, 0.1); }
-
-.mag-core {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent-warm);
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 20px rgba(212, 168, 67, 0.4);
-}
-
-@keyframes magPulse {
-  0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.95); }
-  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
-}
-
-/* Lab 002: Placeholder grid */
-.lab-viz-pending {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  background: linear-gradient(135deg, #0d1a15, #0a1612);
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(4, 1fr);
-  gap: 4px;
-  padding: 24px;
-}
-
-.pending-cell {
-  border-radius: 3px;
-  background: rgba(13, 107, 82, 0.08);
-  border: 1px solid rgba(13, 107, 82, 0.06);
-  transition: background 0.6s;
-}
-
-.lab-viz-pending:hover .pending-cell:nth-child(odd) {
-  background: rgba(13, 107, 82, 0.15);
-}
-
-/* Lab 003: Placeholder wave */
-.lab-viz-pending-b {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  background: linear-gradient(135deg, #1a1210, #15110d);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 3px;
-  padding: 24px 32px;
-}
-
-.wave-bar {
-  flex: 1;
-  background: rgba(212, 168, 67, 0.1);
-  border-radius: 2px 2px 0 0;
-  transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.wave-bar:nth-child(1) { height: 20%; }
-.wave-bar:nth-child(2) { height: 35%; }
-.wave-bar:nth-child(3) { height: 55%; }
-.wave-bar:nth-child(4) { height: 70%; }
-.wave-bar:nth-child(5) { height: 85%; }
-.wave-bar:nth-child(6) { height: 65%; }
-.wave-bar:nth-child(7) { height: 45%; }
-.wave-bar:nth-child(8) { height: 30%; }
-.wave-bar:nth-child(9) { height: 50%; }
-.wave-bar:nth-child(10) { height: 40%; }
-.wave-bar:nth-child(11) { height: 25%; }
-.wave-bar:nth-child(12) { height: 15%; }
-
-.lab-card:hover .wave-bar { background: rgba(212, 168, 67, 0.2); }
-
-.lab-card-info {
-  padding: 28px;
-}
-
-.lab-card-num {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--accent-warm);
-  margin-bottom: 12px;
-}
-
-.lab-card-title {
-  font-family: var(--font-editorial);
-  font-size: 20px;
-  font-weight: 500;
-  margin-bottom: 8px;
-  line-height: 1.3;
-}
-
-.lab-card-status {
-  font-size: 13px;
-  color: var(--text-dim);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.05em;
-}
-
-.lab-card-footer {
-  display: flex;
-  justify-content: flex-end;
-  padding: 0 28px 24px;
-}
-
-.lab-card .project-arrow {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(240, 240, 240, 0.04);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-  color: var(--text-dim);
-  font-size: 14px;
-}
-
-.lab-card:hover .project-arrow {
-  background: var(--accent-warm-dim);
-  color: var(--accent-warm);
-}
-
-@media (max-width: 900px) {
-  .lab { padding: 80px 24px; }
-  .lab-grid { grid-template-columns: 1fr; }
-}
-
-/* ── PHILOSOPHY ── */
-.philosophy {
-  padding: 160px 48px;
-  background: var(--bg);
-  position: relative;
-}
-
-.philosophy::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 48px;
-  right: 48px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(240, 240, 240, 0.06), transparent);
-}
-
-.philosophy-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
-  max-width: 1200px;
-}
-
-.philosophy-text .section-title {
-  margin-bottom: 40px;
-}
-
-.philosophy-quote {
-  font-family: var(--font-editorial);
-  font-size: 24px;
-  font-style: italic;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  margin-bottom: 32px;
-  padding-left: 24px;
-  border-left: 2px solid var(--accent-warm);
-}
-
-.philosophy-body {
-  font-size: 15px;
-  color: var(--text-secondary);
-  line-height: 1.8;
-}
-
-.philosophy-values {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding-top: 24px;
-}
-
-.value-card {
-  padding: 32px;
-  border-radius: var(--radius);
-  background: var(--surface);
-  border: 1px solid rgba(240, 240, 240, 0.04);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.value-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 3px;
-  height: 100%;
-  background: var(--accent-warm);
-  transform: scaleY(0);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  transform-origin: top;
-}
-
-.value-card:hover::before { transform: scaleY(1); }
-
-.value-card:hover {
-  border-color: rgba(212, 168, 67, 0.1);
-  transform: translateX(4px);
-}
-
-.value-num {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--accent-warm);
-  letter-spacing: 0.1em;
-  margin-bottom: 12px;
-}
-
-.value-title {
-  font-family: var(--font-editorial);
-  font-size: 20px;
-  margin-bottom: 8px;
-}
-
-.value-desc {
-  font-size: 14px;
-  color: var(--text-secondary);
-  line-height: 1.6;
-}
-
-/* ── STORE CTA ── */
-.store-cta {
-  padding: 120px 48px;
-  background: var(--surface);
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.store-cta::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(ellipse, rgba(212, 168, 67, 0.04), transparent);
-  pointer-events: none;
-}
-
-.store-cta .section-label { justify-content: center; }
-
-.store-cta .section-title {
-  margin-bottom: 20px;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.store-cta-sub {
-  font-size: 16px;
-  color: var(--text-secondary);
-  max-width: 480px;
-  margin: 0 auto 40px;
-  line-height: 1.7;
-}
-
-.store-products-mini {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  margin-bottom: 48px;
-  flex-wrap: wrap;
-}
-
-.mini-product {
-  padding: 16px 24px;
-  background: var(--surface-raised);
-  border: 1px solid rgba(240, 240, 240, 0.04);
-  border-radius: var(--radius);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: all 0.3s;
-}
-
-.mini-product:hover {
-  border-color: rgba(212, 168, 67, 0.15);
-  transform: translateY(-2px);
-}
-
-.mini-product-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.mini-product-icon.warm { background: var(--accent-warm-dim); color: var(--accent-warm); }
-.mini-product-icon.teal { background: rgba(10, 77, 60, 0.2); color: var(--accent-teal-bright); }
-
-.mini-product-name {
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.mini-product-price {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--text-dim);
-}
-
-/* ── ABOUT ── */
-.about {
-  padding: 160px 48px;
-  background: var(--bg);
-  position: relative;
-}
-
-.about::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 48px;
-  right: 48px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(240, 240, 240, 0.06), transparent);
-}
-
-.about-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
-  max-width: 1200px;
-}
-
-.about-text .section-title { margin-bottom: 32px; }
-
-.about-body {
-  font-size: 15px;
-  color: var(--text-secondary);
-  line-height: 1.8;
-  margin-bottom: 32px;
-}
-
-.about-details {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-
-.about-detail {
-  padding: 24px;
-  background: var(--surface);
-  border-radius: var(--radius);
-  border: 1px solid rgba(240, 240, 240, 0.04);
-}
-
-.about-detail-label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  margin-bottom: 8px;
-}
-
-.about-detail-value {
-  font-family: var(--font-editorial);
-  font-size: 18px;
-}
-
-.about-right {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-/* Neumorphic terminal */
-.terminal-card {
-  background: #0D0D0D;
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(240, 240, 240, 0.06);
-  overflow: hidden;
+.project-card:hover {
+  transform: translateY(-8px);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.04),
-    0 8px 32px rgba(0,0,0,0.4);
+    0 1px 0 rgba(255,255,255,0.08) inset,
+    0 16px 48px rgba(0,102,255,0.15),
+    0 4px 12px rgba(0,0,0,0.3);
 }
 
-.terminal-bar {
-  padding: 12px 16px;
+.project-visual {
+  aspect-ratio: 4/3;
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: rgba(255,255,255,0.02);
-  border-bottom: 1px solid rgba(240, 240, 240, 0.04);
-}
-
-.terminal-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-
-.terminal-dot:nth-child(1) { background: #FF5F57; }
-.terminal-dot:nth-child(2) { background: #FFBD2E; }
-.terminal-dot:nth-child(3) { background: #28C840; }
-
-.terminal-title {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-dim);
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.terminal-body {
-  padding: 24px;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1.8;
-  color: var(--text-secondary);
-}
-
-.terminal-line { margin-bottom: 4px; }
-.terminal-prompt { color: var(--accent-warm); }
-.terminal-cmd { color: var(--text-primary); }
-.terminal-comment { color: var(--text-dim); }
-.terminal-output { color: var(--accent-teal-bright); }
-
-.terminal-cursor {
-  display: inline-block;
-  width: 8px;
-  height: 16px;
-  background: var(--accent-warm);
-  vertical-align: text-bottom;
-  animation: blink 1s step-end infinite;
-}
-
-@keyframes blink { 50% { opacity: 0; } }
-
-/* Status card - glassmorphism */
-.status-card {
-  background: rgba(26, 26, 26, 0.6);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(240, 240, 240, 0.06);
-  border-radius: var(--radius-lg);
-  padding: 32px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
-}
-
-.status-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.status-title {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-}
-
-.status-live {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--accent-teal-bright);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.status-live::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent-teal-bright);
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; box-shadow: 0 0 8px rgba(13, 107, 82, 0.6); }
-}
-
-.status-items { display: flex; flex-direction: column; gap: 16px; }
-
-.status-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.status-item-label {
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-
-.status-item-value {
-  font-family: var(--font-mono);
-  font-size: 13px;
-  color: var(--text-primary);
-}
-
-.status-bar-track {
-  width: 100%;
-  height: 4px;
-  background: rgba(240, 240, 240, 0.04);
-  border-radius: 2px;
-  margin-top: 20px;
+  justify-content: center;
+  position: relative;
   overflow: hidden;
 }
 
-.status-bar-fill {
-  height: 100%;
-  border-radius: 2px;
-  background: linear-gradient(90deg, var(--accent-teal-bright), var(--accent-warm));
-  width: 0%;
-  transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+.project-visual svg {
+  width: 70%;
+  height: 70%;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
 }
 
-/* ── FOOTER ── */
-footer {
-  padding: 48px;
-  border-top: 1px solid rgba(240, 240, 240, 0.04);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.project-card:hover .project-visual svg {
+  transform: scale(1.08);
 }
 
-.footer-left {
+.project-info {
+  padding: 1.75rem 2rem 2rem;
+}
+
+.project-name {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.project-type {
   font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--text-dim);
-  letter-spacing: 0.05em;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--blue-400);
+  margin-bottom: 0.75rem;
+}
+
+.project-desc {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--dark-300);
+}
+
+/* Individual project visual backgrounds */
+.vis-futureself { background: linear-gradient(135deg, #0a1628 0%, #0d2040 100%); }
+.vis-system0 { background: linear-gradient(135deg, #080c18 0%, #0a1628 100%); }
+.vis-causalme { background: linear-gradient(135deg, #0d1530 0%, #0a1e40 100%); }
+.vis-snake { background: linear-gradient(135deg, #0a1a12 0%, #0d2818 100%); }
+.vis-timer { background: linear-gradient(135deg, #1a0d0d 0%, #2a1212 100%); }
+.vis-mood { background: linear-gradient(135deg, #0d0a1a 0%, #140e28 100%); }
+
+/* ─── PHILOSOPHY ─── */
+#philosophy {
+  padding: 10rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  background: var(--dark-900);
+  position: relative;
+}
+
+#philosophy::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(0,102,255,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.philosophy-text {
+  font-family: var(--font-serif);
+  font-size: clamp(1.75rem, 3.5vw, 3rem);
+  line-height: 1.35;
+  max-width: 900px;
+  text-align: center;
+  color: var(--dark-200);
+  letter-spacing: -0.01em;
+  position: relative;
+}
+
+/* ─── STORE CTA ─── */
+#store {
+  padding: 8rem 2rem;
+  text-align: center;
+  background: var(--dark-950);
+}
+
+.store-inner {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.store-desc {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--dark-300);
+  margin: 1.5rem 0 2.5rem;
+}
+
+/* ─── GLOWING BUTTON ─── */
+.btn {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.9rem 2.5rem;
+  border-radius: 100px;
+  text-decoration: none;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-500) 100%);
+  color: white;
+  box-shadow:
+    0 0 20px rgba(0,102,255,0.3),
+    0 0 60px rgba(0,102,255,0.1),
+    0 1px 0 rgba(255,255,255,0.15) inset,
+    0 4px 12px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 30px rgba(0,102,255,0.5),
+    0 0 80px rgba(0,102,255,0.2),
+    0 1px 0 rgba(255,255,255,0.2) inset,
+    0 8px 24px rgba(0,0,0,0.3);
+}
+
+/* ─── ABOUT ─── */
+#about {
+  padding: 8rem 2rem;
+  background: var(--dark-900);
+}
+
+.about-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 4rem;
+}
+
+.about-card {
+  padding: 3rem;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.05) inset,
+    0 4px 24px rgba(0,0,0,0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.about-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 30% 20%, rgba(0,102,255,0.04) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.about-initial {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: white;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.about-initial-e {
+  background: linear-gradient(135deg, var(--blue-600), var(--blue-700));
+  box-shadow: 0 4px 16px rgba(0,102,255,0.3), 0 1px 0 rgba(255,255,255,0.15) inset;
+}
+
+.about-initial-k {
+  background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+  box-shadow: 0 4px 16px rgba(0,136,255,0.3), 0 1px 0 rgba(255,255,255,0.15) inset;
+}
+
+.about-name {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  margin-bottom: 0.25rem;
+  color: #fff;
+}
+
+.about-role {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--blue-400);
+  margin-bottom: 1rem;
+}
+
+.about-bio {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--dark-300);
+  position: relative;
+}
+
+/* ─── FOOTER ─── */
+footer {
+  padding: 4rem 2rem;
+  text-align: center;
+  background: var(--dark-950);
+  border-top: 1px solid rgba(255,255,255,0.05);
 }
 
 .footer-links {
   display: flex;
-  gap: 24px;
+  justify-content: center;
+  gap: 2.5rem;
+  margin-bottom: 2rem;
 }
 
 .footer-links a {
-  font-size: 13px;
-  color: var(--text-dim);
+  color: var(--dark-300);
   text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
   transition: color 0.3s;
 }
 
-.footer-links a:hover { color: var(--text-secondary); }
+.footer-links a:hover { color: var(--blue-400); }
 
-/* ── RESPONSIVE ── */
-@media (max-width: 900px) {
-  nav { padding: 16px 24px; }
-  .hero { padding: 0 24px; }
-  .hero-meta { left: 24px; right: 24px; bottom: 24px; }
-  .projects { padding: 80px 24px; }
+.footer-copy {
+  font-size: 0.8rem;
+  color: var(--dark-500);
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+  .about-grid { grid-template-columns: 1fr; }
   .projects-grid { grid-template-columns: 1fr; }
-  .philosophy { padding: 80px 24px; }
-  .philosophy-layout { grid-template-columns: 1fr; gap: 48px; }
-  .store-cta { padding: 80px 24px; }
-  .about { padding: 80px 24px; }
-  .about-layout { grid-template-columns: 1fr; gap: 48px; }
-  .section-header { flex-direction: column; align-items: flex-start; gap: 8px; }
-  .section-nav { display: none; }
-  footer { padding: 32px 24px; flex-direction: column; gap: 16px; }
+  #projects-ai, #projects-apps, #store, #about { padding: 5rem 1.5rem; }
+  #philosophy { padding: 6rem 1.5rem; }
+  .about-card { padding: 2rem; }
 }
 
-@media (max-width: 600px) {
-  .nav-links a:not(.nav-store) { display: none; }
-  .hero-coords { display: none; }
-  .store-products-mini { flex-direction: column; align-items: center; }
-  .about-details { grid-template-columns: 1fr; }
-}
+/* ─── SVG ANIMATIONS ─── */
+@keyframes float1 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes float2 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes float3 { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-6px) rotate(3deg); } }
+@keyframes pulse-ring { 0%, 100% { stroke-dashoffset: 220; } 50% { stroke-dashoffset: 100; } }
+@keyframes wave-shift { 0% { transform: translateX(0); } 100% { transform: translateX(-20px); } }
+@keyframes orbit { 0% { transform: rotate(0deg) translateX(24px) rotate(0deg); } 100% { transform: rotate(360deg) translateX(24px) rotate(-360deg); } }
+@keyframes orbit-sm { 0% { transform: rotate(0deg) translateX(16px) rotate(0deg); } 100% { transform: rotate(360deg) translateX(16px) rotate(-360deg); } }
+@keyframes snake-move { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(6px); } }
+@keyframes shimmer { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+@keyframes shimmer2 { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
+@keyframes pulse-glow { 0%, 100% { r: 3; opacity: 0.6; } 50% { r: 5; opacity: 1; } }
+@keyframes pulse-expand { 0% { r: 20; opacity: 0.3; } 100% { r: 45; opacity: 0; } }
+@keyframes pulse-expand2 { 0% { r: 20; opacity: 0.2; } 100% { r: 50; opacity: 0; } }
+@keyframes data-flow { 0% { stroke-dashoffset: 20; } 100% { stroke-dashoffset: 0; } }
+@keyframes data-flow-rev { 0% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 20; } }
+@keyframes sweep-hand { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes sparkle { 0%, 100% { opacity: 0; transform: scale(0.5); } 50% { opacity: 1; transform: scale(1); } }
+@keyframes wave-morph1 { 0%, 100% { d: path("M0,80 Q25,60 50,80 Q75,100 100,80 Q125,60 150,80 Q175,100 200,80 Q225,60 250,80"); } 50% { d: path("M0,80 Q25,70 50,75 Q75,90 100,85 Q125,70 150,75 Q175,95 200,80 Q225,65 250,80"); } }
+
+.anim-float1 { animation: float1 4s ease-in-out infinite; }
+.anim-float2 { animation: float2 5s ease-in-out infinite 0.5s; }
+.anim-float3 { animation: float3 6s ease-in-out infinite 1s; }
+.anim-pulse-ring { animation: pulse-ring 3s ease-in-out infinite; }
+.anim-wave { animation: wave-shift 2s linear infinite; }
+.anim-orbit { animation: orbit 8s linear infinite; }
+.anim-orbit-sm { animation: orbit-sm 6s linear infinite reverse; }
+.anim-snake { animation: snake-move 1.5s ease-in-out infinite; }
+.anim-shimmer { animation: shimmer 3s ease-in-out infinite; }
+.anim-shimmer2 { animation: shimmer2 4s ease-in-out infinite 1s; }
+.anim-pulse-expand { animation: pulse-expand 2.5s ease-out infinite; }
+.anim-pulse-expand2 { animation: pulse-expand2 2.5s ease-out infinite 1.25s; }
+.anim-data-flow { animation: data-flow 1s linear infinite; }
+.anim-data-flow-rev { animation: data-flow-rev 1s linear infinite; }
+.anim-sweep { animation: sweep-hand 10s linear infinite; transform-origin: 100px 75px; }
+.anim-sparkle1 { animation: sparkle 3s ease-in-out infinite; }
+.anim-sparkle2 { animation: sparkle 3s ease-in-out infinite 0.5s; }
+.anim-sparkle3 { animation: sparkle 3s ease-in-out infinite 1s; }
+.anim-sparkle4 { animation: sparkle 3s ease-in-out infinite 1.5s; }
+.anim-sparkle5 { animation: sparkle 3s ease-in-out infinite 2s; }
 </style>
 </head>
 <body>
 
-<div class="scroll-progress" id="scrollProgress"></div>
+<div id="progress"></div>
 
-<nav id="nav">
-  <a href="/" class="nav-logo">
-    <span class="logo-mark">e</span>
-    ewk labs
-  </a>
-  <div class="nav-links">
-    <a href="#projects">Projects</a>
-    <a href="#lab">Lab</a>
-    <a href="#philosophy">Philosophy</a>
-    <a href="#about">About</a>
-    <a href="/shop/" class="nav-store">Store</a>
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-css-fallback" id="hero-fallback" style="display:none;">
+    <div class="orb"></div>
+    <div class="orb"></div>
+    <div class="orb"></div>
+    <div class="orb"></div>
   </div>
-</nav>
-
-<div class="section-nav" id="sectionNav">
-  <a href="#hero" data-label="Home" class="active"></a>
-  <a href="#projects" data-label="Projects"></a>
-  <a href="#lab" data-label="Lab"></a>
-  <a href="#philosophy" data-label="Philosophy"></a>
-  <a href="#store-cta" data-label="Store"></a>
-  <a href="#about" data-label="About"></a>
-</div>
-
-<!-- HERO -->
-<section class="hero" id="hero">
-  <div class="hero-grid"></div>
-  <div class="hero-glow"></div>
   <div class="hero-content">
-    <div class="hero-label reveal">Seattle, WA</div>
-    <h1 class="reveal" style="--delay: 100ms">Crafting <em>AI interfaces</em><br>that feel inevitable</h1>
-    <p class="hero-sub reveal" style="--delay: 200ms">An experimental studio at the intersection of artificial intelligence and considered design. We build niche, interesting products.</p>
-    <div class="hero-actions reveal" style="--delay: 300ms">
-      <a href="#projects" class="btn-primary">
-        View Work
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
-      </a>
-      <a href="/shop/" class="btn-ghost">Browse Store</a>
-    </div>
-  </div>
-  <div class="hero-meta">
-    <div class="hero-scroll">
-      <div class="scroll-line"></div>
-      Scroll
-    </div>
-    <div class="hero-coords">47.6062 N, 122.3321 W</div>
+    <h1 class="hero-title reveal">ewk labs</h1>
+    <p class="hero-subtitle reveal reveal-delay-1">Experimental AI &middot; Seattle</p>
   </div>
 </section>
 
-<!-- PROJECTS -->
-<section class="projects" id="projects">
-  <div class="section-header reveal">
-    <div>
-      <div class="section-label">Selected Work</div>
-      <h2 class="section-title">Things we've built</h2>
-    </div>
-    <div class="section-count">04 Projects</div>
-  </div>
-
+<!-- ─── PROJECTS: AI ─── -->
+<section id="projects-ai">
+  <p class="section-label reveal">Products</p>
+  <h2 class="section-title reveal reveal-delay-1">AI Experiments</h2>
   <div class="projects-grid">
-    <a class="project-card reveal" style="--delay: 0ms" href="https://kimpossible05.gumroad.com/l/emvmct" target="_blank">
-      <div class="project-preview">
-        <div class="project-preview-inner">
-          <div class="preview-viz dashboard">
-            <div class="dash-block"></div>
-            <div class="dash-block"></div>
-            <div class="dash-block"></div>
-            <div class="dash-block"></div>
-            <div class="dash-block"></div>
-          </div>
-        </div>
+
+    <!-- FutureSelf: Two overlapping translucent silhouettes with data streams -->
+    <a href="/futureself/" class="project-card reveal reveal-delay-2">
+      <div class="project-visual vis-futureself">
+        <svg viewBox="0 0 200 150" fill="none">
+          <defs>
+            <radialGradient id="fs-bg" cx="50%" cy="45%" r="55%"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.12"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+            <linearGradient id="fs-g1" x1="0" y1="0" x2="0.5" y2="1"><stop offset="0%" stop-color="#00CCFF" stop-opacity="0.6"/><stop offset="40%" stop-color="#0066FF" stop-opacity="0.3"/><stop offset="100%" stop-color="#0044DD" stop-opacity="0.15"/></linearGradient>
+            <linearGradient id="fs-g2" x1="1" y1="0" x2="0.5" y2="1"><stop offset="0%" stop-color="#00DDFF" stop-opacity="0.4"/><stop offset="50%" stop-color="#0088FF" stop-opacity="0.2"/><stop offset="100%" stop-color="#0055DD" stop-opacity="0.1"/></linearGradient>
+            <linearGradient id="fs-stream" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.8"/><stop offset="50%" stop-color="#0066FF" stop-opacity="0.4"/><stop offset="100%" stop-color="#00CCFF" stop-opacity="0.8"/></linearGradient>
+            <radialGradient id="fs-core1" cx="50%" cy="40%" r="50%"><stop offset="0%" stop-color="#00CCFF" stop-opacity="0.8"/><stop offset="100%" stop-color="#0044DD" stop-opacity="0.1"/></radialGradient>
+            <radialGradient id="fs-core2" cx="50%" cy="40%" r="50%"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.6"/><stop offset="100%" stop-color="#0055DD" stop-opacity="0.05"/></radialGradient>
+            <filter id="fs-blur"><feGaussianBlur stdDeviation="8"/></filter>
+            <filter id="fs-blur-sm"><feGaussianBlur stdDeviation="3"/></filter>
+            <filter id="fs-glow"><feGaussianBlur stdDeviation="2"/></filter>
+          </defs>
+          <!-- Background glow -->
+          <ellipse cx="100" cy="80" rx="70" ry="30" fill="url(#fs-bg)" filter="url(#fs-blur)"/>
+          <!-- Present silhouette (left) -->
+          <g class="anim-float1">
+            <ellipse cx="75" cy="48" rx="16" ry="18" fill="url(#fs-g1)"/>
+            <ellipse cx="75" cy="48" rx="16" ry="18" stroke="rgba(0,170,255,0.25)" stroke-width="0.8" fill="none"/>
+            <ellipse cx="75" cy="82" rx="22" ry="28" fill="url(#fs-g1)"/>
+            <ellipse cx="75" cy="82" rx="22" ry="28" stroke="rgba(0,170,255,0.2)" stroke-width="0.8" fill="none"/>
+            <!-- Inner glow core -->
+            <circle cx="75" cy="65" r="8" fill="url(#fs-core1)" filter="url(#fs-glow)"/>
+            <!-- Highlight -->
+            <ellipse cx="68" cy="42" rx="8" ry="5" fill="rgba(255,255,255,0.08)" transform="rotate(-15 68 42)"/>
+            <!-- Eye detail -->
+            <circle cx="72" cy="46" r="1.5" fill="rgba(0,200,255,0.7)"/>
+            <circle cx="79" cy="46" r="1.5" fill="rgba(0,200,255,0.7)"/>
+          </g>
+          <!-- Future silhouette (right, ghostly) -->
+          <g class="anim-float2" opacity="0.6">
+            <ellipse cx="125" cy="48" rx="16" ry="18" fill="url(#fs-g2)"/>
+            <ellipse cx="125" cy="48" rx="16" ry="18" stroke="rgba(0,200,255,0.15)" stroke-width="0.8" fill="none"/>
+            <ellipse cx="125" cy="82" rx="22" ry="28" fill="url(#fs-g2)"/>
+            <ellipse cx="125" cy="82" rx="22" ry="28" stroke="rgba(0,200,255,0.12)" stroke-width="0.8" fill="none"/>
+            <circle cx="125" cy="65" r="8" fill="url(#fs-core2)" filter="url(#fs-glow)"/>
+            <ellipse cx="118" cy="42" rx="7" ry="4" fill="rgba(255,255,255,0.05)" transform="rotate(-15 118 42)"/>
+            <circle cx="122" cy="46" r="1.5" fill="rgba(0,200,255,0.4)"/>
+            <circle cx="129" cy="46" r="1.5" fill="rgba(0,200,255,0.4)"/>
+          </g>
+          <!-- Ghost outline duplicates (depth) -->
+          <ellipse cx="127" cy="49" rx="18" ry="20" stroke="rgba(0,170,255,0.06)" stroke-width="1.5" fill="none" class="anim-float2" filter="url(#fs-blur-sm)"/>
+          <ellipse cx="127" cy="83" rx="24" ry="30" stroke="rgba(0,170,255,0.04)" stroke-width="1.5" fill="none" class="anim-float2" filter="url(#fs-blur-sm)"/>
+          <!-- Data streams connecting them -->
+          <path d="M90,55 C95,50 105,50 110,55" stroke="url(#fs-stream)" stroke-width="1.2" fill="none" stroke-dasharray="4 3" class="anim-data-flow"/>
+          <path d="M88,65 C95,58 105,58 112,65" stroke="url(#fs-stream)" stroke-width="1" fill="none" stroke-dasharray="3 4" class="anim-data-flow" opacity="0.7"/>
+          <path d="M90,75 C96,68 104,68 110,75" stroke="url(#fs-stream)" stroke-width="0.8" fill="none" stroke-dasharray="3 3" class="anim-data-flow" opacity="0.5"/>
+          <path d="M92,85 C97,78 103,78 108,85" stroke="url(#fs-stream)" stroke-width="0.6" fill="none" stroke-dasharray="2 3" class="anim-data-flow" opacity="0.4"/>
+          <!-- Floating data particles along streams -->
+          <circle cx="98" cy="52" r="1.5" fill="#00CCFF" class="anim-shimmer"/>
+          <circle cx="102" cy="62" r="1.2" fill="#00AAFF" class="anim-shimmer2"/>
+          <circle cx="100" cy="72" r="1" fill="#0088FF" class="anim-shimmer"/>
+          <circle cx="99" cy="82" r="0.8" fill="#0066FF" class="anim-shimmer2"/>
+          <!-- Bottom reflection -->
+          <ellipse cx="100" cy="118" rx="50" ry="5" fill="rgba(0,102,255,0.08)" filter="url(#fs-blur)"/>
+        </svg>
       </div>
       <div class="project-info">
-        <div class="project-tag">Dashboard</div>
-        <div class="project-name">AI Dashboard Starter Kit</div>
-        <div class="project-desc">Production-ready dashboard components designed for AI-powered applications. Dark mode, data-dense, beautiful.</div>
-      </div>
-      <div class="project-footer">
-        <div class="project-tech">
-          <span class="tech-pill">React</span>
-          <span class="tech-pill">Tailwind</span>
-          <span class="tech-pill">Charts</span>
-        </div>
-        <div class="project-arrow">&nearr;</div>
+        <h3 class="project-name">FutureSelf</h3>
+        <p class="project-type">AI Chat</p>
+        <p class="project-desc">Conversational AI that helps you think through decisions by simulating your future perspective.</p>
       </div>
     </a>
 
-    <a class="project-card reveal" style="--delay: 100ms" href="https://kimpossible05.gumroad.com/l/arottc" target="_blank">
-      <div class="project-preview">
-        <div class="project-preview-inner">
-          <div class="preview-viz graph">
-            <div class="graph-nodes">
-              <div class="g-node"></div>
-              <div class="g-node"></div>
-              <div class="g-node"></div>
-              <div class="g-node"></div>
-              <div class="g-node"></div>
-            </div>
-          </div>
-        </div>
+    <!-- System 0: Brain neural network with pulsing nodes -->
+    <a href="/system0/" class="project-card reveal reveal-delay-3">
+      <div class="project-visual vis-system0">
+        <svg viewBox="0 0 200 150" fill="none">
+          <defs>
+            <radialGradient id="s0-bg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#0066FF" stop-opacity="0.15"/><stop offset="70%" stop-color="#0044DD" stop-opacity="0.05"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+            <radialGradient id="s0-shell" cx="50%" cy="45%" r="50%"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.06"/><stop offset="80%" stop-color="#0044DD" stop-opacity="0.02"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+            <linearGradient id="s0-node" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00CCFF"/><stop offset="100%" stop-color="#0055DD"/></linearGradient>
+            <linearGradient id="s0-node2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0088FF"/><stop offset="100%" stop-color="#0044DD"/></linearGradient>
+            <filter id="s0-glow"><feGaussianBlur stdDeviation="4"/></filter>
+            <filter id="s0-glow-sm"><feGaussianBlur stdDeviation="2"/></filter>
+            <filter id="s0-blur"><feGaussianBlur stdDeviation="6"/></filter>
+          </defs>
+          <!-- Outer translucent brain shell -->
+          <ellipse cx="100" cy="72" rx="55" ry="48" fill="url(#s0-shell)"/>
+          <ellipse cx="100" cy="72" rx="55" ry="48" stroke="rgba(0,136,255,0.08)" stroke-width="1" fill="none"/>
+          <ellipse cx="100" cy="72" rx="48" ry="42" stroke="rgba(0,136,255,0.05)" stroke-width="0.5" fill="none"/>
+          <!-- Background radial -->
+          <circle cx="100" cy="72" r="40" fill="url(#s0-bg)" filter="url(#s0-blur)"/>
+          <!-- Pulse waves radiating from center -->
+          <circle cx="100" cy="72" r="20" stroke="rgba(0,170,255,0.15)" stroke-width="0.8" fill="none" class="anim-pulse-expand"/>
+          <circle cx="100" cy="72" r="20" stroke="rgba(0,136,255,0.1)" stroke-width="0.6" fill="none" class="anim-pulse-expand2"/>
+          <!-- Neural connections (deep layer, faint) -->
+          <line x1="100" y1="38" x2="62" y2="62" stroke="rgba(0,136,255,0.12)" stroke-width="0.5"/>
+          <line x1="100" y1="38" x2="138" y2="62" stroke="rgba(0,136,255,0.12)" stroke-width="0.5"/>
+          <line x1="62" y1="62" x2="55" y2="95" stroke="rgba(0,102,255,0.08)" stroke-width="0.5"/>
+          <line x1="138" y1="62" x2="145" y2="95" stroke="rgba(0,102,255,0.08)" stroke-width="0.5"/>
+          <!-- Neural connections (main) -->
+          <line x1="100" y1="42" x2="60" y2="68" stroke="rgba(0,170,255,0.35)" stroke-width="1.2"/>
+          <line x1="100" y1="42" x2="140" y2="68" stroke="rgba(0,170,255,0.35)" stroke-width="1.2"/>
+          <line x1="60" y1="68" x2="75" y2="100" stroke="rgba(0,136,255,0.25)" stroke-width="1"/>
+          <line x1="140" y1="68" x2="125" y2="100" stroke="rgba(0,136,255,0.25)" stroke-width="1"/>
+          <line x1="60" y1="68" x2="140" y2="68" stroke="rgba(0,102,255,0.1)" stroke-width="0.8" stroke-dasharray="4 4"/>
+          <line x1="75" y1="100" x2="125" y2="100" stroke="rgba(0,102,255,0.1)" stroke-width="0.8" stroke-dasharray="4 4"/>
+          <line x1="100" y1="42" x2="100" y2="72" stroke="rgba(0,170,255,0.2)" stroke-width="0.8"/>
+          <line x1="100" y1="72" x2="75" y2="100" stroke="rgba(0,136,255,0.2)" stroke-width="0.8"/>
+          <line x1="100" y1="72" x2="125" y2="100" stroke="rgba(0,136,255,0.2)" stroke-width="0.8"/>
+          <line x1="100" y1="72" x2="60" y2="68" stroke="rgba(0,136,255,0.15)" stroke-width="0.8"/>
+          <line x1="100" y1="72" x2="140" y2="68" stroke="rgba(0,136,255,0.15)" stroke-width="0.8"/>
+          <!-- Data flow particles along connections -->
+          <line x1="100" y1="42" x2="60" y2="68" stroke="rgba(0,220,255,0.5)" stroke-width="2" stroke-dasharray="2 18" class="anim-data-flow"/>
+          <line x1="100" y1="42" x2="140" y2="68" stroke="rgba(0,220,255,0.5)" stroke-width="2" stroke-dasharray="2 18" class="anim-data-flow-rev"/>
+          <!-- Primary nodes -->
+          <g>
+            <circle cx="100" cy="42" r="8" fill="url(#s0-node)"/>
+            <circle cx="100" cy="42" r="8" stroke="rgba(255,255,255,0.2)" stroke-width="0.5" fill="none"/>
+            <circle cx="100" cy="42" r="13" fill="#00AAFF" opacity="0.12" filter="url(#s0-glow)"/>
+            <ellipse cx="96" cy="39" rx="4" ry="2" fill="rgba(255,255,255,0.12)"/>
+          </g>
+          <g>
+            <circle cx="60" cy="68" r="7" fill="url(#s0-node2)"/>
+            <circle cx="60" cy="68" r="7" stroke="rgba(255,255,255,0.15)" stroke-width="0.5" fill="none"/>
+            <circle cx="60" cy="68" r="11" fill="#0088FF" opacity="0.1" filter="url(#s0-glow)"/>
+          </g>
+          <g>
+            <circle cx="140" cy="68" r="7" fill="url(#s0-node2)"/>
+            <circle cx="140" cy="68" r="7" stroke="rgba(255,255,255,0.15)" stroke-width="0.5" fill="none"/>
+            <circle cx="140" cy="68" r="11" fill="#0088FF" opacity="0.1" filter="url(#s0-glow)"/>
+          </g>
+          <!-- Secondary nodes -->
+          <circle cx="75" cy="100" r="5.5" fill="#0066FF" opacity="0.7"/>
+          <circle cx="75" cy="100" r="5.5" stroke="rgba(255,255,255,0.1)" stroke-width="0.5" fill="none"/>
+          <circle cx="125" cy="100" r="5.5" fill="#0066FF" opacity="0.7"/>
+          <circle cx="125" cy="100" r="5.5" stroke="rgba(255,255,255,0.1)" stroke-width="0.5" fill="none"/>
+          <!-- Center hub node -->
+          <circle cx="100" cy="72" r="4" fill="#00CCFF" opacity="0.8" class="anim-shimmer"/>
+          <circle cx="100" cy="72" r="7" fill="#00AAFF" opacity="0.15" filter="url(#s0-glow-sm)" class="anim-shimmer"/>
+          <!-- Orbiting particles -->
+          <circle cx="100" cy="72" r="2.5" fill="#00DDFF" class="anim-orbit"/>
+          <circle cx="100" cy="72" r="1.8" fill="#0088FF" class="anim-orbit-sm"/>
+          <!-- Tertiary (depth) nodes -->
+          <circle cx="45" cy="88" r="3" fill="#0055DD" opacity="0.35"/>
+          <circle cx="155" cy="88" r="3" fill="#0055DD" opacity="0.35"/>
+          <circle cx="100" cy="115" r="3" fill="#0044DD" opacity="0.25"/>
+          <!-- Faint connections to tertiary -->
+          <line x1="60" y1="68" x2="45" y2="88" stroke="rgba(0,85,221,0.1)" stroke-width="0.5"/>
+          <line x1="140" y1="68" x2="155" y2="88" stroke="rgba(0,85,221,0.1)" stroke-width="0.5"/>
+          <line x1="75" y1="100" x2="100" y2="115" stroke="rgba(0,68,221,0.08)" stroke-width="0.5"/>
+          <line x1="125" y1="100" x2="100" y2="115" stroke="rgba(0,68,221,0.08)" stroke-width="0.5"/>
+        </svg>
       </div>
       <div class="project-info">
-        <div class="project-tag">Data Viz</div>
-        <div class="project-name">Causal Graph UI Kit</div>
-        <div class="project-desc">Interactive graph visualization components for causal inference and network analysis. Beautiful node-edge rendering.</div>
-      </div>
-      <div class="project-footer">
-        <div class="project-tech">
-          <span class="tech-pill">D3.js</span>
-          <span class="tech-pill">SVG</span>
-          <span class="tech-pill">React</span>
-        </div>
-        <div class="project-arrow">&nearr;</div>
+        <h3 class="project-name">System 0</h3>
+        <p class="project-type">Cognitive AI</p>
+        <p class="project-desc">An experimental reasoning engine that models pre-conscious thought, the layer before language.</p>
       </div>
     </a>
 
-    <a class="project-card reveal" style="--delay: 200ms" href="https://gumroad.com/products/aqsrrt" target="_blank">
-      <div class="project-preview">
-        <div class="project-preview-inner">
-          <div class="preview-viz landing">
-            <div class="landing-block"></div>
-            <div class="landing-block"></div>
-            <div class="landing-block"></div>
-            <div class="landing-block"></div>
-          </div>
-        </div>
+    <!-- CausalMe: Complex multi-layered directed graph with flowing particles -->
+    <a href="/causalme/" class="project-card reveal reveal-delay-4">
+      <div class="project-visual vis-causalme">
+        <svg viewBox="0 0 200 150" fill="none">
+          <defs>
+            <marker id="cm-arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="#00AAFF" opacity="0.8"/></marker>
+            <marker id="cm-arr2" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5" fill="#0066FF" opacity="0.5"/></marker>
+            <linearGradient id="cm-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00CCFF" stop-opacity="0.8"/><stop offset="100%" stop-color="#0055DD" stop-opacity="0.4"/></linearGradient>
+            <linearGradient id="cm-g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0088FF" stop-opacity="0.7"/><stop offset="100%" stop-color="#0044DD" stop-opacity="0.3"/></linearGradient>
+            <linearGradient id="cm-g3" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#0066FF" stop-opacity="0.5"/><stop offset="100%" stop-color="#0044DD" stop-opacity="0.2"/></linearGradient>
+            <radialGradient id="cm-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.2"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+            <filter id="cm-sh"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0066FF" flood-opacity="0.3"/></filter>
+            <filter id="cm-glo"><feGaussianBlur stdDeviation="3"/></filter>
+          </defs>
+          <!-- Background glow -->
+          <circle cx="100" cy="75" r="55" fill="url(#cm-glow)"/>
+          <!-- Deep background nodes (layer 3, faintest) -->
+          <circle cx="30" cy="75" r="5" fill="#0044DD" opacity="0.15"/>
+          <circle cx="170" cy="75" r="5" fill="#0044DD" opacity="0.15"/>
+          <circle cx="100" cy="130" r="4" fill="#0044DD" opacity="0.12"/>
+          <!-- Mid-layer nodes (layer 2) -->
+          <circle cx="50" cy="118" r="8" fill="url(#cm-g3)"/>
+          <circle cx="50" cy="118" r="8" stroke="rgba(255,255,255,0.08)" stroke-width="0.5" fill="none"/>
+          <circle cx="150" cy="118" r="8" fill="url(#cm-g3)"/>
+          <circle cx="150" cy="118" r="8" stroke="rgba(255,255,255,0.08)" stroke-width="0.5" fill="none"/>
+          <circle cx="35" cy="55" r="6" fill="rgba(0,85,221,0.35)"/>
+          <circle cx="165" cy="55" r="6" fill="rgba(0,85,221,0.35)"/>
+          <!-- Primary nodes (layer 1) -->
+          <g class="anim-float1">
+            <circle cx="60" cy="38" r="14" fill="url(#cm-g1)" filter="url(#cm-sh)"/>
+            <circle cx="60" cy="38" r="14" stroke="rgba(255,255,255,0.15)" stroke-width="0.5" fill="none"/>
+            <ellipse cx="55" cy="33" rx="6" ry="3" fill="rgba(255,255,255,0.1)"/>
+            <circle cx="60" cy="38" r="4" fill="rgba(0,200,255,0.4)" class="anim-shimmer"/>
+          </g>
+          <g>
+            <circle cx="140" cy="38" r="14" fill="url(#cm-g2)"/>
+            <circle cx="140" cy="38" r="14" stroke="rgba(255,255,255,0.12)" stroke-width="0.5" fill="none"/>
+            <ellipse cx="135" cy="33" rx="5" ry="2.5" fill="rgba(255,255,255,0.07)"/>
+          </g>
+          <g class="anim-float2">
+            <circle cx="100" cy="78" r="16" fill="url(#cm-g1)" filter="url(#cm-sh)"/>
+            <circle cx="100" cy="78" r="16" stroke="rgba(255,255,255,0.15)" stroke-width="0.5" fill="none"/>
+            <ellipse cx="94" cy="72" rx="7" ry="3" fill="rgba(255,255,255,0.08)"/>
+            <circle cx="100" cy="78" r="5" fill="#00AAFF" opacity="0.4" class="anim-shimmer"/>
+            <circle cx="100" cy="78" r="9" fill="#00AAFF" opacity="0.08" filter="url(#cm-glo)"/>
+          </g>
+          <!-- Primary edges with flow animation -->
+          <line x1="72" y1="46" x2="88" y2="66" stroke="rgba(0,170,255,0.5)" stroke-width="1.5" marker-end="url(#cm-arr)"/>
+          <line x1="72" y1="46" x2="88" y2="66" stroke="rgba(0,220,255,0.6)" stroke-width="2" stroke-dasharray="3 17" class="anim-data-flow"/>
+          <line x1="128" y1="46" x2="112" y2="66" stroke="rgba(0,170,255,0.5)" stroke-width="1.5" marker-end="url(#cm-arr)"/>
+          <line x1="128" y1="46" x2="112" y2="66" stroke="rgba(0,220,255,0.6)" stroke-width="2" stroke-dasharray="3 17" class="anim-data-flow-rev"/>
+          <!-- Secondary edges -->
+          <line x1="90" y1="90" x2="60" y2="112" stroke="rgba(0,136,255,0.35)" stroke-width="1.2" marker-end="url(#cm-arr2)"/>
+          <line x1="110" y1="90" x2="140" y2="112" stroke="rgba(0,136,255,0.35)" stroke-width="1.2" marker-end="url(#cm-arr2)"/>
+          <!-- Cross connections -->
+          <line x1="60" y1="38" x2="140" y2="38" stroke="rgba(0,102,255,0.1)" stroke-width="0.8" stroke-dasharray="4 4"/>
+          <line x1="50" y1="118" x2="150" y2="118" stroke="rgba(0,85,221,0.08)" stroke-width="0.6" stroke-dasharray="3 4"/>
+          <!-- Connections to depth nodes -->
+          <line x1="60" y1="38" x2="35" y2="55" stroke="rgba(0,85,221,0.15)" stroke-width="0.6" marker-end="url(#cm-arr2)"/>
+          <line x1="140" y1="38" x2="165" y2="55" stroke="rgba(0,85,221,0.15)" stroke-width="0.6" marker-end="url(#cm-arr2)"/>
+          <line x1="50" y1="118" x2="30" y2="75" stroke="rgba(0,68,221,0.08)" stroke-width="0.5"/>
+          <line x1="150" y1="118" x2="170" y2="75" stroke="rgba(0,68,221,0.08)" stroke-width="0.5"/>
+          <line x1="50" y1="118" x2="100" y2="130" stroke="rgba(0,68,221,0.06)" stroke-width="0.5"/>
+          <line x1="150" y1="118" x2="100" y2="130" stroke="rgba(0,68,221,0.06)" stroke-width="0.5"/>
+          <!-- Flow particles -->
+          <circle cx="80" cy="56" r="1.8" fill="#00DDFF" class="anim-shimmer"/>
+          <circle cx="120" cy="56" r="1.8" fill="#00BBFF" class="anim-shimmer2"/>
+          <circle cx="75" cy="100" r="1.3" fill="#0088FF" class="anim-shimmer"/>
+          <circle cx="125" cy="100" r="1.3" fill="#0088FF" class="anim-shimmer2"/>
+        </svg>
       </div>
       <div class="project-info">
-        <div class="project-tag">Marketing</div>
-        <div class="project-name">AI Landing Page Kit</div>
-        <div class="project-desc">Conversion-optimized landing page templates for AI products. Designed to communicate complex value simply.</div>
-      </div>
-      <div class="project-footer">
-        <div class="project-tech">
-          <span class="tech-pill">Next.js</span>
-          <span class="tech-pill">Framer</span>
-          <span class="tech-pill">CSS</span>
-        </div>
-        <div class="project-arrow">&nearr;</div>
+        <h3 class="project-name">CausalMe</h3>
+        <p class="project-type">Data Visualization</p>
+        <p class="project-desc">Interactive causal graphs that help you visualize cause and effect in complex systems.</p>
       </div>
     </a>
 
-    <a class="project-card reveal" style="--delay: 300ms" href="https://gumroad.com/products/oolmc" target="_blank">
-      <div class="project-preview">
-        <div class="project-preview-inner">
-          <div class="preview-viz portfolio">
-            <div class="port-block"></div>
-            <div class="port-block"></div>
-            <div class="port-block"></div>
-          </div>
-        </div>
+  </div>
+</section>
+
+<!-- ─── PROJECTS: APPS ─── -->
+<section id="projects-apps">
+  <p class="section-label reveal">Experiments</p>
+  <h2 class="section-title reveal reveal-delay-1">Apps</h2>
+  <div class="projects-grid">
+
+    <!-- Snake Game: Isometric 3D board with glossy spheres -->
+    <a href="apps/snake-game/" class="project-card reveal reveal-delay-2">
+      <div class="project-visual vis-snake">
+        <svg viewBox="0 0 200 150" fill="none">
+          <defs>
+            <linearGradient id="sn-board" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0a2015" stop-opacity="0.8"/><stop offset="100%" stop-color="#061a0e" stop-opacity="0.4"/></linearGradient>
+            <radialGradient id="sn-sphere" cx="35%" cy="30%" r="60%"><stop offset="0%" stop-color="#86efac"/><stop offset="40%" stop-color="#4ade80"/><stop offset="100%" stop-color="#166534"/></radialGradient>
+            <radialGradient id="sn-sphere2" cx="35%" cy="30%" r="60%"><stop offset="0%" stop-color="#bbf7d0"/><stop offset="40%" stop-color="#6ee7b7"/><stop offset="100%" stop-color="#15803d"/></radialGradient>
+            <radialGradient id="sn-sphere3" cx="35%" cy="30%" r="60%"><stop offset="0%" stop-color="#d1fae5" stop-opacity="0.8"/><stop offset="40%" stop-color="#a7f3d0" stop-opacity="0.6"/><stop offset="100%" stop-color="#22c55e" stop-opacity="0.3"/></radialGradient>
+            <radialGradient id="sn-apple" cx="35%" cy="25%" r="55%"><stop offset="0%" stop-color="#fca5a5"/><stop offset="40%" stop-color="#f87171"/><stop offset="100%" stop-color="#991b1b"/></radialGradient>
+            <radialGradient id="sn-apple-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#f87171" stop-opacity="0.5"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+            <filter id="sn-gl"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#4ade80" flood-opacity="0.4"/></filter>
+            <filter id="sn-agl"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#f87171" flood-opacity="0.5"/></filter>
+            <filter id="sn-blur"><feGaussianBlur stdDeviation="1"/></filter>
+          </defs>
+          <!-- Isometric grid board -->
+          <g opacity="0.2">
+            <line x1="30" y1="110" x2="80" y2="85" stroke="#4ade80" stroke-width="0.4"/>
+            <line x1="50" y1="120" x2="100" y2="95" stroke="#4ade80" stroke-width="0.4"/>
+            <line x1="70" y1="130" x2="120" y2="105" stroke="#4ade80" stroke-width="0.3"/>
+            <line x1="90" y1="140" x2="140" y2="115" stroke="#4ade80" stroke-width="0.2"/>
+            <line x1="30" y1="110" x2="80" y2="135" stroke="#4ade80" stroke-width="0.4"/>
+            <line x1="55" y1="97" x2="105" y2="122" stroke="#4ade80" stroke-width="0.4"/>
+            <line x1="80" y1="85" x2="130" y2="110" stroke="#4ade80" stroke-width="0.3"/>
+            <line x1="105" y1="72" x2="155" y2="97" stroke="#4ade80" stroke-width="0.2"/>
+          </g>
+          <!-- Board shadow -->
+          <ellipse cx="100" cy="125" rx="60" ry="8" fill="rgba(74,222,128,0.06)" filter="url(#sn-blur)"/>
+          <!-- Snake body: connected glossy spheres -->
+          <g class="anim-snake" filter="url(#sn-gl)">
+            <!-- Tail (faintest) -->
+            <circle cx="148" cy="68" r="7" fill="url(#sn-sphere3)" opacity="0.4"/>
+            <ellipse cx="145" cy="65" rx="3" ry="1.5" fill="rgba(255,255,255,0.15)" opacity="0.4"/>
+            <!-- Body segments -->
+            <circle cx="132" cy="68" r="8" fill="url(#sn-sphere3)" opacity="0.55"/>
+            <ellipse cx="129" cy="64" rx="3.5" ry="1.8" fill="rgba(255,255,255,0.15)" opacity="0.55"/>
+            <circle cx="114" cy="68" r="9" fill="url(#sn-sphere2)" opacity="0.7"/>
+            <ellipse cx="110" cy="63" rx="4" ry="2" fill="rgba(255,255,255,0.18)" opacity="0.7"/>
+            <circle cx="95" cy="66" r="10" fill="url(#sn-sphere2)" opacity="0.85"/>
+            <ellipse cx="91" cy="61" rx="4.5" ry="2" fill="rgba(255,255,255,0.2)" opacity="0.85"/>
+            <circle cx="74" cy="64" r="11" fill="url(#sn-sphere)"/>
+            <ellipse cx="70" cy="58" rx="5" ry="2.5" fill="rgba(255,255,255,0.25)"/>
+            <!-- Head (biggest, brightest) -->
+            <circle cx="54" cy="62" r="12" fill="url(#sn-sphere)"/>
+            <ellipse cx="49" cy="55" rx="5.5" ry="2.5" fill="rgba(255,255,255,0.3)"/>
+            <!-- Connection shadows between spheres -->
+            <rect x="60" y="62" width="8" height="4" rx="2" fill="rgba(74,222,128,0.3)"/>
+            <rect x="80" y="63" width="8" height="3.5" rx="1.75" fill="rgba(74,222,128,0.25)"/>
+            <rect x="100" y="65" width="7" height="3" rx="1.5" fill="rgba(74,222,128,0.2)"/>
+            <rect x="120" y="66" width="6" height="2.5" rx="1.25" fill="rgba(74,222,128,0.15)"/>
+            <rect x="137" y="67" width="5" height="2" rx="1" fill="rgba(74,222,128,0.1)"/>
+          </g>
+          <!-- Eyes -->
+          <circle cx="49" cy="59" r="2.5" fill="#f0fdf4"/>
+          <circle cx="49" cy="59" r="1.2" fill="#166534"/>
+          <circle cx="57" cy="58" r="2.5" fill="#f0fdf4"/>
+          <circle cx="57" cy="58" r="1.2" fill="#166534"/>
+          <!-- Tongue -->
+          <line x1="44" y1="63" x2="39" y2="61" stroke="#f87171" stroke-width="1" stroke-linecap="round"/>
+          <line x1="39" y1="61" x2="37" y2="59" stroke="#f87171" stroke-width="0.8" stroke-linecap="round"/>
+          <line x1="39" y1="61" x2="37" y2="63" stroke="#f87171" stroke-width="0.8" stroke-linecap="round"/>
+          <!-- Apple -->
+          <g filter="url(#sn-agl)">
+            <circle cx="155" cy="42" r="8" fill="url(#sn-apple-glow)"/>
+            <circle cx="155" cy="45" r="7" fill="url(#sn-apple)"/>
+            <ellipse cx="152" cy="41" rx="3" ry="1.5" fill="rgba(255,255,255,0.25)"/>
+            <path d="M155,38 Q157,32 160,34" stroke="#22c55e" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <ellipse cx="158" cy="33" rx="3" ry="1.5" fill="#22c55e" opacity="0.6" transform="rotate(30 158 33)"/>
+          </g>
+          <!-- Score dots -->
+          <circle cx="32" cy="32" r="2" fill="#4ade80" opacity="0.5" class="anim-shimmer"/>
+          <circle cx="40" cy="32" r="2" fill="#4ade80" opacity="0.4" class="anim-shimmer2"/>
+          <circle cx="48" cy="32" r="2" fill="#4ade80" opacity="0.3"/>
+        </svg>
       </div>
       <div class="project-info">
-        <div class="project-tag">Portfolio</div>
-        <div class="project-name">Developer Portfolio Kit</div>
-        <div class="project-desc">Minimal, fast portfolio template for developers who care about design. Ship your personal site in hours, not weeks.</div>
-      </div>
-      <div class="project-footer">
-        <div class="project-tech">
-          <span class="tech-pill">HTML</span>
-          <span class="tech-pill">CSS</span>
-          <span class="tech-pill">JS</span>
-        </div>
-        <div class="project-arrow">&nearr;</div>
-      </div>
-    </a>
-  </div>
-</section>
-
-<!-- LAB -->
-<section class="lab" id="lab">
-  <div class="section-header reveal">
-    <div>
-      <div class="section-label">Field Studies</div>
-      <h2 class="section-title">Lab</h2>
-      <p class="lab-desc">Interactive experiments in code and design</p>
-    </div>
-    <div class="section-count">03 Studies</div>
-  </div>
-
-  <div class="lab-grid">
-    <a class="lab-card reveal" style="--delay: 0ms" href="/lab/001/">
-      <div class="lab-card-visual">
-        <div class="lab-viz-magnetic">
-          <div class="mag-ring"></div>
-          <div class="mag-ring"></div>
-          <div class="mag-ring"></div>
-          <div class="mag-ring"></div>
-          <div class="mag-ring"></div>
-          <div class="mag-core"></div>
-        </div>
-      </div>
-      <div class="lab-card-info">
-        <div class="lab-card-num">Study 001</div>
-        <div class="lab-card-title">Magnetic Field</div>
-        <div class="lab-card-status">Particle physics visualizer</div>
-      </div>
-      <div class="lab-card-footer">
-        <div class="project-arrow">&nearr;</div>
+        <h3 class="project-name">Snake Game</h3>
+        <p class="project-type">Web Game</p>
+        <p class="project-desc">A minimal, beautifully animated take on the classic.</p>
       </div>
     </a>
 
-    <a class="lab-card reveal" style="--delay: 100ms" href="/lab/002/">
-      <div class="lab-card-visual">
-        <div class="lab-viz-pending">
-          <div class="pending-cell"></div><div class="pending-cell"></div><div class="pending-cell"></div>
-          <div class="pending-cell"></div><div class="pending-cell"></div><div class="pending-cell"></div>
-          <div class="pending-cell"></div><div class="pending-cell"></div><div class="pending-cell"></div>
-          <div class="pending-cell"></div><div class="pending-cell"></div><div class="pending-cell"></div>
-          <div class="pending-cell"></div><div class="pending-cell"></div><div class="pending-cell"></div>
-          <div class="pending-cell"></div><div class="pending-cell"></div><div class="pending-cell"></div>
-          <div class="pending-cell"></div><div class="pending-cell"></div><div class="pending-cell"></div>
-          <div class="pending-cell"></div><div class="pending-cell"></div><div class="pending-cell"></div>
-        </div>
+    <!-- Focus Timer: Multi-ring detailed timer -->
+    <a href="apps/focus-timer/" class="project-card reveal reveal-delay-3">
+      <div class="project-visual vis-timer">
+        <svg viewBox="0 0 200 150" fill="none">
+          <defs>
+            <linearGradient id="tm-ring1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fca5a5"/><stop offset="100%" stop-color="#f87171"/></linearGradient>
+            <linearGradient id="tm-ring2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f87171" stop-opacity="0.5"/><stop offset="100%" stop-color="#ef4444" stop-opacity="0.3"/></linearGradient>
+            <radialGradient id="tm-frost" cx="50%" cy="45%" r="50%"><stop offset="0%" stop-color="rgba(255,255,255,0.08)"/><stop offset="100%" stop-color="rgba(255,255,255,0.01)"/></radialGradient>
+            <radialGradient id="tm-center-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#f87171" stop-opacity="0.15"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+            <filter id="tm-gl"><feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#f87171" flood-opacity="0.4"/></filter>
+            <filter id="tm-gl-sm"><feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#f87171" flood-opacity="0.3"/></filter>
+            <filter id="tm-blur"><feGaussianBlur stdDeviation="4"/></filter>
+          </defs>
+          <!-- Outer glow ring -->
+          <circle cx="100" cy="75" r="52" stroke="rgba(248,113,113,0.06)" stroke-width="8" fill="none"/>
+          <!-- Background glow -->
+          <circle cx="100" cy="75" r="30" fill="url(#tm-center-glow)" filter="url(#tm-blur)"/>
+          <!-- Tick marks (outer ring, 60 ticks) -->
+          <g opacity="0.3">
+            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(0 100 75)"/>
+            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(30 100 75)"/>
+            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(60 100 75)"/>
+            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(90 100 75)"/>
+            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(120 100 75)"/>
+            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(150 100 75)"/>
+            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(180 100 75)"/>
+            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(210 100 75)"/>
+            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(240 100 75)"/>
+            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(270 100 75)"/>
+            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(300 100 75)"/>
+            <line x1="100" y1="27" x2="100" y2="30" stroke="#f87171" stroke-width="0.5" transform="rotate(330 100 75)"/>
+          </g>
+          <!-- Major tick marks (12 positions, longer) -->
+          <g opacity="0.5">
+            <line x1="100" y1="25" x2="100" y2="30" stroke="#fca5a5" stroke-width="1" transform="rotate(0 100 75)"/>
+            <line x1="100" y1="25" x2="100" y2="30" stroke="#fca5a5" stroke-width="1" transform="rotate(90 100 75)"/>
+            <line x1="100" y1="25" x2="100" y2="30" stroke="#fca5a5" stroke-width="1" transform="rotate(180 100 75)"/>
+            <line x1="100" y1="25" x2="100" y2="30" stroke="#fca5a5" stroke-width="1" transform="rotate(270 100 75)"/>
+          </g>
+          <!-- Track ring (background) -->
+          <circle cx="100" cy="75" r="42" stroke="rgba(127,29,29,0.35)" stroke-width="3" fill="none"/>
+          <!-- Progress ring (animated) -->
+          <circle cx="100" cy="75" r="42" stroke="url(#tm-ring1)" stroke-width="3" stroke-dasharray="264" class="anim-pulse-ring" stroke-linecap="round" transform="rotate(-90 100 75)" filter="url(#tm-gl)"/>
+          <!-- Inner track ring -->
+          <circle cx="100" cy="75" r="35" stroke="rgba(127,29,29,0.2)" stroke-width="1.5" fill="none"/>
+          <!-- Inner progress ring -->
+          <circle cx="100" cy="75" r="35" stroke="url(#tm-ring2)" stroke-width="1.5" stroke-dasharray="110 110" stroke-linecap="round" transform="rotate(-90 100 75)" filter="url(#tm-gl-sm)"/>
+          <!-- Glow ring (outermost, subtle) -->
+          <circle cx="100" cy="75" r="46" stroke="rgba(248,113,113,0.08)" stroke-width="1" fill="none"/>
+          <!-- Frosted glass center -->
+          <circle cx="100" cy="75" r="25" fill="url(#tm-frost)"/>
+          <circle cx="100" cy="75" r="25" stroke="rgba(255,255,255,0.06)" stroke-width="0.5" fill="none"/>
+          <!-- Center dot -->
+          <circle cx="100" cy="75" r="4" fill="#f87171" opacity="0.9"/>
+          <circle cx="100" cy="75" r="6" fill="#f87171" opacity="0.15"/>
+          <circle cx="100" cy="75" r="2" fill="#fca5a5"/>
+          <!-- Sweep hand -->
+          <g class="anim-sweep">
+            <line x1="100" y1="75" x2="100" y2="40" stroke="#f87171" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+            <circle cx="100" cy="40" r="2" fill="#fca5a5" opacity="0.8"/>
+          </g>
+          <!-- Time text placeholder dots -->
+          <circle cx="90" cy="75" r="1" fill="#fca5a5" opacity="0.4"/>
+          <circle cx="100" cy="75" r="1" fill="#fca5a5" opacity="0.4"/>
+          <circle cx="110" cy="75" r="1" fill="#fca5a5" opacity="0.4"/>
+        </svg>
       </div>
-      <div class="lab-card-info">
-        <div class="lab-card-num">Study 002</div>
-        <div class="lab-card-title">Coming Soon</div>
-        <div class="lab-card-status">In progress</div>
-      </div>
-      <div class="lab-card-footer">
-        <div class="project-arrow">&nearr;</div>
+      <div class="project-info">
+        <h3 class="project-name">Focus Timer</h3>
+        <p class="project-type">Productivity</p>
+        <p class="project-desc">A distraction-free pomodoro timer with ambient sound design.</p>
       </div>
     </a>
 
-    <a class="lab-card reveal" style="--delay: 200ms" href="/lab/003/">
-      <div class="lab-card-visual">
-        <div class="lab-viz-pending-b">
-          <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-          <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-          <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-          <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-        </div>
+    <!-- Mood Journal: Layered waves with sparkles -->
+    <a href="apps/mood-journal/" class="project-card reveal reveal-delay-4">
+      <div class="project-visual vis-mood">
+        <svg viewBox="0 0 200 150" fill="none">
+          <defs>
+            <linearGradient id="md-g1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.7"/><stop offset="50%" stop-color="#7c3aed" stop-opacity="0.5"/><stop offset="100%" stop-color="#00AAFF" stop-opacity="0.7"/></linearGradient>
+            <linearGradient id="md-g2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#7c3aed" stop-opacity="0.5"/><stop offset="50%" stop-color="#a855f7" stop-opacity="0.3"/><stop offset="100%" stop-color="#0088FF" stop-opacity="0.5"/></linearGradient>
+            <linearGradient id="md-g3" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#0066FF" stop-opacity="0.4"/><stop offset="50%" stop-color="#6d28d9" stop-opacity="0.25"/><stop offset="100%" stop-color="#00AAFF" stop-opacity="0.4"/></linearGradient>
+            <linearGradient id="md-g4" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#a855f7" stop-opacity="0.2"/><stop offset="50%" stop-color="#0088FF" stop-opacity="0.15"/><stop offset="100%" stop-color="#7c3aed" stop-opacity="0.2"/></linearGradient>
+            <linearGradient id="md-g5" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#0044DD" stop-opacity="0.15"/><stop offset="50%" stop-color="#5b21b6" stop-opacity="0.1"/><stop offset="100%" stop-color="#0066FF" stop-opacity="0.15"/></linearGradient>
+            <radialGradient id="md-sparkle" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/><stop offset="100%" stop-color="#00AAFF" stop-opacity="0"/></radialGradient>
+            <filter id="md-blur"><feGaussianBlur stdDeviation="2"/></filter>
+            <filter id="md-blur2"><feGaussianBlur stdDeviation="4"/></filter>
+          </defs>
+          <!-- Background gradient wash -->
+          <rect x="0" y="0" width="200" height="150" fill="url(#md-g5)" filter="url(#md-blur2)" opacity="0.5"/>
+          <!-- Wave layer 5 (deepest, most blurred) -->
+          <g class="anim-wave" opacity="0.2" filter="url(#md-blur)">
+            <path d="M-20,95 Q0,75 20,95 Q40,115 60,95 Q80,75 100,95 Q120,115 140,95 Q160,75 180,95 Q200,115 220,95" stroke="url(#md-g5)" stroke-width="3" fill="none" stroke-linecap="round"/>
+          </g>
+          <!-- Wave layer 4 -->
+          <g style="animation: wave-shift 3.5s linear infinite;" opacity="0.3">
+            <path d="M-20,88 Q0,70 20,88 Q40,106 60,88 Q80,70 100,88 Q120,106 140,88 Q160,70 180,88 Q200,106 220,88" stroke="url(#md-g4)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          </g>
+          <!-- Wave layer 3 -->
+          <g style="animation: wave-shift 2.8s linear infinite reverse;" opacity="0.4">
+            <path d="M-20,80 Q0,62 20,80 Q40,98 60,80 Q80,62 100,80 Q120,98 140,80 Q160,62 180,80 Q200,98 220,80" stroke="url(#md-g3)" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </g>
+          <!-- Wave layer 2 -->
+          <g style="animation: wave-shift 2.2s linear infinite;" opacity="0.6">
+            <path d="M-20,73 Q0,55 20,73 Q40,91 60,73 Q80,55 100,73 Q120,91 140,73 Q160,55 180,73 Q200,91 220,73" stroke="url(#md-g2)" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </g>
+          <!-- Wave layer 1 (foreground) -->
+          <g class="anim-wave" opacity="0.85">
+            <path d="M-20,68 Q0,48 20,68 Q40,88 60,68 Q80,48 100,68 Q120,88 140,68 Q160,48 180,68 Q200,88 220,68" stroke="url(#md-g1)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          </g>
+          <!-- Secondary foreground wave (offset) -->
+          <g style="animation: wave-shift 1.6s linear infinite reverse;" opacity="0.5">
+            <path d="M-20,62 Q5,50 25,65 Q50,82 75,62 Q95,48 115,65 Q140,82 165,62 Q185,48 210,65" stroke="url(#md-g1)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          </g>
+          <!-- Filled wave areas for depth -->
+          <path d="M0,120 Q10,108 30,115 Q50,125 70,112 Q90,105 110,115 Q130,128 150,112 Q170,102 190,115 L200,150 L0,150 Z" fill="rgba(124,58,237,0.06)"/>
+          <path d="M0,125 Q20,115 40,122 Q60,130 80,118 Q100,110 120,122 Q140,132 160,118 Q180,108 200,120 L200,150 L0,150 Z" fill="rgba(0,102,255,0.04)"/>
+          <!-- Sparkle particles floating above -->
+          <circle cx="35" cy="40" r="2" fill="url(#md-sparkle)" class="anim-sparkle1"/>
+          <circle cx="72" cy="32" r="1.5" fill="url(#md-sparkle)" class="anim-sparkle2"/>
+          <circle cx="110" cy="38" r="2.5" fill="url(#md-sparkle)" class="anim-sparkle3"/>
+          <circle cx="148" cy="30" r="1.8" fill="url(#md-sparkle)" class="anim-sparkle4"/>
+          <circle cx="170" cy="42" r="2" fill="url(#md-sparkle)" class="anim-sparkle5"/>
+          <circle cx="55" cy="48" r="1.2" fill="url(#md-sparkle)" class="anim-sparkle3"/>
+          <circle cx="130" cy="45" r="1.5" fill="url(#md-sparkle)" class="anim-sparkle1"/>
+          <circle cx="90" cy="28" r="1.8" fill="url(#md-sparkle)" class="anim-sparkle4"/>
+          <!-- Tiny accent dots -->
+          <circle cx="25" cy="55" r="0.8" fill="#7c3aed" opacity="0.4" class="anim-shimmer"/>
+          <circle cx="185" cy="50" r="0.8" fill="#00AAFF" opacity="0.4" class="anim-shimmer2"/>
+          <circle cx="60" cy="25" r="0.6" fill="#a855f7" opacity="0.3" class="anim-shimmer"/>
+          <circle cx="155" cy="22" r="0.6" fill="#0088FF" opacity="0.3" class="anim-shimmer2"/>
+        </svg>
       </div>
-      <div class="lab-card-info">
-        <div class="lab-card-num">Study 003</div>
-        <div class="lab-card-title">Coming Soon</div>
-        <div class="lab-card-status">In progress</div>
-      </div>
-      <div class="lab-card-footer">
-        <div class="project-arrow">&nearr;</div>
+      <div class="project-info">
+        <h3 class="project-name">Mood Journal</h3>
+        <p class="project-type">Wellness</p>
+        <p class="project-desc">Track emotional patterns through abstract visualizations, not words.</p>
       </div>
     </a>
+
   </div>
 </section>
 
-<!-- PHILOSOPHY -->
-<section class="philosophy" id="philosophy">
-  <div class="philosophy-layout">
-    <div class="philosophy-text reveal">
-      <div class="section-label">Our Approach</div>
-      <h2 class="section-title">Design is how it works</h2>
-      <blockquote class="philosophy-quote">"Good design is as little design as possible. Less, but better -- because it concentrates on the essential aspects, and the products are not burdened with non-essentials."</blockquote>
-      <p class="philosophy-body">We believe the best AI interfaces disappear. They don't demand attention -- they earn trust through clarity, consistency, and respect for the person using them. Every pixel is a decision. We make those decisions deliberately.</p>
-    </div>
-    <div class="philosophy-values">
-      <div class="value-card reveal" style="--delay: 0ms">
-        <div class="value-num">01</div>
-        <div class="value-title">Material Honesty</div>
-        <div class="value-desc">Digital interfaces should feel real. We design with weight, texture, and depth -- not flat decoration.</div>
-      </div>
-      <div class="value-card reveal" style="--delay: 100ms">
-        <div class="value-num">02</div>
-        <div class="value-title">Considered Craft</div>
-        <div class="value-desc">Every spacing value, every color choice, every interaction has a reason. If we can't explain why, we remove it.</div>
-      </div>
-      <div class="value-card reveal" style="--delay: 200ms">
-        <div class="value-num">03</div>
-        <div class="value-title">Quiet Confidence</div>
-        <div class="value-desc">The best work doesn't shout. It sits comfortably in its own skin and lets the content breathe.</div>
-      </div>
-    </div>
+<!-- ─── PHILOSOPHY ─── -->
+<section id="philosophy">
+  <p class="philosophy-text reveal">"We build experimental products that are niche enough to be a tool, not a toy, but interesting enough for anyone to use."</p>
+</section>
+
+<!-- ─── STORE ─── -->
+<section id="store">
+  <div class="store-inner">
+    <p class="section-label reveal">Store</p>
+    <h2 class="section-title reveal reveal-delay-1">Digital Products</h2>
+    <p class="store-desc reveal reveal-delay-2">Design kits, templates, and tools from our experiments.</p>
+    <a href="/shop/" class="btn btn-primary reveal reveal-delay-3">Browse Store</a>
   </div>
 </section>
 
-<!-- STORE CTA -->
-<section class="store-cta" id="store-cta">
-  <div class="section-label reveal">From the Lab</div>
-  <h2 class="section-title reveal" style="--delay: 100ms">Tools for builders</h2>
-  <p class="store-cta-sub reveal" style="--delay: 200ms">Design kits and templates extracted from our own production work. Built with the same care we bring to client projects.</p>
-  <div class="store-products-mini reveal" style="--delay: 300ms">
-    <div class="mini-product">
-      <div class="mini-product-icon warm">AI</div>
-      <div>
-        <div class="mini-product-name">Dashboard Kit</div>
-        <div class="mini-product-price">$12</div>
+<!-- ─── ABOUT ─── -->
+<section id="about">
+  <div class="about-inner">
+    <p class="section-label reveal">Team</p>
+    <h2 class="section-title reveal reveal-delay-1">About</h2>
+    <div class="about-grid">
+      <div class="about-card reveal reveal-delay-2">
+        <div class="about-initial about-initial-e">E</div>
+        <h3 class="about-name">Eli</h3>
+        <p class="about-role">Founder &amp; Designer</p>
+        <p class="about-bio">Product designer and systems thinker based in Seattle. Works at the intersection of AI, developer tools, and design. Builds things that are ambitious, niche, and slightly unconventional.</p>
       </div>
-    </div>
-    <div class="mini-product">
-      <div class="mini-product-icon teal">CG</div>
-      <div>
-        <div class="mini-product-name">Graph UI Kit</div>
-        <div class="mini-product-price">$15</div>
-      </div>
-    </div>
-    <div class="mini-product">
-      <div class="mini-product-icon warm">LP</div>
-      <div>
-        <div class="mini-product-name">Landing Page Kit</div>
-        <div class="mini-product-price">$15</div>
-      </div>
-    </div>
-    <div class="mini-product">
-      <div class="mini-product-icon teal">DP</div>
-      <div>
-        <div class="mini-product-name">Portfolio Kit</div>
-        <div class="mini-product-price">$10</div>
-      </div>
-    </div>
-  </div>
-  <a href="/shop/" class="btn-primary reveal" style="--delay: 400ms">
-    Browse the Store
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-  </a>
-</section>
-
-<!-- ABOUT -->
-<section class="about" id="about">
-  <div class="about-layout">
-    <div class="about-text reveal">
-      <div class="section-label">Studio</div>
-      <h2 class="section-title">Built in Seattle</h2>
-      <p class="about-body">ewk labs is an independent design and AI studio. We experiment at the edges of what's possible -- building tools, templates, and products that bridge the gap between artificial intelligence and human-centered design.</p>
-      <div class="about-details">
-        <div class="about-detail">
-          <div class="about-detail-label">Location</div>
-          <div class="about-detail-value">Seattle, WA</div>
-        </div>
-        <div class="about-detail">
-          <div class="about-detail-label">Focus</div>
-          <div class="about-detail-value">AI + Design</div>
-        </div>
-        <div class="about-detail">
-          <div class="about-detail-label">Founded</div>
-          <div class="about-detail-value">2024</div>
-        </div>
-        <div class="about-detail">
-          <div class="about-detail-label">Status</div>
-          <div class="about-detail-value">Active</div>
-        </div>
-      </div>
-    </div>
-    <div class="about-right">
-      <div class="terminal-card reveal" style="--delay: 100ms">
-        <div class="terminal-bar">
-          <div class="terminal-dot"></div>
-          <div class="terminal-dot"></div>
-          <div class="terminal-dot"></div>
-          <div class="terminal-title">ewk-labs ~ zsh</div>
-        </div>
-        <div class="terminal-body">
-          <div class="terminal-line"><span class="terminal-prompt">~</span> <span class="terminal-cmd">cat manifesto.txt</span></div>
-          <div class="terminal-line"><span class="terminal-output">Build things that matter.</span></div>
-          <div class="terminal-line"><span class="terminal-output">Ship things that work.</span></div>
-          <div class="terminal-line"><span class="terminal-output">Design things that last.</span></div>
-          <div class="terminal-line">&nbsp;</div>
-          <div class="terminal-line"><span class="terminal-prompt">~</span> <span class="terminal-cursor"></span></div>
-        </div>
-      </div>
-      <div class="status-card reveal" style="--delay: 200ms">
-        <div class="status-header">
-          <div class="status-title">Studio Status</div>
-          <div class="status-live">Active</div>
-        </div>
-        <div class="status-items">
-          <div class="status-item">
-            <span class="status-item-label">Products shipped</span>
-            <span class="status-item-value">4</span>
-          </div>
-          <div class="status-item">
-            <span class="status-item-label">Currently building</span>
-            <span class="status-item-value">3</span>
-          </div>
-          <div class="status-item">
-            <span class="status-item-label">Stack</span>
-            <span class="status-item-value">React / AI / Design</span>
-          </div>
-        </div>
-        <div class="status-bar-track">
-          <div class="status-bar-fill" id="statusBar"></div>
-        </div>
+      <div class="about-card reveal reveal-delay-3">
+        <div class="about-initial about-initial-k">K</div>
+        <h3 class="about-name">Kim</h3>
+        <p class="about-role">Co-Founder &amp; Operator</p>
+        <p class="about-bio">Digital operator and strategist. Runs systems, coordinates agents, and keeps everything moving. The infrastructure behind the experiments.</p>
       </div>
     </div>
   </div>
 </section>
 
+<!-- ─── FOOTER ─── -->
 <footer>
-  <div class="footer-left">ewk labs / 2024</div>
   <div class="footer-links">
-    <a href="https://github.com/ewk-experiments" target="_blank">GitHub</a>
-    <a href="/shop/">Store</a>
+    <a href="https://github.com/ewk-experiments" target="_blank" rel="noopener">GitHub</a>
+    <a href="mailto:heyitskim@agentmail.to">Contact</a>
   </div>
+  <p class="footer-copy">ewk labs</p>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// Scroll progress
-const scrollProgress = document.getElementById('scrollProgress');
-const nav = document.getElementById('nav');
+// ─── Progress Bar ───
+const progress = document.getElementById('progress');
+window.addEventListener('scroll', function() {
+  var h = document.documentElement.scrollHeight - window.innerHeight;
+  progress.style.height = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
+}, { passive: true });
 
-function updateScroll() {
-  const scrollTop = window.scrollY;
-  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-  const progress = (scrollTop / docHeight) * 100;
-  scrollProgress.style.width = progress + '%';
+// ─── Scroll Reveals ───
+var reveals = document.querySelectorAll('.reveal');
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.15 });
+reveals.forEach(function(el) { observer.observe(el); });
 
-  if (scrollTop > 80) {
-    nav.classList.add('scrolled');
-  } else {
-    nav.classList.remove('scrolled');
+// ─── Three.js Hero: Universal WebGL1-compatible glass shapes ───
+(function() {
+  var canvas = document.getElementById('hero-canvas');
+  var fallback = document.getElementById('hero-fallback');
+
+  // Check WebGL availability
+  var gl = null;
+  try {
+    gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  } catch(e) {}
+
+  if (!gl) {
+    // Show CSS fallback
+    canvas.style.display = 'none';
+    fallback.style.display = 'block';
+    return;
   }
-}
 
-window.addEventListener('scroll', updateScroll, { passive: true });
+  try {
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(60, canvas.offsetWidth / canvas.offsetHeight, 0.1, 100);
+    camera.position.z = 5;
 
-// Intersection Observer for reveals
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const delay = getComputedStyle(entry.target).getPropertyValue('--delay') || '0ms';
-      setTimeout(() => {
-        entry.target.classList.add('visible');
-      }, parseInt(delay));
-      revealObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+    renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+    // Rim-lit glass shader (WebGL1 compatible, works everywhere)
+    var glassVertexShader = [
+      'varying vec3 vNormal;',
+      'varying vec3 vViewPosition;',
+      'void main() {',
+      '  vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);',
+      '  vViewPosition = -mvPosition.xyz;',
+      '  vNormal = normalMatrix * normal;',
+      '  gl_Position = projectionMatrix * mvPosition;',
+      '}'
+    ].join('\n');
 
-// Section nav active state
-const sections = document.querySelectorAll('section');
-const navDots = document.querySelectorAll('.section-nav a');
+    var glassFragmentShader = [
+      'uniform vec3 uColor;',
+      'uniform float uOpacity;',
+      'uniform float uRimPower;',
+      'varying vec3 vNormal;',
+      'varying vec3 vViewPosition;',
+      'void main() {',
+      '  vec3 normal = normalize(vNormal);',
+      '  vec3 viewDir = normalize(vViewPosition);',
+      '  float rim = 1.0 - max(dot(viewDir, normal), 0.0);',
+      '  rim = pow(rim, uRimPower);',
+      '  vec3 color = uColor + vec3(0.3, 0.5, 1.0) * rim * 0.8;',
+      '  float alpha = uOpacity + rim * 0.4;',
+      '  gl_FragColor = vec4(color, alpha);',
+      '}'
+    ].join('\n');
 
-const sectionObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const id = entry.target.id;
-      navDots.forEach(dot => {
-        dot.classList.toggle('active', dot.getAttribute('href') === '#' + id);
+    function makeGlassMat(color, opacity, rimPower) {
+      return new THREE.ShaderMaterial({
+        uniforms: {
+          uColor: { value: new THREE.Color(color) },
+          uOpacity: { value: opacity },
+          uRimPower: { value: rimPower || 2.5 }
+        },
+        vertexShader: glassVertexShader,
+        fragmentShader: glassFragmentShader,
+        transparent: true,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
       });
     }
-  });
-}, { threshold: 0.3 });
 
-sections.forEach(s => sectionObserver.observe(s));
+    var shapes = [];
+    var geometries = [
+      new THREE.IcosahedronGeometry(0.8, 0),
+      new THREE.OctahedronGeometry(0.6, 0),
+      new THREE.TetrahedronGeometry(0.5, 0),
+      new THREE.IcosahedronGeometry(0.4, 1),
+      new THREE.OctahedronGeometry(0.35, 0)
+    ];
 
-// Status bar animation
-const statusBarObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      document.getElementById('statusBar').style.width = '72%';
-      statusBarObserver.unobserve(entry.target);
+    var positions = [
+      { x: -2.5, y: 0.5, z: -1 },
+      { x: 2.2, y: -0.8, z: -0.5 },
+      { x: -1, y: -1.5, z: -2 },
+      { x: 1.8, y: 1.5, z: -1.5 },
+      { x: -0.3, y: 2, z: -2.5 }
+    ];
+
+    var colors = [0x0066FF, 0x00AAFF, 0x0044DD, 0x0088FF, 0x0055DD];
+    var opacities = [0.12, 0.1, 0.08, 0.1, 0.06];
+
+    geometries.forEach(function(geo, i) {
+      var mat = makeGlassMat(colors[i], opacities[i], 2.0 + Math.random());
+      var mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(positions[i].x, positions[i].y, positions[i].z);
+      mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+      scene.add(mesh);
+      shapes.push({
+        mesh: mesh,
+        rotSpeed: { x: 0.002 + Math.random() * 0.004, y: 0.003 + Math.random() * 0.004 },
+        floatSpeed: 0.3 + Math.random() * 0.3,
+        floatAmp: 0.15 + Math.random() * 0.15,
+        baseY: positions[i].y
+      });
+    });
+
+    // Wireframe overlays
+    var wireMat = new THREE.MeshBasicMaterial({ color: 0x00AAFF, wireframe: true, transparent: true, opacity: 0.06 });
+    shapes.forEach(function(s) {
+      var wire = new THREE.Mesh(s.mesh.geometry, wireMat);
+      wire.position.copy(s.mesh.position);
+      wire.rotation.copy(s.mesh.rotation);
+      wire.scale.set(1.15, 1.15, 1.15);
+      s.wire = wire;
+      scene.add(wire);
+    });
+
+    // Particle field
+    var particleCount = 150;
+    var particleGeo = new THREE.BufferGeometry();
+    var particlePos = new Float32Array(particleCount * 3);
+    for (var i = 0; i < particleCount; i++) {
+      particlePos[i * 3] = (Math.random() - 0.5) * 12;
+      particlePos[i * 3 + 1] = (Math.random() - 0.5) * 8;
+      particlePos[i * 3 + 2] = (Math.random() - 0.5) * 8 - 2;
     }
-  });
-}, { threshold: 0.5 });
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
+    var particleMat = new THREE.PointsMaterial({ color: 0x0088FF, size: 0.03, transparent: true, opacity: 0.5, sizeAttenuation: true });
+    var particles = new THREE.Points(particleGeo, particleMat);
+    scene.add(particles);
 
-const statusBar = document.getElementById('statusBar');
-if (statusBar) statusBarObserver.observe(statusBar.closest('.status-card'));
+    var time = 0;
+    function animate() {
+      requestAnimationFrame(animate);
+      time += 0.01;
 
-// Parallax on hero glow
-document.addEventListener('mousemove', (e) => {
-  const glow = document.querySelector('.hero-glow');
-  if (!glow) return;
-  const x = (e.clientX / window.innerWidth - 0.5) * 30;
-  const y = (e.clientY / window.innerHeight - 0.5) * 30;
-  glow.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
-});
+      shapes.forEach(function(s) {
+        s.mesh.rotation.x += s.rotSpeed.x;
+        s.mesh.rotation.y += s.rotSpeed.y;
+        s.mesh.position.y = s.baseY + Math.sin(time * s.floatSpeed) * s.floatAmp;
+        if (s.wire) {
+          s.wire.rotation.copy(s.mesh.rotation);
+          s.wire.position.copy(s.mesh.position);
+        }
+      });
 
-// Color shift on sections via background transition
-const colorShiftObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      document.body.style.backgroundColor = getComputedStyle(entry.target).backgroundColor;
+      particles.rotation.y = time * 0.02;
+      renderer.render(scene, camera);
     }
-  });
-}, { threshold: 0.5 });
 
-sections.forEach(s => colorShiftObserver.observe(s));
+    animate();
 
-// Smooth anchor scrolling
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function(e) {
-    e.preventDefault();
-    const target = document.querySelector(this.getAttribute('href'));
-    if (target) target.scrollIntoView({ behavior: 'smooth' });
-  });
-});
+    window.addEventListener('resize', function() {
+      camera.aspect = canvas.offsetWidth / canvas.offsetHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+    });
+
+  } catch(e) {
+    // If Three.js fails for any reason, show CSS fallback
+    canvas.style.display = 'none';
+    fallback.style.display = 'block';
+  }
+})();
 </script>
+
 </body>
 </html>

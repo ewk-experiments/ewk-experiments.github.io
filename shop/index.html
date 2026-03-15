@@ -4,1036 +4,654 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Store | ewk labs</title>
-<meta name="description" content="Design kits, templates, and tools from ewk labs. Built with craft.">
+<meta name="description" content="Design kits, templates, and tools from ewk labs experiments.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --bg: #111111;
-  --surface: #1A1A1A;
-  --surface-raised: #222222;
-  --surface-hover: #282828;
-  --text-primary: #F0F0F0;
-  --text-secondary: #8A8A8A;
-  --text-dim: #555555;
-  --accent-warm: #D4A843;
-  --accent-warm-dim: rgba(212, 168, 67, 0.15);
-  --accent-teal: #0A4D3C;
-  --accent-teal-bright: #0D6B52;
-  --font-ui: 'Inter', -apple-system, sans-serif;
-  --font-editorial: 'Lora', Georgia, serif;
+  --blue-400: #00AAFF;
+  --blue-500: #0088FF;
+  --blue-600: #0066FF;
+  --blue-700: #0044DD;
+  --blue-glow: rgba(0, 102, 255, 0.4);
+  --dark-950: #08090c;
+  --dark-900: #0d0f14;
+  --dark-800: #13161d;
+  --dark-700: #1a1e28;
+  --dark-600: #232836;
+  --dark-500: #3a4050;
+  --dark-400: #555d70;
+  --dark-300: #7a8394;
+  --dark-200: #a0a8b8;
+  --dark-100: #c8cdd8;
+  --dark-50: #e8ebf0;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --radius: 12px;
-  --radius-lg: 20px;
-  --shadow-soft: 0 4px 24px rgba(0,0,0,0.3);
 }
 
-html { scroll-behavior: smooth; font-size: 16px; }
+html { scroll-behavior: smooth; }
 
 body {
-  font-family: var(--font-ui);
-  background: var(--bg);
-  color: var(--text-primary);
-  line-height: 1.6;
+  font-family: var(--font-sans);
+  color: var(--dark-100);
+  background: var(--dark-950);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Scroll Progress ── */
-.scroll-progress {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--accent-warm), var(--accent-teal-bright));
-  width: 0%;
-  z-index: 1000;
-  transition: width 0.1s linear;
-}
-
-/* ── Nav ── */
-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 500;
-  padding: 24px 48px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  backdrop-filter: blur(20px) saturate(1.5);
-  -webkit-backdrop-filter: blur(20px) saturate(1.5);
-  background: rgba(17, 17, 17, 0.7);
-  border-bottom: 1px solid rgba(240, 240, 240, 0.04);
-  transition: padding 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-nav.scrolled { padding: 16px 48px; background: rgba(17, 17, 17, 0.9); }
-
-.nav-logo {
-  font-family: var(--font-mono);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  color: var(--text-primary);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logo-mark {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, var(--accent-warm), var(--accent-teal-bright));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--bg);
-}
-
-.nav-links {
-  display: flex;
-  gap: 32px;
-  align-items: center;
-}
-
-.nav-links a {
-  font-size: 13px;
-  color: var(--text-secondary);
-  text-decoration: none;
-  letter-spacing: 0.04em;
-  transition: color 0.3s;
-}
-
-.nav-links a:hover { color: var(--text-primary); }
-
-.nav-back {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* ── Reveal ── */
+/* Reveal animation */
 .reveal {
   opacity: 0;
   transform: translateY(40px);
   transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
 .reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
 
-/* ── Store Hero ── */
-.store-hero {
-  min-height: 50vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 0 48px 80px;
-  background: var(--bg);
+/* ─── HEADER ─── */
+.store-header {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
   position: relative;
+  z-index: 10;
 }
 
-.store-hero-grid {
+.store-header a {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--blue-500);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.store-header a:hover { color: var(--blue-400); }
+
+/* ─── HERO ─── */
+.store-hero {
+  padding: 4rem 2rem 6rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+#store-hero-canvas {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(240, 240, 240, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(240, 240, 240, 0.02) 1px, transparent 1px);
-  background-size: 80px 80px;
-  mask-image: linear-gradient(to bottom, transparent, black 40%, black 80%, transparent);
-  -webkit-mask-image: linear-gradient(to bottom, transparent, black 40%, black 80%, transparent);
-}
-
-.store-hero-glow {
-  position: absolute;
-  top: 30%;
-  right: 20%;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(ellipse, rgba(212, 168, 67, 0.05), transparent 70%);
+  width: 100%;
+  height: 100%;
   pointer-events: none;
 }
 
-.store-hero-content {
-  position: relative;
-  z-index: 2;
-  max-width: 700px;
+.store-css-fallback {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
 }
-
-.store-hero .section-label {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--accent-warm);
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.store-hero .section-label::before {
-  content: '';
-  width: 8px;
-  height: 8px;
+.store-css-fallback .orb {
+  position: absolute;
   border-radius: 50%;
-  background: var(--accent-warm);
+  filter: blur(50px);
+  opacity: 0;
+  animation: css-orb-float 8s ease-in-out infinite;
+}
+.store-css-fallback .orb:nth-child(1) {
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(0,102,255,0.25), transparent 70%);
+  top: 15%; left: 20%;
+}
+.store-css-fallback .orb:nth-child(2) {
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(0,170,255,0.2), transparent 70%);
+  top: 30%; right: 15%;
+  animation-delay: -3s;
+}
+.store-css-fallback .orb:nth-child(3) {
+  width: 150px; height: 150px;
+  background: radial-gradient(circle, rgba(0,68,221,0.25), transparent 70%);
+  bottom: 10%; left: 45%;
+  animation-delay: -5s;
+}
+@keyframes css-orb-float {
+  0%, 100% { opacity: 0.4; transform: translateY(0) scale(1); }
+  50% { opacity: 0.8; transform: translateY(-20px) scale(1.1); }
 }
 
 .store-hero h1 {
-  font-family: var(--font-editorial);
-  font-size: clamp(40px, 5vw, 64px);
+  font-family: var(--font-serif);
+  font-size: clamp(3rem, 8vw, 6rem);
   font-weight: 400;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  margin-bottom: 20px;
+  color: #fff;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 0 60px rgba(0, 102, 255, 0.25), 0 2px 4px rgba(0,0,0,0.4);
 }
 
-.store-hero-sub {
-  font-size: 17px;
-  font-weight: 300;
-  color: var(--text-secondary);
-  line-height: 1.7;
+.store-hero p {
+  font-size: 1.1rem;
+  color: var(--dark-300);
   max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+  position: relative;
+  z-index: 2;
 }
 
-/* ── Filter Bar (hardware toggle feel) ── */
-.filter-bar {
-  padding: 0 48px;
-  margin-bottom: 64px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.filter-pill {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 10px 20px;
-  border-radius: 100px;
-  background: var(--surface);
-  border: 1px solid rgba(240, 240, 240, 0.06);
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  user-select: none;
-  /* Neumorphic */
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.04),
-    0 2px 8px rgba(0,0,0,0.2);
-}
-
-.filter-pill:hover {
-  border-color: rgba(240, 240, 240, 0.1);
-  color: var(--text-primary);
-}
-
-.filter-pill.active {
-  background: var(--accent-warm-dim);
-  border-color: rgba(212, 168, 67, 0.3);
-  color: var(--accent-warm);
-  box-shadow:
-    inset 0 2px 4px rgba(0,0,0,0.2),
-    0 0 12px rgba(212, 168, 67, 0.1);
-}
-
-.filter-count {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-dim);
-  margin-left: auto;
-  letter-spacing: 0.05em;
-}
-
-/* ── Product Cards ── */
-.products-section {
-  padding: 0 48px 160px;
-}
-
+/* ─── PRODUCTS GRID ─── */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem 8rem;
 }
 
 .product-card {
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(240, 240, 240, 0.04);
+  background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+  border-radius: 20px;
   overflow: hidden;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
   position: relative;
-}
-
-.product-card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(212, 168, 67, 0.15);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.3), 0 0 40px rgba(212, 168, 67, 0.05);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.06) inset,
+    0 4px 24px rgba(0,0,0,0.3),
+    0 1px 3px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .product-card::before {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, rgba(212, 168, 67, 0.02), transparent 60%);
+  border-radius: 20px;
+  background: radial-gradient(ellipse at 30% 0%, rgba(0,136,255,0.08) 0%, transparent 60%);
+  pointer-events: none;
   opacity: 0;
   transition: opacity 0.5s;
-  pointer-events: none;
-  z-index: 1;
 }
 
 .product-card:hover::before { opacity: 1; }
 
-.product-preview {
-  aspect-ratio: 16/10;
-  background: var(--bg);
-  position: relative;
-  overflow: hidden;
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.08) inset,
+    0 16px 48px rgba(0,102,255,0.15),
+    0 4px 12px rgba(0,0,0,0.3);
 }
 
-.product-preview-inner {
-  position: absolute;
-  inset: 24px;
-  border-radius: 10px;
-  overflow: hidden;
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.product-card:hover .product-preview-inner { transform: scale(1.02); }
-
-/* Abstract product visuals */
-.pv {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-.pv.dashboard {
-  background: linear-gradient(135deg, #141420, #1a1a2e);
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: auto 1fr 1fr;
-  gap: 6px;
-  padding: 16px;
-}
-
-.pv.dashboard .pv-bar {
-  grid-column: span 3;
-  height: 20px;
-  border-radius: 4px;
-  background: rgba(212, 168, 67, 0.06);
-  border: 1px solid rgba(212, 168, 67, 0.08);
+.product-visual {
+  aspect-ratio: 4/3;
   display: flex;
   align-items: center;
-  padding: 0 8px;
-  gap: 4px;
-}
-
-.pv.dashboard .pv-bar span {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(212, 168, 67, 0.2);
-}
-
-.pv.dashboard .pv-cell {
-  border-radius: 4px;
-  background: rgba(212, 168, 67, 0.04);
-  border: 1px solid rgba(212, 168, 67, 0.06);
+  justify-content: center;
   position: relative;
   overflow: hidden;
 }
 
-.pv.dashboard .pv-cell::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: var(--fill, 40%);
-  background: linear-gradient(to top, rgba(212, 168, 67, 0.1), transparent);
+.product-visual svg {
+  width: 55%;
+  height: 55%;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
 }
 
-.pv.dashboard .pv-cell.wide { grid-column: span 2; }
-.pv.dashboard .pv-cell:nth-child(3) { --fill: 70%; }
-.pv.dashboard .pv-cell:nth-child(5) { --fill: 55%; }
-.pv.dashboard .pv-cell:nth-child(6) { --fill: 80%; }
-
-.pv.graph {
-  background: linear-gradient(135deg, #0a1a15, #0d2818);
-  padding: 20px;
-  position: relative;
+.product-card:hover .product-visual svg {
+  transform: scale(1.08);
 }
 
-.pv.graph .node {
-  position: absolute;
-  border-radius: 50%;
-  background: var(--accent-teal-bright);
-  box-shadow: 0 0 20px rgba(13, 107, 82, 0.3);
-}
-
-.pv.graph .node:nth-child(1) { width: 14px; height: 14px; top: 25%; left: 20%; }
-.pv.graph .node:nth-child(2) { width: 18px; height: 18px; top: 45%; left: 55%; }
-.pv.graph .node:nth-child(3) { width: 10px; height: 10px; top: 70%; left: 30%; }
-.pv.graph .node:nth-child(4) { width: 12px; height: 12px; top: 30%; left: 75%; }
-.pv.graph .node:nth-child(5) { width: 16px; height: 16px; top: 65%; left: 72%; }
-.pv.graph .node:nth-child(6) { width: 8px; height: 8px; top: 15%; left: 48%; }
-
-.pv.graph .edge {
-  position: absolute;
-  height: 1px;
-  background: rgba(13, 107, 82, 0.2);
-  transform-origin: left center;
-}
-
-.pv.graph .edge:nth-child(7) { width: 120px; top: 35%; left: 22%; transform: rotate(20deg); }
-.pv.graph .edge:nth-child(8) { width: 90px; top: 50%; left: 55%; transform: rotate(45deg); }
-.pv.graph .edge:nth-child(9) { width: 140px; top: 28%; left: 50%; transform: rotate(-10deg); }
-
-.pv.landing {
-  background: linear-gradient(135deg, #1a1a1a, #242424);
+.product-info {
+  padding: 1.75rem 2rem 2rem;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  gap: 10px;
 }
 
-.pv.landing .l-line {
-  border-radius: 4px;
-}
-
-.pv.landing .l-line:nth-child(1) { height: 14px; width: 35%; background: rgba(240,240,240,0.06); }
-.pv.landing .l-line:nth-child(2) { height: 8px; width: 60%; background: rgba(212,168,67,0.08); }
-.pv.landing .l-line:nth-child(3) { height: 8px; width: 45%; background: rgba(240,240,240,0.03); }
-.pv.landing .l-hero { flex: 1; border-radius: 8px; border: 1px solid rgba(240,240,240,0.05); background: rgba(240,240,240,0.02); }
-.pv.landing .l-btn { height: 28px; width: 28%; border-radius: 100px; background: rgba(212,168,67,0.1); }
-.pv.landing .l-cols { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-.pv.landing .l-col { height: 40px; border-radius: 6px; background: rgba(240,240,240,0.03); border: 1px solid rgba(240,240,240,0.04); }
-
-.pv.portfolio {
-  background: linear-gradient(135deg, #111, #1c1c1c);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  padding: 16px;
-}
-
-.pv.portfolio .p-block {
-  border-radius: 8px;
-  background: rgba(240,240,240,0.03);
-  border: 1px solid rgba(240,240,240,0.05);
-  aspect-ratio: 1;
-  transition: background 0.3s;
-}
-
-.pv.portfolio .p-block:first-child { grid-column: span 2; aspect-ratio: 2.2/1; }
-
-.product-card:hover .pv.portfolio .p-block { background: rgba(240,240,240,0.05); }
-
-.product-body {
-  padding: 32px;
-}
-
-.product-tag {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--accent-teal-bright);
-  margin-bottom: 12px;
-}
-
-.product-name {
-  font-family: var(--font-editorial);
-  font-size: 24px;
-  font-weight: 500;
-  margin-bottom: 10px;
-  line-height: 1.3;
-}
-
-.product-desc {
-  font-size: 14px;
-  color: var(--text-secondary);
-  line-height: 1.7;
-  margin-bottom: 24px;
-}
-
-.product-features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 28px;
-}
-
-.feature-tag {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  padding: 5px 12px;
-  border-radius: 100px;
-  background: rgba(240,240,240,0.04);
-  color: var(--text-dim);
-  border: 1px solid rgba(240,240,240,0.06);
-  letter-spacing: 0.04em;
-}
-
-.product-footer {
+.product-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.product-name {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  color: #fff;
 }
 
 .product-price {
   font-family: var(--font-mono);
-  font-size: 20px;
+  font-size: 0.85rem;
   font-weight: 500;
-  color: var(--accent-warm);
+  color: var(--blue-400);
 }
 
-.product-buy {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 28px;
-  background: var(--accent-warm);
-  color: var(--bg);
-  font-family: var(--font-ui);
-  font-size: 13px;
-  font-weight: 600;
-  border: none;
-  border-radius: 100px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.product-buy::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.2));
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.product-buy:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(212, 168, 67, 0.3);
-}
-
-.product-buy:hover::before { opacity: 1; }
-
-/* ── Features Section ── */
-.features-section {
-  padding: 120px 48px;
-  background: var(--surface);
-  position: relative;
-}
-
-.features-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 48px;
-  right: 48px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(240,240,240,0.06), transparent);
-}
-
-.features-header {
-  text-align: center;
-  margin-bottom: 80px;
-}
-
-.features-header .section-label {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--accent-warm);
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.features-header .section-label::before {
-  content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent-warm);
-}
-
-.features-header h2 {
-  font-family: var(--font-editorial);
-  font-size: clamp(32px, 4vw, 48px);
-  font-weight: 400;
-  margin-bottom: 16px;
-}
-
-.features-header p {
-  font-size: 16px;
-  color: var(--text-secondary);
-  max-width: 480px;
-  margin: 0 auto;
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-.feature-card {
-  padding: 36px;
-  background: var(--surface-raised);
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(240,240,240,0.04);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
-  overflow: hidden;
-  /* Neumorphic subtle */
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.03),
-    0 4px 16px rgba(0,0,0,0.2);
-}
-
-.feature-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(212, 168, 67, 0.1);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.03),
-    0 8px 32px rgba(0,0,0,0.3),
-    0 0 24px rgba(212, 168, 67, 0.04);
-}
-
-.feature-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
-  font-family: var(--font-mono);
-  font-size: 16px;
-  font-weight: 600;
-  /* Glassmorphism */
-  background: rgba(212, 168, 67, 0.08);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(212, 168, 67, 0.1);
-  color: var(--accent-warm);
-}
-
-.feature-card-title {
-  font-family: var(--font-editorial);
-  font-size: 18px;
-  margin-bottom: 8px;
-}
-
-.feature-card-desc {
-  font-size: 14px;
-  color: var(--text-secondary);
+.product-desc {
+  font-size: 0.9rem;
   line-height: 1.6;
+  color: var(--dark-300);
+  margin-bottom: 1.5rem;
+  flex: 1;
 }
 
-/* ── CTA ── */
-.bottom-cta {
-  padding: 120px 48px;
-  text-align: center;
-  background: var(--bg);
-  position: relative;
-}
-
-.bottom-cta::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(ellipse, rgba(13, 107, 82, 0.04), transparent);
-  pointer-events: none;
-}
-
-.bottom-cta h2 {
-  font-family: var(--font-editorial);
-  font-size: clamp(32px, 4vw, 48px);
-  font-weight: 400;
-  margin-bottom: 16px;
-  position: relative;
-}
-
-.bottom-cta p {
-  font-size: 16px;
-  color: var(--text-secondary);
-  max-width: 400px;
-  margin: 0 auto 40px;
-  position: relative;
-}
-
-.bottom-cta .btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 32px;
-  background: var(--accent-warm);
-  color: var(--bg);
-  font-family: var(--font-ui);
-  font-size: 14px;
-  font-weight: 600;
-  border: none;
+.btn-get {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.75rem 2rem;
   border-radius: 100px;
   text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
+  text-align: center;
+  background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-500) 100%);
+  color: white;
+  box-shadow:
+    0 0 16px rgba(0,102,255,0.25),
+    0 1px 0 rgba(255,255,255,0.12) inset,
+    0 4px 12px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.bottom-cta .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(212, 168, 67, 0.3); }
+.btn-get:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 28px rgba(0,102,255,0.45),
+    0 1px 0 rgba(255,255,255,0.15) inset,
+    0 8px 24px rgba(0,0,0,0.3);
+}
 
-/* ── Footer ── */
+/* Visual backgrounds */
+.vis-dashboard { background: linear-gradient(135deg, #080c18 0%, #0d1a30 100%); }
+.vis-causal { background: linear-gradient(135deg, #0a1020 0%, #0d1830 100%); }
+.vis-landing { background: linear-gradient(135deg, #0d1225 0%, #0a1830 100%); }
+.vis-portfolio { background: linear-gradient(135deg, #080c18 0%, #0d1225 100%); }
+
+/* ─── FOOTER ─── */
 footer {
-  padding: 48px;
-  border-top: 1px solid rgba(240,240,240,0.04);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.footer-left {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--text-dim);
-  letter-spacing: 0.05em;
+  padding: 4rem 2rem;
+  text-align: center;
+  background: var(--dark-950);
+  border-top: 1px solid rgba(255,255,255,0.05);
 }
 
 .footer-links {
   display: flex;
-  gap: 24px;
+  justify-content: center;
+  gap: 2.5rem;
+  margin-bottom: 2rem;
 }
 
 .footer-links a {
-  font-size: 13px;
-  color: var(--text-dim);
+  color: var(--dark-300);
   text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
   transition: color 0.3s;
 }
 
-.footer-links a:hover { color: var(--text-secondary); }
+.footer-links a:hover { color: var(--blue-400); }
 
-/* ── Responsive ── */
-@media (max-width: 900px) {
-  nav { padding: 16px 24px; }
-  .store-hero { padding: 0 24px 60px; }
-  .filter-bar { padding: 0 24px; flex-wrap: wrap; }
-  .products-section { padding: 0 24px 80px; }
-  .products-grid { grid-template-columns: 1fr; }
-  .features-section { padding: 80px 24px; }
-  .features-grid { grid-template-columns: 1fr; }
-  .bottom-cta { padding: 80px 24px; }
-  footer { padding: 32px 24px; flex-direction: column; gap: 16px; }
+.footer-copy {
+  font-size: 0.8rem;
+  color: var(--dark-500);
+}
+
+/* ─── SVG ANIMATIONS ─── */
+@keyframes float1 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes float2 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes pulse-sm { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+@keyframes orbit { 0% { transform: rotate(0deg) translateX(18px) rotate(0deg); } 100% { transform: rotate(360deg) translateX(18px) rotate(-360deg); } }
+@keyframes shimmer { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+.anim-float1 { animation: float1 4s ease-in-out infinite; }
+.anim-float2 { animation: float2 5s ease-in-out infinite 0.5s; }
+.anim-pulse { animation: pulse-sm 3s ease-in-out infinite; }
+.anim-orbit { animation: orbit 8s linear infinite; }
+.anim-shimmer { animation: shimmer 3s ease-in-out infinite; }
+
+@media (max-width: 768px) {
+  .products-grid { grid-template-columns: 1fr; padding: 0 1.5rem 5rem; }
+  .store-hero { padding: 3rem 1.5rem 4rem; }
 }
 </style>
 </head>
 <body>
 
-<div class="scroll-progress" id="scrollProgress"></div>
-
-<nav id="nav">
-  <a href="/" class="nav-logo">
-    <span class="logo-mark">e</span>
-    ewk labs
-  </a>
-  <div class="nav-links">
-    <a href="/" class="nav-back">&larr; Home</a>
-    <a href="https://github.com/ewk-experiments" target="_blank">GitHub</a>
-  </div>
+<nav class="store-header">
+  <a href="/">&larr; Back to ewk labs</a>
 </nav>
 
-<!-- HERO -->
-<section class="store-hero" id="hero">
-  <div class="store-hero-grid"></div>
-  <div class="store-hero-glow"></div>
-  <div class="store-hero-content">
-    <div class="section-label reveal">The Store</div>
-    <h1 class="reveal" style="--delay: 100ms">Tools for people<br>who build things</h1>
-    <p class="store-hero-sub reveal" style="--delay: 200ms">Design kits and templates extracted from our production work. Every component is considered, every pattern is battle-tested.</p>
+<section class="store-hero">
+  <canvas id="store-hero-canvas"></canvas>
+  <div class="store-css-fallback" id="store-fallback" style="display:none;">
+    <div class="orb"></div>
+    <div class="orb"></div>
+    <div class="orb"></div>
   </div>
+  <h1 class="reveal">Store</h1>
+  <p class="reveal reveal-delay-1">Design kits, templates, and tools extracted from our experiments.</p>
 </section>
 
-<!-- Filters -->
-<div class="filter-bar reveal" style="--delay: 300ms">
-  <button class="filter-pill active" data-filter="all">All</button>
-  <button class="filter-pill" data-filter="dashboard">Dashboard</button>
-  <button class="filter-pill" data-filter="dataviz">Data Viz</button>
-  <button class="filter-pill" data-filter="marketing">Marketing</button>
-  <button class="filter-pill" data-filter="portfolio">Portfolio</button>
-  <span class="filter-count">4 products</span>
+<div class="products-grid">
+
+  <!-- AI Dashboard Starter Kit -->
+  <div class="product-card reveal reveal-delay-2">
+    <div class="product-visual vis-dashboard">
+      <svg viewBox="0 0 200 150" fill="none">
+        <defs>
+          <linearGradient id="db-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.5"/><stop offset="100%" stop-color="#0055DD" stop-opacity="0.2"/></linearGradient>
+          <linearGradient id="db-g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0088FF" stop-opacity="0.6"/><stop offset="100%" stop-color="#0044DD" stop-opacity="0.2"/></linearGradient>
+          <filter id="db-sh"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0066FF" flood-opacity="0.3"/></filter>
+        </defs>
+        <rect x="30" y="30" width="60" height="40" rx="8" fill="url(#db-g1)" filter="url(#db-sh)" class="anim-float1"/>
+        <rect x="30" y="30" width="60" height="40" rx="8" stroke="rgba(255,255,255,0.12)" stroke-width="0.5" fill="none" class="anim-float1"/>
+        <rect x="110" y="30" width="60" height="40" rx="8" fill="url(#db-g2)"/>
+        <rect x="110" y="30" width="60" height="40" rx="8" stroke="rgba(255,255,255,0.1)" stroke-width="0.5" fill="none"/>
+        <rect x="30" y="85" width="140" height="35" rx="8" fill="url(#db-g1)" filter="url(#db-sh)" class="anim-float2"/>
+        <rect x="30" y="85" width="140" height="35" rx="8" stroke="rgba(255,255,255,0.1)" stroke-width="0.5" fill="none" class="anim-float2"/>
+        <line x1="40" y1="50" x2="50" y2="42" stroke="rgba(0,170,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="50" y1="42" x2="60" y2="55" stroke="rgba(0,170,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="60" y1="55" x2="70" y2="45" stroke="rgba(0,170,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="70" y1="45" x2="80" y2="48" stroke="rgba(0,170,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="130" cy="50" r="12" stroke="rgba(0,136,255,0.5)" stroke-width="1.5" fill="none"/>
+        <path d="M130,38 L130,50 L140,50" stroke="rgba(0,170,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+        <rect x="40" y="95" width="30" height="15" rx="4" fill="rgba(0,102,255,0.3)"/>
+        <rect x="80" y="95" width="30" height="15" rx="4" fill="rgba(0,136,255,0.25)"/>
+        <rect x="120" y="95" width="30" height="15" rx="4" fill="rgba(0,170,255,0.2)"/>
+      </svg>
+    </div>
+    <div class="product-info">
+      <div class="product-meta">
+        <h3 class="product-name">AI Dashboard Starter Kit</h3>
+        <span class="product-price">$12+</span>
+      </div>
+      <p class="product-desc">Production-extracted dashboard components, charts, and layouts.</p>
+      <a href="https://kimpossible05.gumroad.com/l/emvmct" target="_blank" rel="noopener" class="btn-get">Get it</a>
+    </div>
+  </div>
+
+  <!-- Causal Graph UI Kit -->
+  <div class="product-card reveal reveal-delay-3">
+    <div class="product-visual vis-causal">
+      <svg viewBox="0 0 200 150" fill="none">
+        <defs>
+          <marker id="arr2" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5" fill="#00AAFF"/></marker>
+          <linearGradient id="cg-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.7"/><stop offset="100%" stop-color="#0055DD" stop-opacity="0.4"/></linearGradient>
+          <filter id="cg-sh"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0066FF" flood-opacity="0.3"/></filter>
+        </defs>
+        <circle cx="60" cy="40" r="14" fill="url(#cg-g1)" filter="url(#cg-sh)" class="anim-float1"/>
+        <circle cx="60" cy="40" r="14" stroke="rgba(255,255,255,0.12)" stroke-width="0.5" fill="none" class="anim-float1"/>
+        <ellipse cx="55" cy="35" rx="5" ry="3" fill="rgba(255,255,255,0.08)" class="anim-float1"/>
+        <circle cx="140" cy="40" r="14" fill="url(#cg-g1)"/>
+        <circle cx="140" cy="40" r="14" stroke="rgba(255,255,255,0.1)" stroke-width="0.5" fill="none"/>
+        <circle cx="100" cy="80" r="16" fill="url(#cg-g1)" filter="url(#cg-sh)" class="anim-float2"/>
+        <circle cx="100" cy="80" r="16" stroke="rgba(255,255,255,0.12)" stroke-width="0.5" fill="none" class="anim-float2"/>
+        <ellipse cx="94" cy="74" rx="6" ry="3" fill="rgba(255,255,255,0.06)" class="anim-float2"/>
+        <circle cx="55" cy="120" r="10" fill="rgba(0,102,255,0.4)"/>
+        <circle cx="145" cy="120" r="10" fill="rgba(0,85,221,0.4)"/>
+        <circle cx="100" cy="80" r="5" fill="#00AAFF" opacity="0.5" class="anim-pulse"/>
+        <line x1="70" y1="48" x2="90" y2="68" stroke="rgba(0,170,255,0.5)" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <line x1="130" y1="48" x2="112" y2="68" stroke="rgba(0,170,255,0.5)" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <line x1="90" y1="92" x2="65" y2="112" stroke="rgba(0,136,255,0.4)" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <line x1="110" y1="92" x2="135" y2="112" stroke="rgba(0,136,255,0.4)" stroke-width="1.5" marker-end="url(#arr2)"/>
+      </svg>
+    </div>
+    <div class="product-info">
+      <div class="product-meta">
+        <h3 class="product-name">Causal Graph UI Kit</h3>
+        <span class="product-price">$15+</span>
+      </div>
+      <p class="product-desc">Interactive node-based graph components for data visualization.</p>
+      <a href="https://kimpossible05.gumroad.com/l/arottc" target="_blank" rel="noopener" class="btn-get">Get it</a>
+    </div>
+  </div>
+
+  <!-- AI Landing Page Kit -->
+  <div class="product-card reveal reveal-delay-4">
+    <div class="product-visual vis-landing">
+      <svg viewBox="0 0 200 150" fill="none">
+        <defs>
+          <linearGradient id="lp-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.4"/><stop offset="100%" stop-color="#0055DD" stop-opacity="0.15"/></linearGradient>
+          <filter id="lp-sh"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0066FF" flood-opacity="0.25"/></filter>
+        </defs>
+        <rect x="40" y="25" width="120" height="100" rx="10" fill="url(#lp-g)" filter="url(#lp-sh)"/>
+        <rect x="40" y="25" width="120" height="100" rx="10" stroke="rgba(255,255,255,0.1)" stroke-width="0.5" fill="none"/>
+        <rect x="55" y="40" width="50" height="6" rx="3" fill="rgba(0,170,255,0.5)" class="anim-float1"/>
+        <rect x="55" y="52" width="90" height="4" rx="2" fill="rgba(0,102,255,0.2)"/>
+        <rect x="55" y="60" width="70" height="4" rx="2" fill="rgba(0,102,255,0.15)"/>
+        <rect x="55" y="75" width="35" height="12" rx="6" fill="rgba(0,136,255,0.4)"/>
+        <rect x="55" y="75" width="35" height="12" rx="6" stroke="rgba(255,255,255,0.1)" stroke-width="0.5" fill="none"/>
+        <rect x="55" y="96" width="25" height="18" rx="5" fill="rgba(0,102,255,0.2)" class="anim-float2"/>
+        <rect x="55" y="96" width="25" height="18" rx="5" stroke="rgba(255,255,255,0.08)" stroke-width="0.5" fill="none" class="anim-float2"/>
+        <rect x="85" y="96" width="25" height="18" rx="5" fill="rgba(0,136,255,0.15)"/>
+        <rect x="85" y="96" width="25" height="18" rx="5" stroke="rgba(255,255,255,0.06)" stroke-width="0.5" fill="none"/>
+        <rect x="115" y="96" width="25" height="18" rx="5" fill="rgba(0,170,255,0.1)"/>
+        <rect x="115" y="96" width="25" height="18" rx="5" stroke="rgba(255,255,255,0.05)" stroke-width="0.5" fill="none"/>
+      </svg>
+    </div>
+    <div class="product-info">
+      <div class="product-meta">
+        <h3 class="product-name">AI Landing Page Kit</h3>
+        <span class="product-price">$15+</span>
+      </div>
+      <p class="product-desc">Clean, modern landing page templates designed for AI products.</p>
+      <a href="https://gumroad.com/products/aqsrrt" target="_blank" rel="noopener" class="btn-get">Get it</a>
+    </div>
+  </div>
+
+  <!-- Developer Portfolio Kit -->
+  <div class="product-card reveal reveal-delay-5">
+    <div class="product-visual vis-portfolio">
+      <svg viewBox="0 0 200 150" fill="none">
+        <defs>
+          <linearGradient id="pf-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.6"/><stop offset="100%" stop-color="#0044DD" stop-opacity="0.2"/></linearGradient>
+          <filter id="pf-sh"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0066FF" flood-opacity="0.3"/></filter>
+        </defs>
+        <circle cx="100" cy="42" r="20" fill="url(#pf-g)" filter="url(#pf-sh)" class="anim-float1"/>
+        <circle cx="100" cy="42" r="20" stroke="rgba(255,255,255,0.12)" stroke-width="0.5" fill="none" class="anim-float1"/>
+        <ellipse cx="93" cy="35" rx="7" ry="4" fill="rgba(255,255,255,0.07)" class="anim-float1"/>
+        <circle cx="100" cy="42" r="7" fill="rgba(0,102,255,0.4)"/>
+        <rect x="60" y="70" width="80" height="5" rx="2.5" fill="rgba(0,170,255,0.35)"/>
+        <rect x="70" y="80" width="60" height="4" rx="2" fill="rgba(0,102,255,0.15)"/>
+        <rect x="45" y="96" width="50" height="30" rx="8" fill="rgba(0,102,255,0.2)" class="anim-float2"/>
+        <rect x="45" y="96" width="50" height="30" rx="8" stroke="rgba(255,255,255,0.08)" stroke-width="0.5" fill="none" class="anim-float2"/>
+        <rect x="105" y="96" width="50" height="30" rx="8" fill="rgba(0,136,255,0.15)"/>
+        <rect x="105" y="96" width="50" height="30" rx="8" stroke="rgba(255,255,255,0.06)" stroke-width="0.5" fill="none"/>
+        <line x1="55" y1="106" x2="85" y2="106" stroke="rgba(0,170,255,0.25)" stroke-width="1"/>
+        <line x1="55" y1="112" x2="75" y2="112" stroke="rgba(0,170,255,0.18)" stroke-width="1"/>
+        <line x1="115" y1="106" x2="145" y2="106" stroke="rgba(0,170,255,0.25)" stroke-width="1"/>
+        <line x1="115" y1="112" x2="135" y2="112" stroke="rgba(0,170,255,0.18)" stroke-width="1"/>
+      </svg>
+    </div>
+    <div class="product-info">
+      <div class="product-meta">
+        <h3 class="product-name">Developer Portfolio Kit</h3>
+        <span class="product-price">$10+</span>
+      </div>
+      <p class="product-desc">Minimal portfolio templates for developers and designers.</p>
+      <a href="https://gumroad.com/products/oolmc" target="_blank" rel="noopener" class="btn-get">Get it</a>
+    </div>
+  </div>
+
 </div>
 
-<!-- Products -->
-<section class="products-section">
-  <div class="products-grid">
-
-    <div class="product-card reveal" data-category="dashboard" style="--delay: 0ms">
-      <div class="product-preview">
-        <div class="product-preview-inner">
-          <div class="pv dashboard">
-            <div class="pv-bar"><span></span><span></span><span></span></div>
-            <div class="pv-cell wide"></div>
-            <div class="pv-cell"></div>
-            <div class="pv-cell"></div>
-            <div class="pv-cell"></div>
-            <div class="pv-cell wide"></div>
-          </div>
-        </div>
-      </div>
-      <div class="product-body">
-        <div class="product-tag">Dashboard</div>
-        <div class="product-name">AI Dashboard Starter Kit</div>
-        <div class="product-desc">Production-ready dashboard components designed for AI-powered applications. Dark mode, data-dense layouts, beautiful chart integrations.</div>
-        <div class="product-features">
-          <span class="feature-tag">React</span>
-          <span class="feature-tag">Tailwind CSS</span>
-          <span class="feature-tag">Chart.js</span>
-          <span class="feature-tag">Dark Mode</span>
-          <span class="feature-tag">Responsive</span>
-        </div>
-        <div class="product-footer">
-          <div class="product-price">$12</div>
-          <a href="https://kimpossible05.gumroad.com/l/emvmct" target="_blank" class="product-buy">
-            Get Kit
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="product-card reveal" data-category="dataviz" style="--delay: 100ms">
-      <div class="product-preview">
-        <div class="product-preview-inner">
-          <div class="pv graph">
-            <div class="node"></div>
-            <div class="node"></div>
-            <div class="node"></div>
-            <div class="node"></div>
-            <div class="node"></div>
-            <div class="node"></div>
-            <div class="edge"></div>
-            <div class="edge"></div>
-            <div class="edge"></div>
-          </div>
-        </div>
-      </div>
-      <div class="product-body">
-        <div class="product-tag">Data Visualization</div>
-        <div class="product-name">Causal Graph UI Kit</div>
-        <div class="product-desc">Interactive graph visualization components for causal inference and network analysis. Beautiful node-edge rendering with smooth animations.</div>
-        <div class="product-features">
-          <span class="feature-tag">D3.js</span>
-          <span class="feature-tag">SVG</span>
-          <span class="feature-tag">React</span>
-          <span class="feature-tag">Interactive</span>
-          <span class="feature-tag">Animated</span>
-        </div>
-        <div class="product-footer">
-          <div class="product-price">$15</div>
-          <a href="https://kimpossible05.gumroad.com/l/arottc" target="_blank" class="product-buy">
-            Get Kit
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="product-card reveal" data-category="marketing" style="--delay: 200ms">
-      <div class="product-preview">
-        <div class="product-preview-inner">
-          <div class="pv landing">
-            <div class="l-line"></div>
-            <div class="l-line"></div>
-            <div class="l-line"></div>
-            <div class="l-hero"></div>
-            <div class="l-btn"></div>
-            <div class="l-cols">
-              <div class="l-col"></div>
-              <div class="l-col"></div>
-              <div class="l-col"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="product-body">
-        <div class="product-tag">Marketing</div>
-        <div class="product-name">AI Landing Page Kit</div>
-        <div class="product-desc">Conversion-optimized landing page templates for AI products. Designed to communicate complex value propositions simply and beautifully.</div>
-        <div class="product-features">
-          <span class="feature-tag">Next.js</span>
-          <span class="feature-tag">Framer Motion</span>
-          <span class="feature-tag">Responsive</span>
-          <span class="feature-tag">SEO Ready</span>
-        </div>
-        <div class="product-footer">
-          <div class="product-price">$15</div>
-          <a href="https://gumroad.com/products/aqsrrt" target="_blank" class="product-buy">
-            Get Kit
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="product-card reveal" data-category="portfolio" style="--delay: 300ms">
-      <div class="product-preview">
-        <div class="product-preview-inner">
-          <div class="pv portfolio">
-            <div class="p-block"></div>
-            <div class="p-block"></div>
-            <div class="p-block"></div>
-          </div>
-        </div>
-      </div>
-      <div class="product-body">
-        <div class="product-tag">Portfolio</div>
-        <div class="product-name">Developer Portfolio Kit</div>
-        <div class="product-desc">Minimal, fast portfolio template for developers who care about design. Ship your personal site in hours, not weeks.</div>
-        <div class="product-features">
-          <span class="feature-tag">HTML/CSS</span>
-          <span class="feature-tag">Vanilla JS</span>
-          <span class="feature-tag">Fast</span>
-          <span class="feature-tag">Accessible</span>
-        </div>
-        <div class="product-footer">
-          <div class="product-price">$10</div>
-          <a href="https://gumroad.com/products/oolmc" target="_blank" class="product-buy">
-            Get Kit
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
-          </a>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- Features -->
-<section class="features-section" id="features">
-  <div class="features-header">
-    <div class="section-label reveal">Why Our Kits</div>
-    <h2 class="reveal" style="--delay: 100ms">Built different</h2>
-    <p class="reveal" style="--delay: 200ms">Every kit is extracted from real production work, not assembled from generic components.</p>
-  </div>
-  <div class="features-grid">
-    <div class="feature-card reveal" style="--delay: 0ms">
-      <div class="feature-icon">//</div>
-      <div class="feature-card-title">Production-Ready</div>
-      <div class="feature-card-desc">Clean, well-structured code you can ship today. No prototype-quality shortcuts.</div>
-    </div>
-    <div class="feature-card reveal" style="--delay: 100ms">
-      <div class="feature-icon">&lt;/&gt;</div>
-      <div class="feature-card-title">Design-Led Code</div>
-      <div class="feature-card-desc">Written by designers who code. Every spacing value and color choice is intentional.</div>
-    </div>
-    <div class="feature-card reveal" style="--delay: 200ms">
-      <div class="feature-icon">Aa</div>
-      <div class="feature-card-title">Type-First</div>
-      <div class="feature-card-desc">Typography-driven layouts with considered hierarchies. Your content will look right.</div>
-    </div>
-    <div class="feature-card reveal" style="--delay: 300ms">
-      <div class="feature-icon">[ ]</div>
-      <div class="feature-card-title">Dark Mode Native</div>
-      <div class="feature-card-desc">Designed dark-first, not dark-as-afterthought. Proper contrast, proper depth.</div>
-    </div>
-    <div class="feature-card reveal" style="--delay: 400ms">
-      <div class="feature-icon">*.*</div>
-      <div class="feature-card-title">Edge Cases Covered</div>
-      <div class="feature-card-desc">Empty states, loading states, error handling -- the details that separate good from great.</div>
-    </div>
-    <div class="feature-card reveal" style="--delay: 500ms">
-      <div class="feature-icon">:)</div>
-      <div class="feature-card-title">Accessible</div>
-      <div class="feature-card-desc">WCAG 2.1 AA compliant. Keyboard navigable. Screen reader friendly. For everyone.</div>
-    </div>
-  </div>
-</section>
-
-<!-- Bottom CTA -->
-<section class="bottom-cta">
-  <h2 class="reveal">Ready to build?</h2>
-  <p class="reveal" style="--delay: 100ms">Grab a kit and ship something beautiful.</p>
-  <a href="/" class="btn-primary reveal" style="--delay: 200ms">
-    Back to ewk labs
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-  </a>
-</section>
-
 <footer>
-  <div class="footer-left">ewk labs / 2024</div>
   <div class="footer-links">
-    <a href="https://github.com/ewk-experiments" target="_blank">GitHub</a>
     <a href="/">Home</a>
+    <a href="https://github.com/ewk-experiments" target="_blank" rel="noopener">GitHub</a>
+    <a href="mailto:heyitskim@agentmail.to">Contact</a>
   </div>
+  <p class="footer-copy">ewk labs</p>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// Scroll progress
-const scrollProgress = document.getElementById('scrollProgress');
-const nav = document.getElementById('nav');
+// ─── Scroll Reveals ───
+var reveals = document.querySelectorAll('.reveal');
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.15 });
+reveals.forEach(function(el) { observer.observe(el); });
 
-window.addEventListener('scroll', () => {
-  const scrollTop = window.scrollY;
-  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-  scrollProgress.style.width = (scrollTop / docHeight) * 100 + '%';
-  nav.classList.toggle('scrolled', scrollTop > 80);
-}, { passive: true });
+// ─── Three.js Store Hero: Universal WebGL1-compatible glass shapes ───
+(function() {
+  var canvas = document.getElementById('store-hero-canvas');
+  var fallback = document.getElementById('store-fallback');
+  if (!canvas) return;
 
-// Reveal
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const delay = getComputedStyle(entry.target).getPropertyValue('--delay') || '0ms';
-      setTimeout(() => entry.target.classList.add('visible'), parseInt(delay));
-      revealObserver.unobserve(entry.target);
+  var gl = null;
+  try {
+    gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  } catch(e) {}
+
+  if (!gl) {
+    canvas.style.display = 'none';
+    if (fallback) fallback.style.display = 'block';
+    return;
+  }
+
+  try {
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(60, canvas.offsetWidth / canvas.offsetHeight, 0.1, 100);
+    camera.position.z = 5;
+
+    var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+    renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Rim-lit glass shader (WebGL1 compatible)
+    var glassVS = [
+      'varying vec3 vNormal;',
+      'varying vec3 vViewPosition;',
+      'void main() {',
+      '  vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);',
+      '  vViewPosition = -mvPosition.xyz;',
+      '  vNormal = normalMatrix * normal;',
+      '  gl_Position = projectionMatrix * mvPosition;',
+      '}'
+    ].join('\n');
+
+    var glassFS = [
+      'uniform vec3 uColor;',
+      'uniform float uOpacity;',
+      'uniform float uRimPower;',
+      'varying vec3 vNormal;',
+      'varying vec3 vViewPosition;',
+      'void main() {',
+      '  vec3 normal = normalize(vNormal);',
+      '  vec3 viewDir = normalize(vViewPosition);',
+      '  float rim = 1.0 - max(dot(viewDir, normal), 0.0);',
+      '  rim = pow(rim, uRimPower);',
+      '  vec3 color = uColor + vec3(0.3, 0.5, 1.0) * rim * 0.8;',
+      '  float alpha = uOpacity + rim * 0.4;',
+      '  gl_FragColor = vec4(color, alpha);',
+      '}'
+    ].join('\n');
+
+    function makeGlassMat(color, opacity, rimPower) {
+      return new THREE.ShaderMaterial({
+        uniforms: {
+          uColor: { value: new THREE.Color(color) },
+          uOpacity: { value: opacity },
+          uRimPower: { value: rimPower || 2.5 }
+        },
+        vertexShader: glassVS,
+        fragmentShader: glassFS,
+        transparent: true,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+      });
     }
-  });
-}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
-document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+    var shapes = [];
+    var geos = [
+      new THREE.OctahedronGeometry(0.5, 0),
+      new THREE.IcosahedronGeometry(0.4, 0),
+      new THREE.TetrahedronGeometry(0.35, 0)
+    ];
+    var positions = [
+      { x: -2, y: 0.3, z: -1 },
+      { x: 2, y: -0.5, z: -0.5 },
+      { x: 0.5, y: 1, z: -2 }
+    ];
 
-// Filter
-const pills = document.querySelectorAll('.filter-pill');
-const cards = document.querySelectorAll('.product-card');
-const count = document.querySelector('.filter-count');
-
-pills.forEach(pill => {
-  pill.addEventListener('click', () => {
-    pills.forEach(p => p.classList.remove('active'));
-    pill.classList.add('active');
-    const filter = pill.dataset.filter;
-    let visible = 0;
-    cards.forEach(card => {
-      const show = filter === 'all' || card.dataset.category === filter;
-      card.style.display = show ? '' : 'none';
-      if (show) visible++;
+    geos.forEach(function(geo, i) {
+      var mat = makeGlassMat(0x0066FF, 0.1, 2.2 + Math.random());
+      var mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(positions[i].x, positions[i].y, positions[i].z);
+      mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+      scene.add(mesh);
+      shapes.push({
+        mesh: mesh,
+        rotSpeed: { x: 0.003 + Math.random() * 0.004, y: 0.004 + Math.random() * 0.004 },
+        floatSpeed: 0.3 + Math.random() * 0.3,
+        floatAmp: 0.12 + Math.random() * 0.12,
+        baseY: positions[i].y
+      });
     });
-    count.textContent = visible + ' product' + (visible !== 1 ? 's' : '');
-  });
-});
+
+    // Particles
+    var particleCount = 80;
+    var particleGeo = new THREE.BufferGeometry();
+    var particlePos = new Float32Array(particleCount * 3);
+    for (var i = 0; i < particleCount; i++) {
+      particlePos[i * 3] = (Math.random() - 0.5) * 10;
+      particlePos[i * 3 + 1] = (Math.random() - 0.5) * 6;
+      particlePos[i * 3 + 2] = (Math.random() - 0.5) * 6 - 2;
+    }
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
+    var particleMat = new THREE.PointsMaterial({ color: 0x0088FF, size: 0.025, transparent: true, opacity: 0.4, sizeAttenuation: true });
+    scene.add(new THREE.Points(particleGeo, particleMat));
+
+    var time = 0;
+    function animate() {
+      requestAnimationFrame(animate);
+      time += 0.01;
+      shapes.forEach(function(s) {
+        s.mesh.rotation.x += s.rotSpeed.x;
+        s.mesh.rotation.y += s.rotSpeed.y;
+        s.mesh.position.y = s.baseY + Math.sin(time * s.floatSpeed) * s.floatAmp;
+      });
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', function() {
+      camera.aspect = canvas.offsetWidth / canvas.offsetHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+    });
+
+  } catch(e) {
+    canvas.style.display = 'none';
+    if (fallback) fallback.style.display = 'block';
+  }
+})();
 </script>
+
 </body>
 </html>
