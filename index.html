@@ -249,7 +249,10 @@
       transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease), background 0.3s;
       box-shadow: var(--shadow-neu);
       position: relative;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
     }
+    .project-card > * { pointer-events: none; }
     .project-card:hover {
       transform: translateY(-4px);
       background: var(--card-hover-bg);
@@ -267,8 +270,10 @@
       display: flex; align-items: center; justify-content: center;
     }
 
-    .card-pattern { width: 100%; height: 100%; }
-    .card-pattern svg { width: 100%; height: 100%; }
+    .card-pattern { width: 100%; height: 100%; pointer-events: none; }
+    .card-pattern svg { width: 100%; height: 100%; pointer-events: none; }
+    .card-visual * { pointer-events: none; }
+    .card-badge { pointer-events: none; }
 
     .card-badge {
       position: absolute; top: 12px; right: 12px;
@@ -590,6 +595,21 @@
 
     // Init
     requestAnimationFrame(() => document.body.classList.add('loaded'));
+
+    // Ensure card links work on mobile — explicit click handler as backup
+    document.querySelectorAll('.project-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        const url = card.getAttribute('href');
+        if (!url) return;
+        if (card.getAttribute('target') === '_blank') {
+          window.open(url, '_blank', 'noopener');
+        } else {
+          window.location.href = url;
+        }
+      });
+      // Prevent touch delay on mobile
+      card.style.touchAction = 'manipulation';
+    });
   </script>
 </body>
 </html>
