@@ -714,7 +714,7 @@
 
     <div class="hero-meta reveal stagger-3">
       <div class="hero-meta-item">
-        <span class="value" id="project-count">5</span>
+        <span class="value" id="project-count">4</span>
         <span class="label">Projects</span>
       </div>
       <div class="hero-meta-item">
@@ -741,8 +741,6 @@
       <button class="filter-pill active" data-filter="all">All</button>
       <button class="filter-pill" data-filter="app">Apps</button>
       <button class="filter-pill" data-filter="web">Web</button>
-      <button class="filter-pill" data-filter="tool">Tools</button>
-      <button class="filter-pill" data-filter="system">Systems</button>
     </div>
 
     <div class="projects-grid" id="projects-grid"></div>
@@ -872,6 +870,23 @@
         }).join('')}
       </svg>`,
 
+      mood: `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="250" fill="#0f0a14"/>
+        ${['😊','😌','😤','😢','🥳','😴','🤔'].map((e,i) => {
+          const x = 40 + i * 50;
+          const y = 100 + Math.sin(i * 1.2) * 30;
+          return `<text x="${x}" y="${y}" font-size="${18 + Math.random()*12}" opacity="${0.08 + Math.random()*0.12}">${e}</text>`;
+        }).join('')}
+        ${[...Array(30)].map((_,i) => {
+          const x = Math.random() * 400;
+          const y = Math.random() * 250;
+          const colors = ['rgba(200,120,255,','rgba(255,107,157,','rgba(0,212,255,'];
+          const c = colors[Math.floor(Math.random()*3)];
+          return \`<circle cx="\${x}" cy="\${y}" r="\${1+Math.random()*3}" fill="\${c}\${0.03+Math.random()*0.06})"/>\`;
+        }).join('')}
+        <text x="200" y="200" font-family="monospace" font-size="9" fill="rgba(200,120,255,0.15)" text-anchor="middle" letter-spacing="3">HOW ARE YOU FEELING?</text>
+      </svg>`,
+
       garden: `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
         <rect width="400" height="250" fill="#0a120a"/>
         ${[...Array(8)].map((_,i) => {
@@ -889,51 +904,43 @@
       </svg>`
     };
 
-    // Project data
+    // Project data — only public-facing projects
     const projects = [
       {
         title: 'Snake Game',
-        desc: 'A polished, responsive snake game built with React Native and Expo. Retro gameplay meets modern mobile design with haptic feedback and buttery-smooth animations.',
+        desc: 'A polished snake game built with React Native and Expo. Retro gameplay meets modern design with smooth animations. Play it right here.',
         tags: ['react native', 'expo', 'game'],
         category: 'app',
         badge: 'App',
         visual: 'snake',
         image: null,
         date: 'Mar 2026',
-        url: 'https://github.com/ewk-experiments/snake-game'
+        url: 'apps/snake-game/',
+        playable: true
       },
       {
         title: 'Focus Timer',
-        desc: 'A beautiful Pomodoro timer with customizable intervals, circular progress visualization, and session history. Designed for deep focus.',
+        desc: 'A beautiful Pomodoro timer with circular progress visualization and session tracking. Designed for deep focus. Try it live.',
         tags: ['react native', 'expo', 'productivity'],
         category: 'app',
         badge: 'App',
         visual: 'timer',
         image: null,
         date: 'Mar 2026',
-        url: 'https://github.com/ewk-experiments/focus-timer'
+        url: 'apps/focus-timer/',
+        playable: true
       },
       {
-        title: 'Kim Dashboard',
-        desc: 'Real-time control panel for Kim — live event stream, channel status, chat interface, and memory browser. Glassmorphic design with WebSocket-powered updates.',
-        tags: ['html', 'websocket', 'dashboard'],
-        category: 'web',
-        badge: 'Web',
-        visual: 'dashboard',
-        image: 'screenshots/kim-dashboard.png',
-        date: 'Mar 2026',
-        url: 'https://github.com/ewk-experiments/kim-dashboard'
-      },
-      {
-        title: 'Kim — AI Co-Founder',
-        desc: 'A 24/7 autonomous AI agent that manages teams of specialized sub-agents, maintains infrastructure, and co-builds everything in this garden.',
-        tags: ['openclaw', 'claude', 'agents'],
-        category: 'system',
-        badge: 'System',
-        visual: 'kim',
+        title: 'Mood Journal',
+        desc: 'A minimal mood tracking app for daily emotional check-ins. Log how you feel, spot patterns over time. Try it now.',
+        tags: ['react native', 'expo', 'wellness'],
+        category: 'app',
+        badge: 'App',
+        visual: 'mood',
         image: null,
         date: 'Mar 2026',
-        url: 'https://github.com/ewk-experiments/kim-brain'
+        url: 'apps/mood-journal/',
+        playable: true
       },
       {
         title: 'Digital Garden',
@@ -954,7 +961,7 @@
       const filtered = filter === 'all' ? projects : projects.filter(p => p.category === filter);
       
       grid.innerHTML = filtered.map((p, i) => `
-        <a href="${p.url}" target="_blank" rel="noopener" class="project-card reveal stagger-${i + 1}" data-category="${p.category}">
+        <a href="${p.url}" ${p.playable ? '' : 'target="_blank" rel="noopener"'} class="project-card reveal stagger-${i + 1}" data-category="${p.category}">
           <div class="card-image-wrap">
             ${p.image 
               ? `<img class="card-image" src="${p.image}" alt="${p.title}" loading="lazy" />`
@@ -972,7 +979,7 @@
               <span class="card-date">${p.date}</span>
             </div>
           </div>
-          <span class="card-arrow">↗</span>
+          <span class="card-arrow">${p.playable ? '▶' : '↗'}</span>
         </a>
       `).join('');
 
