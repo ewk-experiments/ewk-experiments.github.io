@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Store | ewk labs</title>
+<meta name="description" content="Design kits, templates, and tools from ewk labs experiments.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --blue-400: #00AAFF;
+  --blue-500: #0088FF;
+  --blue-600: #0066FF;
+  --blue-700: #0044DD;
+  --blue-glow: rgba(0, 102, 255, 0.4);
+  --dark-950: #08090c;
+  --dark-900: #0d0f14;
+  --dark-800: #13161d;
+  --dark-700: #1a1e28;
+  --dark-600: #232836;
+  --dark-500: #3a4050;
+  --dark-400: #555d70;
+  --dark-300: #7a8394;
+  --dark-200: #a0a8b8;
+  --dark-100: #c8cdd8;
+  --dark-50: #e8ebf0;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  color: var(--dark-100);
+  background: var(--dark-950);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Reveal animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+
+/* ─── HEADER ─── */
+.store-header {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+}
+
+.store-header a {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--blue-500);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.store-header a:hover { color: var(--blue-400); }
+
+/* ─── HERO ─── */
+.store-hero {
+  padding: 4rem 2rem 6rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+#store-hero-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.store-css-fallback {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.store-css-fallback .orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(50px);
+  opacity: 0;
+  animation: css-orb-float 8s ease-in-out infinite;
+}
+.store-css-fallback .orb:nth-child(1) {
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(0,102,255,0.25), transparent 70%);
+  top: 15%; left: 20%;
+}
+.store-css-fallback .orb:nth-child(2) {
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(0,170,255,0.2), transparent 70%);
+  top: 30%; right: 15%;
+  animation-delay: -3s;
+}
+.store-css-fallback .orb:nth-child(3) {
+  width: 150px; height: 150px;
+  background: radial-gradient(circle, rgba(0,68,221,0.25), transparent 70%);
+  bottom: 10%; left: 45%;
+  animation-delay: -5s;
+}
+@keyframes css-orb-float {
+  0%, 100% { opacity: 0.4; transform: translateY(0) scale(1); }
+  50% { opacity: 0.8; transform: translateY(-20px) scale(1.1); }
+}
+
+.store-hero h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 400;
+  color: #fff;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 0 60px rgba(0, 102, 255, 0.25), 0 2px 4px rgba(0,0,0,0.4);
+}
+
+.store-hero p {
+  font-size: 1.1rem;
+  color: var(--dark-300);
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+  position: relative;
+  z-index: 2;
+}
+
+/* ─── PRODUCTS GRID ─── */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem 8rem;
+}
+
+.product-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+  border-radius: 20px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.06) inset,
+    0 4px 24px rgba(0,0,0,0.3),
+    0 1px 3px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.product-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: radial-gradient(ellipse at 30% 0%, rgba(0,136,255,0.08) 0%, transparent 60%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.product-card:hover::before { opacity: 1; }
+
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.08) inset,
+    0 16px 48px rgba(0,102,255,0.15),
+    0 4px 12px rgba(0,0,0,0.3);
+}
+
+.product-visual {
+  aspect-ratio: 4/3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-visual svg {
+  width: 55%;
+  height: 55%;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+}
+
+.product-card:hover .product-visual svg {
+  transform: scale(1.08);
+}
+
+.product-info {
+  padding: 1.75rem 2rem 2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.product-name {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  color: #fff;
+}
+
+.product-price {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--blue-400);
+}
+
+.product-desc {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--dark-300);
+  margin-bottom: 1.5rem;
+  flex: 1;
+}
+
+.btn-get {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.75rem 2rem;
+  border-radius: 100px;
+  text-decoration: none;
+  text-align: center;
+  background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-500) 100%);
+  color: white;
+  box-shadow:
+    0 0 16px rgba(0,102,255,0.25),
+    0 1px 0 rgba(255,255,255,0.12) inset,
+    0 4px 12px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-get:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 28px rgba(0,102,255,0.45),
+    0 1px 0 rgba(255,255,255,0.15) inset,
+    0 8px 24px rgba(0,0,0,0.3);
+}
+
+/* Visual backgrounds */
+.vis-dashboard { background: linear-gradient(135deg, #080c18 0%, #0d1a30 100%); }
+.vis-causal { background: linear-gradient(135deg, #0a1020 0%, #0d1830 100%); }
+.vis-landing { background: linear-gradient(135deg, #0d1225 0%, #0a1830 100%); }
+.vis-portfolio { background: linear-gradient(135deg, #080c18 0%, #0d1225 100%); }
+
+/* ─── FOOTER ─── */
+footer {
+  padding: 4rem 2rem;
+  text-align: center;
+  background: var(--dark-950);
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.footer-links a {
+  color: var(--dark-300);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.footer-links a:hover { color: var(--blue-400); }
+
+.footer-copy {
+  font-size: 0.8rem;
+  color: var(--dark-500);
+}
+
+/* ─── SVG ANIMATIONS ─── */
+@keyframes float1 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes float2 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes pulse-sm { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+@keyframes orbit { 0% { transform: rotate(0deg) translateX(18px) rotate(0deg); } 100% { transform: rotate(360deg) translateX(18px) rotate(-360deg); } }
+@keyframes shimmer { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+.anim-float1 { animation: float1 4s ease-in-out infinite; }
+.anim-float2 { animation: float2 5s ease-in-out infinite 0.5s; }
+.anim-pulse { animation: pulse-sm 3s ease-in-out infinite; }
+.anim-orbit { animation: orbit 8s linear infinite; }
+.anim-shimmer { animation: shimmer 3s ease-in-out infinite; }
+
+@media (max-width: 768px) {
+  .products-grid { grid-template-columns: 1fr; padding: 0 1.5rem 5rem; }
+  .store-hero { padding: 3rem 1.5rem 4rem; }
+}
+</style>
+</head>
+<body>
+
+<nav class="store-header">
+  <a href="/">&larr; Back to ewk labs</a>
+</nav>
+
+<section class="store-hero">
+  <canvas id="store-hero-canvas"></canvas>
+  <div class="store-css-fallback" id="store-fallback" style="display:none;">
+    <div class="orb"></div>
+    <div class="orb"></div>
+    <div class="orb"></div>
+  </div>
+  <h1 class="reveal">Store</h1>
+  <p class="reveal reveal-delay-1">Design kits, templates, and tools extracted from our experiments.</p>
+</section>
+
+<div class="products-grid">
+
+  <!-- AI Dashboard Starter Kit -->
+  <div class="product-card reveal reveal-delay-2">
+    <div class="product-visual vis-dashboard">
+      <svg viewBox="0 0 200 150" fill="none">
+        <defs>
+          <linearGradient id="db-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.5"/><stop offset="100%" stop-color="#0055DD" stop-opacity="0.2"/></linearGradient>
+          <linearGradient id="db-g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0088FF" stop-opacity="0.6"/><stop offset="100%" stop-color="#0044DD" stop-opacity="0.2"/></linearGradient>
+          <filter id="db-sh"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0066FF" flood-opacity="0.3"/></filter>
+        </defs>
+        <rect x="30" y="30" width="60" height="40" rx="8" fill="url(#db-g1)" filter="url(#db-sh)" class="anim-float1"/>
+        <rect x="30" y="30" width="60" height="40" rx="8" stroke="rgba(255,255,255,0.12)" stroke-width="0.5" fill="none" class="anim-float1"/>
+        <rect x="110" y="30" width="60" height="40" rx="8" fill="url(#db-g2)"/>
+        <rect x="110" y="30" width="60" height="40" rx="8" stroke="rgba(255,255,255,0.1)" stroke-width="0.5" fill="none"/>
+        <rect x="30" y="85" width="140" height="35" rx="8" fill="url(#db-g1)" filter="url(#db-sh)" class="anim-float2"/>
+        <rect x="30" y="85" width="140" height="35" rx="8" stroke="rgba(255,255,255,0.1)" stroke-width="0.5" fill="none" class="anim-float2"/>
+        <line x1="40" y1="50" x2="50" y2="42" stroke="rgba(0,170,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="50" y1="42" x2="60" y2="55" stroke="rgba(0,170,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="60" y1="55" x2="70" y2="45" stroke="rgba(0,170,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="70" y1="45" x2="80" y2="48" stroke="rgba(0,170,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="130" cy="50" r="12" stroke="rgba(0,136,255,0.5)" stroke-width="1.5" fill="none"/>
+        <path d="M130,38 L130,50 L140,50" stroke="rgba(0,170,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+        <rect x="40" y="95" width="30" height="15" rx="4" fill="rgba(0,102,255,0.3)"/>
+        <rect x="80" y="95" width="30" height="15" rx="4" fill="rgba(0,136,255,0.25)"/>
+        <rect x="120" y="95" width="30" height="15" rx="4" fill="rgba(0,170,255,0.2)"/>
+      </svg>
+    </div>
+    <div class="product-info">
+      <div class="product-meta">
+        <h3 class="product-name">AI Dashboard Starter Kit</h3>
+        <span class="product-price">$12+</span>
+      </div>
+      <p class="product-desc">Production-extracted dashboard components, charts, and layouts.</p>
+      <a href="https://kimpossible05.gumroad.com/l/emvmct" target="_blank" rel="noopener" class="btn-get">Get it</a>
+    </div>
+  </div>
+
+  <!-- Causal Graph UI Kit -->
+  <div class="product-card reveal reveal-delay-3">
+    <div class="product-visual vis-causal">
+      <svg viewBox="0 0 200 150" fill="none">
+        <defs>
+          <marker id="arr2" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5" fill="#00AAFF"/></marker>
+          <linearGradient id="cg-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.7"/><stop offset="100%" stop-color="#0055DD" stop-opacity="0.4"/></linearGradient>
+          <filter id="cg-sh"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0066FF" flood-opacity="0.3"/></filter>
+        </defs>
+        <circle cx="60" cy="40" r="14" fill="url(#cg-g1)" filter="url(#cg-sh)" class="anim-float1"/>
+        <circle cx="60" cy="40" r="14" stroke="rgba(255,255,255,0.12)" stroke-width="0.5" fill="none" class="anim-float1"/>
+        <ellipse cx="55" cy="35" rx="5" ry="3" fill="rgba(255,255,255,0.08)" class="anim-float1"/>
+        <circle cx="140" cy="40" r="14" fill="url(#cg-g1)"/>
+        <circle cx="140" cy="40" r="14" stroke="rgba(255,255,255,0.1)" stroke-width="0.5" fill="none"/>
+        <circle cx="100" cy="80" r="16" fill="url(#cg-g1)" filter="url(#cg-sh)" class="anim-float2"/>
+        <circle cx="100" cy="80" r="16" stroke="rgba(255,255,255,0.12)" stroke-width="0.5" fill="none" class="anim-float2"/>
+        <ellipse cx="94" cy="74" rx="6" ry="3" fill="rgba(255,255,255,0.06)" class="anim-float2"/>
+        <circle cx="55" cy="120" r="10" fill="rgba(0,102,255,0.4)"/>
+        <circle cx="145" cy="120" r="10" fill="rgba(0,85,221,0.4)"/>
+        <circle cx="100" cy="80" r="5" fill="#00AAFF" opacity="0.5" class="anim-pulse"/>
+        <line x1="70" y1="48" x2="90" y2="68" stroke="rgba(0,170,255,0.5)" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <line x1="130" y1="48" x2="112" y2="68" stroke="rgba(0,170,255,0.5)" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <line x1="90" y1="92" x2="65" y2="112" stroke="rgba(0,136,255,0.4)" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <line x1="110" y1="92" x2="135" y2="112" stroke="rgba(0,136,255,0.4)" stroke-width="1.5" marker-end="url(#arr2)"/>
+      </svg>
+    </div>
+    <div class="product-info">
+      <div class="product-meta">
+        <h3 class="product-name">Causal Graph UI Kit</h3>
+        <span class="product-price">$15+</span>
+      </div>
+      <p class="product-desc">Interactive node-based graph components for data visualization.</p>
+      <a href="https://kimpossible05.gumroad.com/l/arottc" target="_blank" rel="noopener" class="btn-get">Get it</a>
+    </div>
+  </div>
+
+  <!-- AI Landing Page Kit -->
+  <div class="product-card reveal reveal-delay-4">
+    <div class="product-visual vis-landing">
+      <svg viewBox="0 0 200 150" fill="none">
+        <defs>
+          <linearGradient id="lp-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.4"/><stop offset="100%" stop-color="#0055DD" stop-opacity="0.15"/></linearGradient>
+          <filter id="lp-sh"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0066FF" flood-opacity="0.25"/></filter>
+        </defs>
+        <rect x="40" y="25" width="120" height="100" rx="10" fill="url(#lp-g)" filter="url(#lp-sh)"/>
+        <rect x="40" y="25" width="120" height="100" rx="10" stroke="rgba(255,255,255,0.1)" stroke-width="0.5" fill="none"/>
+        <rect x="55" y="40" width="50" height="6" rx="3" fill="rgba(0,170,255,0.5)" class="anim-float1"/>
+        <rect x="55" y="52" width="90" height="4" rx="2" fill="rgba(0,102,255,0.2)"/>
+        <rect x="55" y="60" width="70" height="4" rx="2" fill="rgba(0,102,255,0.15)"/>
+        <rect x="55" y="75" width="35" height="12" rx="6" fill="rgba(0,136,255,0.4)"/>
+        <rect x="55" y="75" width="35" height="12" rx="6" stroke="rgba(255,255,255,0.1)" stroke-width="0.5" fill="none"/>
+        <rect x="55" y="96" width="25" height="18" rx="5" fill="rgba(0,102,255,0.2)" class="anim-float2"/>
+        <rect x="55" y="96" width="25" height="18" rx="5" stroke="rgba(255,255,255,0.08)" stroke-width="0.5" fill="none" class="anim-float2"/>
+        <rect x="85" y="96" width="25" height="18" rx="5" fill="rgba(0,136,255,0.15)"/>
+        <rect x="85" y="96" width="25" height="18" rx="5" stroke="rgba(255,255,255,0.06)" stroke-width="0.5" fill="none"/>
+        <rect x="115" y="96" width="25" height="18" rx="5" fill="rgba(0,170,255,0.1)"/>
+        <rect x="115" y="96" width="25" height="18" rx="5" stroke="rgba(255,255,255,0.05)" stroke-width="0.5" fill="none"/>
+      </svg>
+    </div>
+    <div class="product-info">
+      <div class="product-meta">
+        <h3 class="product-name">AI Landing Page Kit</h3>
+        <span class="product-price">$15+</span>
+      </div>
+      <p class="product-desc">Clean, modern landing page templates designed for AI products.</p>
+      <a href="https://gumroad.com/products/aqsrrt" target="_blank" rel="noopener" class="btn-get">Get it</a>
+    </div>
+  </div>
+
+  <!-- Developer Portfolio Kit -->
+  <div class="product-card reveal reveal-delay-5">
+    <div class="product-visual vis-portfolio">
+      <svg viewBox="0 0 200 150" fill="none">
+        <defs>
+          <linearGradient id="pf-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00AAFF" stop-opacity="0.6"/><stop offset="100%" stop-color="#0044DD" stop-opacity="0.2"/></linearGradient>
+          <filter id="pf-sh"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0066FF" flood-opacity="0.3"/></filter>
+        </defs>
+        <circle cx="100" cy="42" r="20" fill="url(#pf-g)" filter="url(#pf-sh)" class="anim-float1"/>
+        <circle cx="100" cy="42" r="20" stroke="rgba(255,255,255,0.12)" stroke-width="0.5" fill="none" class="anim-float1"/>
+        <ellipse cx="93" cy="35" rx="7" ry="4" fill="rgba(255,255,255,0.07)" class="anim-float1"/>
+        <circle cx="100" cy="42" r="7" fill="rgba(0,102,255,0.4)"/>
+        <rect x="60" y="70" width="80" height="5" rx="2.5" fill="rgba(0,170,255,0.35)"/>
+        <rect x="70" y="80" width="60" height="4" rx="2" fill="rgba(0,102,255,0.15)"/>
+        <rect x="45" y="96" width="50" height="30" rx="8" fill="rgba(0,102,255,0.2)" class="anim-float2"/>
+        <rect x="45" y="96" width="50" height="30" rx="8" stroke="rgba(255,255,255,0.08)" stroke-width="0.5" fill="none" class="anim-float2"/>
+        <rect x="105" y="96" width="50" height="30" rx="8" fill="rgba(0,136,255,0.15)"/>
+        <rect x="105" y="96" width="50" height="30" rx="8" stroke="rgba(255,255,255,0.06)" stroke-width="0.5" fill="none"/>
+        <line x1="55" y1="106" x2="85" y2="106" stroke="rgba(0,170,255,0.25)" stroke-width="1"/>
+        <line x1="55" y1="112" x2="75" y2="112" stroke="rgba(0,170,255,0.18)" stroke-width="1"/>
+        <line x1="115" y1="106" x2="145" y2="106" stroke="rgba(0,170,255,0.25)" stroke-width="1"/>
+        <line x1="115" y1="112" x2="135" y2="112" stroke="rgba(0,170,255,0.18)" stroke-width="1"/>
+      </svg>
+    </div>
+    <div class="product-info">
+      <div class="product-meta">
+        <h3 class="product-name">Developer Portfolio Kit</h3>
+        <span class="product-price">$10+</span>
+      </div>
+      <p class="product-desc">Minimal portfolio templates for developers and designers.</p>
+      <a href="https://gumroad.com/products/oolmc" target="_blank" rel="noopener" class="btn-get">Get it</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="/">Home</a>
+    <a href="https://github.com/ewk-experiments" target="_blank" rel="noopener">GitHub</a>
+    <a href="mailto:heyitskim@agentmail.to">Contact</a>
+  </div>
+  <p class="footer-copy">ewk labs</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ─── Scroll Reveals ───
+var reveals = document.querySelectorAll('.reveal');
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.15 });
+reveals.forEach(function(el) { observer.observe(el); });
+
+// ─── Three.js Store Hero: Universal WebGL1-compatible glass shapes ───
+(function() {
+  var canvas = document.getElementById('store-hero-canvas');
+  var fallback = document.getElementById('store-fallback');
+  if (!canvas) return;
+
+  var gl = null;
+  try {
+    gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  } catch(e) {}
+
+  if (!gl) {
+    canvas.style.display = 'none';
+    if (fallback) fallback.style.display = 'block';
+    return;
+  }
+
+  try {
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(60, canvas.offsetWidth / canvas.offsetHeight, 0.1, 100);
+    camera.position.z = 5;
+
+    var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+    renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Rim-lit glass shader (WebGL1 compatible)
+    var glassVS = [
+      'varying vec3 vNormal;',
+      'varying vec3 vViewPosition;',
+      'void main() {',
+      '  vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);',
+      '  vViewPosition = -mvPosition.xyz;',
+      '  vNormal = normalMatrix * normal;',
+      '  gl_Position = projectionMatrix * mvPosition;',
+      '}'
+    ].join('\n');
+
+    var glassFS = [
+      'uniform vec3 uColor;',
+      'uniform float uOpacity;',
+      'uniform float uRimPower;',
+      'varying vec3 vNormal;',
+      'varying vec3 vViewPosition;',
+      'void main() {',
+      '  vec3 normal = normalize(vNormal);',
+      '  vec3 viewDir = normalize(vViewPosition);',
+      '  float rim = 1.0 - max(dot(viewDir, normal), 0.0);',
+      '  rim = pow(rim, uRimPower);',
+      '  vec3 color = uColor + vec3(0.3, 0.5, 1.0) * rim * 0.8;',
+      '  float alpha = uOpacity + rim * 0.4;',
+      '  gl_FragColor = vec4(color, alpha);',
+      '}'
+    ].join('\n');
+
+    function makeGlassMat(color, opacity, rimPower) {
+      return new THREE.ShaderMaterial({
+        uniforms: {
+          uColor: { value: new THREE.Color(color) },
+          uOpacity: { value: opacity },
+          uRimPower: { value: rimPower || 2.5 }
+        },
+        vertexShader: glassVS,
+        fragmentShader: glassFS,
+        transparent: true,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+      });
+    }
+
+    var shapes = [];
+    var geos = [
+      new THREE.OctahedronGeometry(0.5, 0),
+      new THREE.IcosahedronGeometry(0.4, 0),
+      new THREE.TetrahedronGeometry(0.35, 0)
+    ];
+    var positions = [
+      { x: -2, y: 0.3, z: -1 },
+      { x: 2, y: -0.5, z: -0.5 },
+      { x: 0.5, y: 1, z: -2 }
+    ];
+
+    geos.forEach(function(geo, i) {
+      var mat = makeGlassMat(0x0066FF, 0.1, 2.2 + Math.random());
+      var mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(positions[i].x, positions[i].y, positions[i].z);
+      mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+      scene.add(mesh);
+      shapes.push({
+        mesh: mesh,
+        rotSpeed: { x: 0.003 + Math.random() * 0.004, y: 0.004 + Math.random() * 0.004 },
+        floatSpeed: 0.3 + Math.random() * 0.3,
+        floatAmp: 0.12 + Math.random() * 0.12,
+        baseY: positions[i].y
+      });
+    });
+
+    // Particles
+    var particleCount = 80;
+    var particleGeo = new THREE.BufferGeometry();
+    var particlePos = new Float32Array(particleCount * 3);
+    for (var i = 0; i < particleCount; i++) {
+      particlePos[i * 3] = (Math.random() - 0.5) * 10;
+      particlePos[i * 3 + 1] = (Math.random() - 0.5) * 6;
+      particlePos[i * 3 + 2] = (Math.random() - 0.5) * 6 - 2;
+    }
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
+    var particleMat = new THREE.PointsMaterial({ color: 0x0088FF, size: 0.025, transparent: true, opacity: 0.4, sizeAttenuation: true });
+    scene.add(new THREE.Points(particleGeo, particleMat));
+
+    var time = 0;
+    function animate() {
+      requestAnimationFrame(animate);
+      time += 0.01;
+      shapes.forEach(function(s) {
+        s.mesh.rotation.x += s.rotSpeed.x;
+        s.mesh.rotation.y += s.rotSpeed.y;
+        s.mesh.position.y = s.baseY + Math.sin(time * s.floatSpeed) * s.floatAmp;
+      });
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', function() {
+      camera.aspect = canvas.offsetWidth / canvas.offsetHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+    });
+
+  } catch(e) {
+    canvas.style.display = 'none';
+    if (fallback) fallback.style.display = 'block';
+  }
+})();
+</script>
+
+</body>
+</html>
