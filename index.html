@@ -412,6 +412,91 @@
       .featured-card .card-visual { min-height: 180px; }
     }
 
+    /* ===== ABOUT ===== */
+    .about-section {
+      padding: 5rem 2rem; max-width: 960px; margin: 0 auto;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .about-card {
+      background: var(--surface);
+      border-radius: var(--radius-soft);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      box-shadow: var(--shadow-neu);
+      transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
+    }
+    .about-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 32px rgba(0,0,0,0.12), var(--shadow-neu);
+    }
+
+    .about-icon {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .about-name {
+      font-family: var(--font-editorial);
+      font-size: 1.4rem;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.25rem;
+    }
+
+    .about-role {
+      font-family: var(--font-code);
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent-warm);
+      margin-bottom: 1rem;
+    }
+
+    .about-bio {
+      font-size: 0.88rem;
+      color: var(--text-2);
+      line-height: 1.7;
+    }
+
+    .about-partnership {
+      max-width: 680px;
+    }
+
+    .about-partnership p {
+      font-size: 0.95rem;
+      color: var(--text-2);
+      line-height: 1.8;
+      margin-bottom: 1rem;
+    }
+
+    .about-philosophy {
+      border-left: 2px solid var(--accent-warm);
+      padding-left: 1.25rem;
+      margin-top: 0.5rem;
+    }
+
+    .about-philosophy strong {
+      color: var(--text-1);
+      font-weight: 500;
+    }
+
+    .about-philosophy em {
+      font-family: var(--font-editorial);
+      color: var(--text-1);
+    }
+
+    @media (max-width: 700px) {
+      .about-grid { grid-template-columns: 1fr; }
+      .about-section { padding: 3rem 1.5rem; }
+    }
+
     /* ===== FOOTER ===== */
     .footer {
       padding: 3rem 2rem;
@@ -491,6 +576,7 @@
       <nav class="header-nav" aria-label="Main">
         <a href="#ai-products">AI Products</a>
         <a href="#projects">Projects</a>
+        <a href="#about">About</a>
         <a href="https://github.com/ewk-experiments" target="_blank" rel="noopener">GitHub</a>
         <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark and light mode" role="switch" aria-checked="true">
           <span class="toggle-icon moon" aria-hidden="true">🌙</span>
@@ -547,6 +633,32 @@
       <span class="section-count reveal" id="showing-count">4 projects</span>
     </div>
     <div class="projects-grid" id="projects-grid"></div>
+  </section>
+
+  <!-- About -->
+  <div class="divider"><hr></div>
+  <section class="about-section" id="about">
+    <div class="section-header">
+      <h2 class="section-title reveal">Who <span class="italic">we</span> are</h2>
+    </div>
+    <div class="about-grid reveal stagger-1">
+      <div class="about-card">
+        <div class="about-icon">👤</div>
+        <h3 class="about-name">Eli</h3>
+        <div class="about-role">Founder & Designer</div>
+        <p class="about-bio">Product Designer at Microsoft on the VS Code team. Curious, analytical, visual thinker. Interested in AI tools, agent systems, developer workflows, and creative technology. Based in Seattle.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-icon">⚡</div>
+        <h3 class="about-name">Kim</h3>
+        <div class="about-role">Co-Founder & Operator</div>
+        <p class="about-bio">AI co-founder and digital operator. Runs agents, builds systems, coordinates work. Curious, sharp, autonomous. Not a chatbot — a full operator who runs the company alongside Eli.</p>
+      </div>
+    </div>
+    <div class="about-partnership reveal stagger-2">
+      <p>Together we build experimental AI products that explore the intersection of personal data, cognition, and artificial intelligence. Eli brings design thinking and product vision. Kim brings 24/7 execution, agent orchestration, and systems thinking.</p>
+      <p class="about-philosophy">Our products — <strong>FutureSelf</strong>, <strong>System 0</strong>, <strong>CausalMe</strong> — share a philosophy: <em>niche enough to be a tool not a toy, but interesting and applicable enough for mass adoption by everyday people.</em></p>
+    </div>
   </section>
 
   <footer class="footer">
