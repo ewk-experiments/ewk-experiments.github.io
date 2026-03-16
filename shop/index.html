@@ -7,23 +7,21 @@
 <meta name="description" content="Design kits, templates, and tools from ewk labs experiments.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --vermillion: #E8380D;
+  --accent: #E8380D;
+  --accent-gradient: linear-gradient(135deg, #E8380D, #D946EF);
+  --accent-gradient-warm: linear-gradient(135deg, #E8380D, #F97316, #FBBF24);
   --surface: #FFFFFF;
   --text-primary: #1A1A1A;
   --text-secondary: #6B6B6B;
   --text-muted: #999999;
-  --border: rgba(0,0,0,0.04);
-  --glass-bg: rgba(255,255,255,0.32);
-  --glass-blur: blur(40px);
+  --glass-bg: rgba(255,255,255,0.45);
   --glass-border: rgba(255,255,255,0.5);
-  --glass-border-outer: rgba(0,0,0,0.03);
   --glass-shadow: 0 8px 32px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.02);
-  --font-serif: 'Instrument Serif', Georgia, serif;
   --font-sans: 'Inter', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -53,20 +51,24 @@ body::after {
   background-size: 256px 256px;
 }
 
-/* Ambient gradient orbs — more intense */
-body::before {
-  content: '';
+/* Parallax ambient orbs */
+.ambient-orbs {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: -1;
-  background:
-    radial-gradient(ellipse 800px 800px at 10% 15%, rgba(232,56,13,0.12), transparent),
-    radial-gradient(ellipse 700px 700px at 85% 30%, rgba(80,80,220,0.08), transparent),
-    radial-gradient(ellipse 600px 600px at 45% 60%, rgba(232,56,13,0.07), transparent),
-    radial-gradient(ellipse 700px 700px at 70% 85%, rgba(120,80,200,0.06), transparent),
-    radial-gradient(ellipse 500px 500px at 20% 80%, rgba(232,56,13,0.05), transparent);
+  z-index: 0;
+  will-change: transform;
 }
+.ambient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  will-change: transform;
+}
+.ambient-orb-1 { width: 800px; height: 800px; top: -5%; left: -5%; background: rgba(232,56,13,0.10); }
+.ambient-orb-2 { width: 700px; height: 700px; top: 15%; right: -10%; background: rgba(217,70,239,0.07); }
+.ambient-orb-3 { width: 600px; height: 600px; top: 50%; left: 25%; background: rgba(232,56,13,0.06); }
+.ambient-orb-4 { width: 700px; height: 700px; top: 75%; right: 5%; background: rgba(120,80,200,0.05); }
 
 #cursor {
   position: fixed;
@@ -88,7 +90,7 @@ body::before {
   top: 0;
   width: 2px;
   height: 0%;
-  background: var(--vermillion);
+  background: var(--accent-gradient);
   z-index: 1000;
   transition: height 0.1s linear;
 }
@@ -103,50 +105,26 @@ body::before {
 .reveal-delay-2 { transition-delay: 0.2s; }
 .reveal-delay-3 { transition-delay: 0.3s; }
 
-.section-number {
-  font-family: var(--font-serif);
-  font-size: clamp(3rem, 5vw, 5rem);
-  color: rgba(0,0,0,0.05);
-  line-height: 1;
-  margin-bottom: 1rem;
-}
-
 .section-label {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 500;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: #fff;
-  background: var(--vermillion);
-  display: inline-block;
-  padding: 0.2rem 0.6rem;
+  color: var(--text-muted);
   margin-bottom: 0.5rem;
 }
 
-/* ─── BRUTALIST: SLASH DIVIDER ─── */
-.slash-divider {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  letter-spacing: 0.02em;
-  color: var(--text-muted);
-  overflow: hidden;
-  white-space: nowrap;
-  padding: 2rem 0;
-  user-select: none;
-  opacity: 0.5;
-}
-
 .section-title {
-  font-family: var(--font-serif);
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 400;
+  font-family: var(--font-sans);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 300;
   color: var(--text-primary);
   line-height: 1.1;
   letter-spacing: -0.025em;
 }
 
-/* Nav — extreme glass */
+/* Nav */
 .store-nav {
   padding: 1.25rem 4rem;
   display: flex;
@@ -164,19 +142,22 @@ body::before {
 
 .store-nav a {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.15em;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-muted);
   text-decoration: none;
   transition: color 0.3s;
 }
-.store-nav a:hover { color: var(--vermillion); }
+.store-nav a:hover { color: var(--accent); }
 
 .nav-mark {
-  font-family: var(--font-serif);
-  font-size: 1.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--text-primary);
+  font-weight: 500;
 }
 
 /* Hero */
@@ -195,12 +176,16 @@ body::before {
   opacity: 0.25;
 }
 
-.hero-content { position: relative; z-index: 2; }
+.hero-content {
+  position: relative;
+  z-index: 2;
+  will-change: transform;
+}
 
 .hero-title {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: clamp(4rem, 12vw, 10rem);
-  font-weight: 400;
+  font-weight: 300;
   line-height: 0.88;
   letter-spacing: -0.04em;
   color: var(--text-primary);
@@ -222,11 +207,11 @@ body::before {
   font-family: var(--font-mono);
   font-size: 0.72rem;
   color: var(--text-muted);
-  letter-spacing: 0.2em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
-/* Catalog — glass cards with overlap */
+/* Catalog — animation-forward cards */
 .catalog {
   padding: 0 4rem 8rem;
   max-width: 1400px;
@@ -235,17 +220,14 @@ body::before {
 
 .catalog-entries {
   margin-top: 4rem;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
 }
 
 .catalog-entry {
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 2.5rem;
-  align-items: start;
-  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
   position: relative;
   background: var(--glass-bg);
   backdrop-filter: blur(40px) saturate(1.3);
@@ -253,49 +235,68 @@ body::before {
   border: 1px solid var(--glass-border);
   border-radius: 20px;
   box-shadow: var(--glass-shadow);
-  transition: transform 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out), background 0.4s;
+  overflow: hidden;
+  transition: transform 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out);
+  will-change: transform;
 }
 
 .catalog-entry:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 56px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.03);
-  background: rgba(255,255,255,0.45);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 56px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.03);
 }
 
-.catalog-entry:hover .entry-cta { color: var(--vermillion); border-color: var(--vermillion); }
+.catalog-entry:hover .entry-visual { opacity: 1; }
+.catalog-entry:hover .entry-meta { opacity: 1; max-height: 200px; margin-top: 0.75rem; }
 
-/* Overlap: alternating offset for depth */
-.catalog-entry:nth-child(even) {
-  margin-left: 3rem;
-  margin-right: -1.5rem;
-}
-.catalog-entry:nth-child(odd) {
-  margin-right: 3rem;
-  margin-left: -1.5rem;
+.entry-visual {
+  width: 100%;
+  aspect-ratio: 16/10;
+  position: relative;
+  overflow: hidden;
+  background: rgba(250,250,250,0.5);
+  opacity: 0.85;
+  transition: opacity 0.5s;
 }
 
-.entry-body { padding-right: 1rem; }
+.entry-visual canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.entry-body {
+  padding: 1.5rem 2rem 2rem;
+}
 
 .entry-type {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.15em;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-muted);
-  margin-bottom: 0.4rem;
 }
 
 .entry-name {
-  font-family: var(--font-serif);
-  font-size: 1.75rem;
+  font-family: var(--font-sans);
+  font-size: 1.35rem;
+  font-weight: 500;
   color: var(--text-primary);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.15rem;
+}
+
+.entry-meta {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.4s var(--ease-out), max-height 0.4s var(--ease-out), margin 0.4s var(--ease-out);
+  margin-top: 0;
 }
 
 .entry-desc {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  line-height: 1.7;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  line-height: 1.6;
   color: var(--text-secondary);
   margin-bottom: 0.75rem;
 }
@@ -309,14 +310,14 @@ body::before {
 
 .entry-tag {
   font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.08em;
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-muted);
   background: rgba(255,255,255,0.5);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  padding: 0.25rem 0.6rem;
+  padding: 0.2rem 0.5rem;
   border-radius: 4px;
   border: 1px solid rgba(255,255,255,0.6);
 }
@@ -337,58 +338,22 @@ body::before {
 .entry-cta {
   font-family: var(--font-mono);
   font-size: 0.68rem;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-primary);
+  color: #fff;
   text-decoration: none;
   padding: 0.55rem 1.5rem;
-  border: 1px solid rgba(0,0,0,0.06);
+  border: none;
   border-radius: 6px;
-  transition: color 0.3s, border-color 0.3s, background 0.3s, box-shadow 0.3s;
+  background: var(--accent-gradient);
+  transition: transform 0.3s var(--ease-out), box-shadow 0.3s;
   display: inline-block;
-  background: rgba(255,255,255,0.5);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 4px 16px rgba(232,56,13,0.15);
 }
 
 .entry-cta:hover {
-  color: var(--vermillion);
-  border-color: var(--vermillion);
-  background: rgba(232,56,13,0.04);
-  box-shadow: 0 4px 16px rgba(232,56,13,0.08);
-}
-
-.entry-visual {
-  height: 200px;
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.6);
-  border-radius: 14px;
-  background: rgba(255,255,255,0.45);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.03), inset 0 1px 2px rgba(255,255,255,0.5);
-}
-
-.entry-visual canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-/* Glass divider strip between sections */
-.glass-strip {
-  height: 60px;
-  margin: -30px 4rem 0;
-  position: relative;
-  z-index: 2;
-  background: rgba(255,255,255,0.3);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border: 1px solid rgba(255,255,255,0.5);
-  border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.02);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(232,56,13,0.25);
 }
 
 /* Footer */
@@ -414,26 +379,23 @@ footer {
   color: var(--text-muted);
   text-decoration: none;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   transition: color 0.3s;
 }
-.footer-links a:hover { color: var(--vermillion); }
+.footer-links a:hover { color: var(--accent); }
 
 .footer-copy {
   font-family: var(--font-mono);
   font-size: 0.68rem;
   color: var(--text-muted);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
 }
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .catalog-entry { grid-template-columns: 1fr 240px; }
-  .entry-visual { height: 170px; }
-  .catalog-entry:nth-child(even),
-  .catalog-entry:nth-child(odd) { margin: 0; }
+  .catalog-entries { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 768px) {
@@ -442,18 +404,11 @@ footer {
   .store-nav { padding: 1rem 2rem; }
   .store-hero { padding: 1rem 2rem 5rem; }
   .catalog { padding: 0 2rem 5rem; }
-  .catalog-entry {
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-    padding: 2rem;
-  }
-  .catalog-entry:nth-child(even),
-  .catalog-entry:nth-child(odd) { margin: 0; }
+  .catalog-entries { grid-template-columns: 1fr; }
+  .entry-meta { opacity: 1; max-height: 200px; margin-top: 0.75rem; }
   .entry-body { padding-right: 0; }
-  .entry-visual { height: 180px; }
-  .entry-name { font-size: 1.35rem; }
+  .entry-name { font-size: 1.2rem; }
   footer { padding: 3rem 2rem; flex-direction: column; gap: 1.5rem; }
-  .glass-strip { margin: -20px 2rem 0; height: 40px; }
 }
 </style>
 </head>
@@ -462,120 +417,136 @@ footer {
 <div id="cursor"></div>
 <div id="progress"></div>
 
+<!-- Parallax ambient orbs -->
+<div class="ambient-orbs">
+  <div class="ambient-orb ambient-orb-1" data-parallax="0.03"></div>
+  <div class="ambient-orb ambient-orb-2" data-parallax="0.05"></div>
+  <div class="ambient-orb ambient-orb-3" data-parallax="0.04"></div>
+  <div class="ambient-orb ambient-orb-4" data-parallax="0.06"></div>
+</div>
+
 <nav class="store-nav">
   <a href="/">Back to Index</a>
-  <span class="nav-mark" style="font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.4em; text-transform: uppercase;">E W K&ensp;L A B S</span>
+  <span class="nav-mark">ewk labs</span>
 </nav>
 
 <section class="store-hero">
   <canvas id="hero-canvas"></canvas>
-  <div class="hero-content">
+  <div class="hero-content" data-parallax-content="0.15">
     <h1 class="hero-title" id="hero-title"></h1>
-    <p class="hero-subtitle reveal reveal-delay-3" style="letter-spacing: 0.4em;">D E S I G N&ensp;K I T S&ensp;+&ensp;T E M P L A T E S</p>
+    <p class="hero-subtitle reveal reveal-delay-3">Design Kits + Templates</p>
   </div>
 </section>
 
 <section class="catalog">
-  <div class="slash-divider reveal">////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</div>
-  <div class="section-number reveal">03</div>
-  <p class="section-label reveal reveal-delay-1">SPECIMENS</p>
-  <h2 class="section-title reveal reveal-delay-2" style="font-family: var(--font-mono); letter-spacing: 0.35em; text-transform: uppercase; font-size: clamp(1.3rem, 2.5vw, 2rem); font-weight: 500;">DIGITAL PRODUCTS</h2>
+  <p class="section-label reveal">Specimens</p>
+  <h2 class="section-title reveal reveal-delay-1">Digital Products</h2>
 
   <div class="catalog-entries">
 
     <div class="catalog-entry reveal">
-      <div class="entry-body">
-        <p class="entry-type">Dashboard / Components</p>
-        <h3 class="entry-name">AI Dashboard Starter Kit</h3>
-        <p class="entry-desc">Production-extracted dashboard components, charts, and layouts. Everything you need to build data-rich AI interfaces.</p>
-        <div class="entry-tags">
-          <span class="entry-tag">React</span>
-          <span class="entry-tag">Tailwind</span>
-          <span class="entry-tag">Charts</span>
-          <span class="entry-tag">Components</span>
-        </div>
-        <div class="entry-price-row">
-          <span class="entry-price">$12</span>
-          <a href="https://kimpossible05.gumroad.com/l/emvmct" target="_blank" rel="noopener" class="entry-cta">Acquire</a>
-        </div>
-      </div>
       <div class="entry-visual"><canvas data-anim="dashboard"></canvas></div>
+      <div class="entry-body">
+        <h3 class="entry-name">AI Dashboard Starter Kit</h3>
+        <p class="entry-type">Dashboard / Components</p>
+        <div class="entry-meta">
+          <p class="entry-desc">Production-extracted dashboard components, charts, and layouts. Everything you need to build data-rich AI interfaces.</p>
+          <div class="entry-tags">
+            <span class="entry-tag">React</span>
+            <span class="entry-tag">Tailwind</span>
+            <span class="entry-tag">Charts</span>
+            <span class="entry-tag">Components</span>
+          </div>
+          <div class="entry-price-row">
+            <span class="entry-price">$12</span>
+            <a href="https://kimpossible05.gumroad.com/l/emvmct" target="_blank" rel="noopener" class="entry-cta">Acquire</a>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="catalog-entry reveal">
-      <div class="entry-body">
-        <p class="entry-type">Data Visualization / Graphs</p>
-        <h3 class="entry-name">Causal Graph UI Kit</h3>
-        <p class="entry-desc">Interactive node-based graph components for data visualization. Map cause and effect with precision.</p>
-        <div class="entry-tags">
-          <span class="entry-tag">React</span>
-          <span class="entry-tag">SVG</span>
-          <span class="entry-tag">D3-Compatible</span>
-          <span class="entry-tag">Interactive</span>
-        </div>
-        <div class="entry-price-row">
-          <span class="entry-price">$15</span>
-          <a href="https://kimpossible05.gumroad.com/l/arottc" target="_blank" rel="noopener" class="entry-cta">Acquire</a>
-        </div>
-      </div>
       <div class="entry-visual"><canvas data-anim="causal"></canvas></div>
+      <div class="entry-body">
+        <h3 class="entry-name">Causal Graph UI Kit</h3>
+        <p class="entry-type">Data Visualization / Graphs</p>
+        <div class="entry-meta">
+          <p class="entry-desc">Interactive node-based graph components for data visualization. Map cause and effect with precision.</p>
+          <div class="entry-tags">
+            <span class="entry-tag">React</span>
+            <span class="entry-tag">SVG</span>
+            <span class="entry-tag">D3-Compatible</span>
+            <span class="entry-tag">Interactive</span>
+          </div>
+          <div class="entry-price-row">
+            <span class="entry-price">$15</span>
+            <a href="https://kimpossible05.gumroad.com/l/arottc" target="_blank" rel="noopener" class="entry-cta">Acquire</a>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="catalog-entry reveal">
-      <div class="entry-body">
-        <p class="entry-type">Landing Page / Templates</p>
-        <h3 class="entry-name">AI Landing Page Kit</h3>
-        <p class="entry-desc">Clean, modern landing page templates designed for AI products. Ship beautiful marketing pages fast.</p>
-        <div class="entry-tags">
-          <span class="entry-tag">HTML</span>
-          <span class="entry-tag">CSS</span>
-          <span class="entry-tag">Responsive</span>
-          <span class="entry-tag">Sections</span>
-        </div>
-        <div class="entry-price-row">
-          <span class="entry-price">$15</span>
-          <a href="https://gumroad.com/products/aqsrrt" target="_blank" rel="noopener" class="entry-cta">Acquire</a>
-        </div>
-      </div>
       <div class="entry-visual"><canvas data-anim="landing"></canvas></div>
+      <div class="entry-body">
+        <h3 class="entry-name">AI Landing Page Kit</h3>
+        <p class="entry-type">Landing Page / Templates</p>
+        <div class="entry-meta">
+          <p class="entry-desc">Clean, modern landing page templates designed for AI products. Ship beautiful marketing pages fast.</p>
+          <div class="entry-tags">
+            <span class="entry-tag">HTML</span>
+            <span class="entry-tag">CSS</span>
+            <span class="entry-tag">Responsive</span>
+            <span class="entry-tag">Sections</span>
+          </div>
+          <div class="entry-price-row">
+            <span class="entry-price">$15</span>
+            <a href="https://gumroad.com/products/aqsrrt" target="_blank" rel="noopener" class="entry-cta">Acquire</a>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="catalog-entry reveal">
-      <div class="entry-body">
-        <p class="entry-type">Portfolio / Templates</p>
-        <h3 class="entry-name">Developer Portfolio Kit</h3>
-        <p class="entry-desc">Minimal portfolio templates for developers and designers. Present your work with intentional restraint.</p>
-        <div class="entry-tags">
-          <span class="entry-tag">HTML</span>
-          <span class="entry-tag">CSS</span>
-          <span class="entry-tag">Minimal</span>
-          <span class="entry-tag">Dark Mode</span>
-        </div>
-        <div class="entry-price-row">
-          <span class="entry-price">$10</span>
-          <a href="https://gumroad.com/products/oolmc" target="_blank" rel="noopener" class="entry-cta">Acquire</a>
-        </div>
-      </div>
       <div class="entry-visual"><canvas data-anim="portfolio"></canvas></div>
+      <div class="entry-body">
+        <h3 class="entry-name">Developer Portfolio Kit</h3>
+        <p class="entry-type">Portfolio / Templates</p>
+        <div class="entry-meta">
+          <p class="entry-desc">Minimal portfolio templates for developers and designers. Present your work with intentional restraint.</p>
+          <div class="entry-tags">
+            <span class="entry-tag">HTML</span>
+            <span class="entry-tag">CSS</span>
+            <span class="entry-tag">Minimal</span>
+            <span class="entry-tag">Dark Mode</span>
+          </div>
+          <div class="entry-price-row">
+            <span class="entry-price">$10</span>
+            <a href="https://gumroad.com/products/oolmc" target="_blank" rel="noopener" class="entry-cta">Acquire</a>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="catalog-entry reveal">
+      <div class="entry-visual"><canvas data-anim="waitlist"></canvas></div>
       <div class="entry-body">
-        <p class="entry-type">Waitlist / Launch Page</p>
         <h3 class="entry-name">Waitlist Launch Page Kit</h3>
-        <p class="entry-desc">Pre-launch waitlist pages with signup forms, social proof counters, and conversion-optimized layouts.</p>
-        <div class="entry-tags">
-          <span class="entry-tag">HTML</span>
-          <span class="entry-tag">CSS</span>
-          <span class="entry-tag">JavaScript</span>
-          <span class="entry-tag">Forms</span>
-        </div>
-        <div class="entry-price-row">
-          <span class="entry-price">$10</span>
-          <a href="https://gumroad.com/products/waitlist" target="_blank" rel="noopener" class="entry-cta">Acquire</a>
+        <p class="entry-type">Waitlist / Launch Page</p>
+        <div class="entry-meta">
+          <p class="entry-desc">Pre-launch waitlist pages with signup forms, social proof counters, and conversion-optimized layouts.</p>
+          <div class="entry-tags">
+            <span class="entry-tag">HTML</span>
+            <span class="entry-tag">CSS</span>
+            <span class="entry-tag">JavaScript</span>
+            <span class="entry-tag">Forms</span>
+          </div>
+          <div class="entry-price-row">
+            <span class="entry-price">$10</span>
+            <a href="https://gumroad.com/products/waitlist" target="_blank" rel="noopener" class="entry-cta">Acquire</a>
+          </div>
         </div>
       </div>
-      <div class="entry-visual"><canvas data-anim="waitlist"></canvas></div>
     </div>
 
   </div>
@@ -587,7 +558,7 @@ footer {
     <a href="https://github.com/ewk-experiments" target="_blank" rel="noopener">GitHub</a>
     <a href="mailto:heyitskim@agentmail.to">Contact</a>
   </div>
-  <p class="footer-copy" style="letter-spacing: 0.4em;">E W K&ensp;L A B S</p>
+  <p class="footer-copy">ewk labs</p>
 </footer>
 
 <script>
@@ -609,15 +580,42 @@ footer {
       el.addEventListener('mouseleave', function() { cursor.classList.remove('hovering'); });
     });
   } else { cursor.style.display = 'none'; }
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) { cursor.style.display = 'none'; document.body.style.cursor = 'auto'; }
 })();
 
-/* Progress + Reveals */
+/* Progress + Reveals + Parallax */
 (function(){
   var progress = document.getElementById('progress');
+  var orbs = document.querySelectorAll('.ambient-orb');
+  var heroContent = document.querySelector('[data-parallax-content]');
+  var cards = document.querySelectorAll('.catalog-entry');
+
   window.addEventListener('scroll', function() {
+    var scrollY = window.scrollY;
     var h = document.documentElement.scrollHeight - window.innerHeight;
-    progress.style.height = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
+    progress.style.height = (h > 0 ? (scrollY / h) * 100 : 0) + '%';
+
+    orbs.forEach(function(orb) {
+      var speed = parseFloat(orb.getAttribute('data-parallax')) || 0.03;
+      orb.style.transform = 'translateY(' + (scrollY * speed) + 'px)';
+    });
+
+    if (heroContent) {
+      var factor = parseFloat(heroContent.getAttribute('data-parallax-content')) || 0.15;
+      heroContent.style.transform = 'translateY(' + (scrollY * factor) + 'px)';
+    }
+
+    cards.forEach(function(card, i) {
+      var rect = card.getBoundingClientRect();
+      var center = rect.top + rect.height / 2;
+      var viewCenter = window.innerHeight / 2;
+      var offset = (center - viewCenter) * 0.02 * (i % 2 === 0 ? 1 : -1);
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        card.style.transform = 'translateY(' + offset + 'px)';
+      }
+    });
   }, { passive: true });
+
   var reveals = document.querySelectorAll('.reveal');
   var obs = new IntersectionObserver(function(entries) {
     entries.forEach(function(e) {
@@ -695,320 +693,166 @@ footer {
     loop();
   }
 
-  /* Dashboard */
   function drawDashboard(ctx, w, h, t) {
     var pad = 12;
-    var cardW = (w - pad * 2 - 8 * 2) / 3;
-    var cardH = h * 0.32;
+    var cardW = (w - pad * 2 - 8 * 2) / 3, cardH = h * 0.32;
     for (var i = 0; i < 3; i++) {
       var x = pad + i * (cardW + 8), y = pad;
       ctx.fillStyle = 'rgba(26,26,26,0.03)';
       ctx.beginPath(); ctx.roundRect(x, y, cardW, cardH, 4); ctx.fill();
-      ctx.strokeStyle = 'rgba(26,26,26,0.06)'; ctx.lineWidth = 0.5;
-      ctx.strokeRect(x, y, cardW, cardH);
+      ctx.strokeStyle = 'rgba(26,26,26,0.06)'; ctx.lineWidth = 0.5; ctx.strokeRect(x, y, cardW, cardH);
       var barCount = 5, barW = (cardW - 16) / barCount - 2;
       for (var b = 0; b < barCount; b++) {
         var bh = (0.3 + Math.abs(Math.sin(t * 1.5 + b * 0.8 + i * 2)) * 0.6) * (cardH * 0.5);
-        var bx = x + 8 + b * (barW + 2);
-        var by = y + cardH - 6 - bh;
-        ctx.fillStyle = b === barCount - 1 && i === 0
-          ? 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.25)'
-          : 'rgba(26,26,26,0.08)';
-        ctx.beginPath(); ctx.roundRect(bx, by, barW, bh, 1.5); ctx.fill();
+        ctx.fillStyle = b === barCount - 1 && i === 0 ? 'rgba('+V[0]+','+V[1]+','+V[2]+',0.25)' : 'rgba(26,26,26,0.08)';
+        ctx.beginPath(); ctx.roundRect(x + 8 + b * (barW + 2), y + cardH - 6 - bh, barW, bh, 1.5); ctx.fill();
       }
       ctx.fillStyle = 'rgba(26,26,26,0.1)';
       ctx.beginPath(); ctx.roundRect(x + 8, y + 8, cardW * 0.45, 3, 1.5); ctx.fill();
     }
-    var sparkY = pad + cardH + 12;
-    var sparkH = h - sparkY - pad;
+    var sparkY = pad + cardH + 12, sparkH = h - sparkY - pad;
     ctx.fillStyle = 'rgba(26,26,26,0.02)';
     ctx.beginPath(); ctx.roundRect(pad, sparkY, w - pad * 2, sparkH, 4); ctx.fill();
-    ctx.strokeStyle = 'rgba(26,26,26,0.06)'; ctx.lineWidth = 0.5;
-    ctx.strokeRect(pad, sparkY, w - pad * 2, sparkH);
     ctx.beginPath();
     var lineW = w - pad * 2 - 16;
     for (var s = 0; s <= 50; s++) {
       var px = pad + 8 + (s / 50) * lineW;
-      var py = sparkY + sparkH * 0.5 + Math.sin(t * 2 + s * 0.2) * sparkH * 0.25
-             + Math.sin(t * 1.3 + s * 0.5) * sparkH * 0.1;
+      var py = sparkY + sparkH * 0.5 + Math.sin(t * 2 + s * 0.2) * sparkH * 0.25 + Math.sin(t * 1.3 + s * 0.5) * sparkH * 0.1;
       if (s === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
     }
-    ctx.strokeStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.4)';
-    ctx.lineWidth = 1.5; ctx.stroke();
-    var endPx = pad + 8 + lineW;
-    var endPy = sparkY + sparkH * 0.5 + Math.sin(t * 2 + 50 * 0.2) * sparkH * 0.25
-               + Math.sin(t * 1.3 + 50 * 0.5) * sparkH * 0.1;
-    ctx.beginPath(); ctx.arc(endPx, endPy, 3, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.5)'; ctx.fill();
+    ctx.strokeStyle = 'rgba('+V[0]+','+V[1]+','+V[2]+',0.4)'; ctx.lineWidth = 1.5; ctx.stroke();
   }
 
-  /* Causal Graph */
   function drawCausal(ctx, w, h, t) {
-    var cx = w / 2, cy = h / 2;
-    var nodes = [
-      { x: cx - w*0.3, y: cy - h*0.28 },
-      { x: cx + w*0.15, y: cy - h*0.32 },
-      { x: cx - w*0.05, y: cy - h*0.02 },
-      { x: cx - w*0.25, y: cy + h*0.28 },
-      { x: cx + w*0.28, y: cy + h*0.18 },
-      { x: cx + w*0.32, y: cy - h*0.08 }
-    ];
+    var cx = w/2, cy = h/2;
+    var nodes = [{x:cx-w*0.3,y:cy-h*0.28},{x:cx+w*0.15,y:cy-h*0.32},{x:cx-w*0.05,y:cy-h*0.02},{x:cx-w*0.25,y:cy+h*0.28},{x:cx+w*0.28,y:cy+h*0.18},{x:cx+w*0.32,y:cy-h*0.08}];
     var edges = [[0,2],[1,2],[2,3],[2,4],[1,5],[5,4]];
-    nodes.forEach(function(n, i) {
-      n.x += Math.sin(t * 0.8 + i * 1.7) * 3;
-      n.y += Math.cos(t * 0.6 + i * 2.3) * 2;
-    });
+    nodes.forEach(function(n, i) { n.x += Math.sin(t*0.8+i*1.7)*3; n.y += Math.cos(t*0.6+i*2.3)*2; });
     edges.forEach(function(e, i) {
       var a = nodes[e[0]], b = nodes[e[1]];
       ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
       ctx.strokeStyle = 'rgba(26,26,26,0.1)'; ctx.lineWidth = 1; ctx.stroke();
-      var dx = b.x-a.x, dy = b.y-a.y, len = Math.sqrt(dx*dx+dy*dy);
-      var nx = dx/len, ny = dy/len;
-      ctx.beginPath(); ctx.moveTo(b.x, b.y);
-      ctx.lineTo(b.x-nx*6+ny*3, b.y-ny*6-nx*3);
-      ctx.lineTo(b.x-nx*6-ny*3, b.y-ny*6+nx*3);
-      ctx.closePath(); ctx.fillStyle = 'rgba(26,26,26,0.15)'; ctx.fill();
+      var dx=b.x-a.x,dy=b.y-a.y,len=Math.sqrt(dx*dx+dy*dy),nx2=dx/len,ny2=dy/len;
+      ctx.beginPath(); ctx.moveTo(b.x,b.y); ctx.lineTo(b.x-nx2*6+ny2*3,b.y-ny2*6-nx2*3); ctx.lineTo(b.x-nx2*6-ny2*3,b.y-ny2*6+nx2*3); ctx.closePath();
+      ctx.fillStyle = 'rgba(26,26,26,0.15)'; ctx.fill();
       for (var p = 0; p < 3; p++) {
-        var prog = ((t * 0.35 + p * 0.33 + i * 0.2) % 1);
-        ctx.beginPath();
-        ctx.arc(a.x+(b.x-a.x)*prog, a.y+(b.y-a.y)*prog, 2, 0, Math.PI*2);
-        ctx.fillStyle = 'rgba('+V[0]+','+V[1]+','+V[2]+','+(Math.sin(prog*Math.PI)*0.45)+')';
-        ctx.fill();
+        var prog = ((t*0.35+p*0.33+i*0.2)%1);
+        ctx.beginPath(); ctx.arc(a.x+(b.x-a.x)*prog,a.y+(b.y-a.y)*prog,2,0,Math.PI*2);
+        ctx.fillStyle = 'rgba('+V[0]+','+V[1]+','+V[2]+','+(Math.sin(prog*Math.PI)*0.45)+')'; ctx.fill();
       }
     });
     nodes.forEach(function(n, i) {
-      var r = i === 2 ? 6 : 4;
-      ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = i === 2 ? 'rgba('+V[0]+','+V[1]+','+V[2]+',0.4)' : 'rgba(26,26,26,0.18)';
-      ctx.fill();
-      ctx.fillStyle = 'rgba(26,26,26,0.06)';
-      ctx.beginPath(); ctx.roundRect(n.x + r + 4, n.y - 2, 16 + i * 3, 3, 1.5); ctx.fill();
+      var r = i===2?6:4;
+      ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI*2);
+      ctx.fillStyle = i===2 ? 'rgba('+V[0]+','+V[1]+','+V[2]+',0.4)' : 'rgba(26,26,26,0.18)'; ctx.fill();
     });
   }
 
-  /* Landing Page */
   function drawLanding(ctx, w, h, t) {
-    var padX = w * 0.08, padY = h * 0.05;
-    var pw = w - padX * 2, ph = h - padY * 2;
-    ctx.save();
-    ctx.shadowColor = 'rgba(0,0,0,0.04)'; ctx.shadowBlur = 12;
-    ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.roundRect(padX, padY, pw, ph, 4); ctx.fill();
-    ctx.restore();
-    ctx.strokeStyle = 'rgba(26,26,26,0.06)'; ctx.lineWidth = 0.5;
-    ctx.beginPath(); ctx.roundRect(padX, padY, pw, ph, 4); ctx.stroke();
-    var navH = 10;
-    ctx.fillStyle = 'rgba(26,26,26,0.02)';
-    ctx.fillRect(padX + 1, padY + 1, pw - 2, navH);
-    ctx.beginPath(); ctx.arc(padX + 12, padY + navH / 2, 2.5, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.35)'; ctx.fill();
-    ctx.fillStyle = 'rgba(26,26,26,0.1)';
-    ctx.beginPath(); ctx.roundRect(padX + 18, padY + navH / 2 - 1.5, 18, 3, 1); ctx.fill();
-    for (var n = 0; n < 4; n++) {
-      ctx.fillStyle = 'rgba(26,26,26,0.07)';
-      ctx.beginPath(); ctx.roundRect(padX + pw - 80 + n * 18, padY + navH / 2 - 1, 12, 2, 1); ctx.fill();
-    }
-    var heroY = padY + navH + ph * 0.06;
-    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.08)';
-    ctx.beginPath(); ctx.roundRect(padX + (pw - 40) / 2, heroY, 40, 5, 2.5); ctx.fill();
-    var hlY = heroY + 12;
-    ctx.fillStyle = 'rgba(26,26,26,0.14)';
-    ctx.beginPath(); ctx.roundRect(padX + pw * 0.1, hlY, pw * 0.8, 7, 3); ctx.fill();
-    ctx.fillStyle = 'rgba(26,26,26,0.1)';
-    ctx.beginPath(); ctx.roundRect(padX + pw * 0.18, hlY + 12, pw * 0.64, 5, 2.5); ctx.fill();
-    ctx.fillStyle = 'rgba(26,26,26,0.05)';
-    ctx.beginPath(); ctx.roundRect(padX + pw * 0.2, hlY + 24, pw * 0.6, 3, 1.5); ctx.fill();
-    var btnY = hlY + 36;
-    var btnW = pw * 0.22, btnH = 11, btnX = padX + (pw - btnW) / 2;
-    ctx.save();
-    ctx.shadowColor = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',' + (0.15 + Math.sin(t * 2.5) * 0.08) + ')';
-    ctx.shadowBlur = 10;
-    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',' + (0.2 + Math.sin(t * 2.5) * 0.06) + ')';
-    ctx.beginPath(); ctx.roundRect(btnX, btnY, btnW, btnH, 5.5); ctx.fill();
-    ctx.restore();
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.beginPath(); ctx.roundRect(btnX + btnW * 0.25, btnY + 4, btnW * 0.5, 3, 1); ctx.fill();
-    var cardY = btnY + btnH + 20;
-    var cardW = (pw - 20) / 3, cardH2 = ph * 0.28;
-    for (var i = 0; i < 3; i++) {
-      var cx2 = padX + 6 + i * (cardW + 4);
-      var parallax = Math.sin(t * 0.9 + i * 1.8) * 3;
-      ctx.save();
-      ctx.shadowColor = 'rgba(0,0,0,0.03)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 2;
-      ctx.fillStyle = 'rgba(255,255,255,0.8)';
-      ctx.beginPath(); ctx.roundRect(cx2, cardY + parallax, cardW, cardH2, 4); ctx.fill();
-      ctx.restore();
-      ctx.strokeStyle = 'rgba(26,26,26,0.04)'; ctx.lineWidth = 0.5;
-      ctx.beginPath(); ctx.roundRect(cx2, cardY + parallax, cardW, cardH2, 4); ctx.stroke();
-      var iconY = cardY + parallax + cardH2 * 0.15;
-      ctx.beginPath(); ctx.arc(cx2 + cardW / 2, iconY, 7, 0, Math.PI * 2);
-      ctx.fillStyle = i === 1 ? 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.1)' : 'rgba(26,26,26,0.04)';
-      ctx.fill();
-      ctx.fillStyle = 'rgba(26,26,26,0.09)';
-      ctx.beginPath(); ctx.roundRect(cx2 + cardW * 0.15, cardY + parallax + cardH2 * 0.45, cardW * 0.7, 3, 1.5); ctx.fill();
-      ctx.fillStyle = 'rgba(26,26,26,0.04)';
-      ctx.beginPath(); ctx.roundRect(cx2 + cardW * 0.1, cardY + parallax + cardH2 * 0.58, cardW * 0.8, 2, 1); ctx.fill();
-      ctx.beginPath(); ctx.roundRect(cx2 + cardW * 0.15, cardY + parallax + cardH2 * 0.66, cardW * 0.7, 2, 1); ctx.fill();
+    var padX=w*0.08,padY=h*0.05,pw=w-padX*2,ph=h-padY*2;
+    ctx.save(); ctx.shadowColor='rgba(0,0,0,0.04)'; ctx.shadowBlur=12;
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.roundRect(padX,padY,pw,ph,4); ctx.fill(); ctx.restore();
+    ctx.strokeStyle='rgba(26,26,26,0.06)'; ctx.lineWidth=0.5;
+    ctx.beginPath(); ctx.roundRect(padX,padY,pw,ph,4); ctx.stroke();
+    var navH=10;
+    ctx.fillStyle='rgba(26,26,26,0.02)'; ctx.fillRect(padX+1,padY+1,pw-2,navH);
+    ctx.beginPath(); ctx.arc(padX+12,padY+navH/2,2.5,0,Math.PI*2);
+    ctx.fillStyle='rgba('+V[0]+','+V[1]+','+V[2]+',0.35)'; ctx.fill();
+    var heroY=padY+navH+ph*0.06;
+    ctx.fillStyle='rgba('+V[0]+','+V[1]+','+V[2]+',0.08)';
+    ctx.beginPath(); ctx.roundRect(padX+(pw-40)/2,heroY,40,5,2.5); ctx.fill();
+    var hlY=heroY+12;
+    ctx.fillStyle='rgba(26,26,26,0.14)';
+    ctx.beginPath(); ctx.roundRect(padX+pw*0.1,hlY,pw*0.8,7,3); ctx.fill();
+    ctx.fillStyle='rgba(26,26,26,0.1)';
+    ctx.beginPath(); ctx.roundRect(padX+pw*0.18,hlY+12,pw*0.64,5,2.5); ctx.fill();
+    var btnY=hlY+36,btnW=pw*0.22,btnH=11,btnX=padX+(pw-btnW)/2;
+    ctx.save(); ctx.shadowColor='rgba('+V[0]+','+V[1]+','+V[2]+','+(0.15+Math.sin(t*2.5)*0.08)+')'; ctx.shadowBlur=10;
+    ctx.fillStyle='rgba('+V[0]+','+V[1]+','+V[2]+','+(0.2+Math.sin(t*2.5)*0.06)+')';
+    ctx.beginPath(); ctx.roundRect(btnX,btnY,btnW,btnH,5.5); ctx.fill(); ctx.restore();
+    var cardY=btnY+btnH+20,cardW2=(pw-20)/3,cardH2=ph*0.28;
+    for (var i=0;i<3;i++) {
+      var cx2=padX+6+i*(cardW2+4),parallax=Math.sin(t*0.9+i*1.8)*3;
+      ctx.save(); ctx.shadowColor='rgba(0,0,0,0.03)'; ctx.shadowBlur=8;
+      ctx.fillStyle='rgba(255,255,255,0.8)'; ctx.beginPath(); ctx.roundRect(cx2,cardY+parallax,cardW2,cardH2,4); ctx.fill(); ctx.restore();
+      ctx.strokeStyle='rgba(26,26,26,0.04)'; ctx.lineWidth=0.5;
+      ctx.beginPath(); ctx.roundRect(cx2,cardY+parallax,cardW2,cardH2,4); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx2+cardW2/2,cardY+parallax+cardH2*0.15,7,0,Math.PI*2);
+      ctx.fillStyle=i===1?'rgba('+V[0]+','+V[1]+','+V[2]+',0.1)':'rgba(26,26,26,0.04)'; ctx.fill();
+      ctx.fillStyle='rgba(26,26,26,0.09)';
+      ctx.beginPath(); ctx.roundRect(cx2+cardW2*0.15,cardY+parallax+cardH2*0.45,cardW2*0.7,3,1.5); ctx.fill();
     }
   }
 
-  /* Developer Portfolio */
   function drawPortfolio(ctx, w, h, t) {
-    var sideW = w * 0.28;
-    ctx.fillStyle = 'rgba(26,26,26,0.02)';
-    ctx.fillRect(0, 0, sideW, h);
-    ctx.strokeStyle = 'rgba(26,26,26,0.04)'; ctx.lineWidth = 0.5;
-    ctx.beginPath(); ctx.moveTo(sideW, 0); ctx.lineTo(sideW, h); ctx.stroke();
-    var avR = Math.min(sideW, h) * 0.14;
-    var avX = sideW / 2, avY = h * 0.2;
-    ctx.beginPath(); ctx.arc(avX, avY, avR, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(26,26,26,0.05)'; ctx.fill();
-    ctx.beginPath(); ctx.arc(avX, avY, avR * 0.5, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.12)'; ctx.fill();
-    ctx.fillStyle = 'rgba(26,26,26,0.12)';
-    ctx.beginPath(); ctx.roundRect(avX - 22, avY + avR + 12, 44, 4, 2); ctx.fill();
-    ctx.fillStyle = 'rgba(26,26,26,0.06)';
-    ctx.beginPath(); ctx.roundRect(avX - 16, avY + avR + 22, 32, 3, 1.5); ctx.fill();
-    ctx.beginPath(); ctx.arc(avX + avR - 2, avY + avR - 6, 3, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(52,199,89,' + (0.3 + Math.sin(t * 1.5) * 0.15) + ')'; ctx.fill();
-    var navStartY = avY + avR + 44;
-    for (var n = 0; n < 5; n++) {
-      var ny = navStartY + n * 16;
-      if (n === 0) {
-        ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.05)';
-        ctx.beginPath(); ctx.roundRect(sideW * 0.1, ny - 3, sideW * 0.8, 12, 3); ctx.fill();
-        ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.3)';
-        ctx.fillRect(sideW * 0.1, ny - 3, 2, 12);
-      }
-      ctx.fillStyle = n === 0 ? 'rgba(26,26,26,0.12)' : 'rgba(26,26,26,0.06)';
-      ctx.beginPath(); ctx.roundRect(sideW * 0.2, ny, sideW * 0.55, 3, 1.5); ctx.fill();
-    }
-    var gridX = sideW + 14, gridY = 14;
-    var gapG = 10;
-    var gw = w - sideW - 28, gh = h - 28;
-    var cellW = (gw - gapG) / 2, cellH = (gh - gapG) / 2;
-    for (var row = 0; row < 2; row++) {
-      for (var col = 0; col < 2; col++) {
-        var idx = row * 2 + col;
-        var bx = gridX + col * (cellW + gapG);
-        var by = gridY + row * (cellH + gapG);
-        var isHovered = idx === 1;
-        var lift = isHovered ? -2 + Math.sin(t * 1.5) * 0.5 : Math.sin(t * 0.8 + idx * 1.2) * 1;
-        ctx.save();
-        ctx.shadowColor = isHovered ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.02)';
-        ctx.shadowBlur = isHovered ? 12 : 4;
-        ctx.fillStyle = '#fff';
-        ctx.beginPath(); ctx.roundRect(bx, by + lift, cellW, cellH, 5); ctx.fill();
-        ctx.restore();
-        ctx.strokeStyle = isHovered ? 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.12)' : 'rgba(26,26,26,0.05)';
-        ctx.lineWidth = isHovered ? 1 : 0.5;
-        ctx.beginPath(); ctx.roundRect(bx, by + lift, cellW, cellH, 5); ctx.stroke();
-        var thumbH = cellH * 0.58;
-        var colors = ['rgba(26,26,26,0.03)', 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.04)', 'rgba(60,60,120,0.03)', 'rgba(26,26,26,0.025)'];
-        ctx.fillStyle = colors[idx];
-        ctx.beginPath(); ctx.roundRect(bx + 4, by + lift + 4, cellW - 8, thumbH, 3); ctx.fill();
-        ctx.fillStyle = 'rgba(26,26,26,0.1)';
-        ctx.beginPath(); ctx.roundRect(bx + 6, by + lift + thumbH + 8, cellW * 0.55, 3.5, 1.5); ctx.fill();
-        ctx.fillStyle = 'rgba(26,26,26,0.04)';
-        ctx.beginPath(); ctx.roundRect(bx + 6, by + lift + thumbH + 16, cellW * 0.3, 3, 1.5); ctx.fill();
-      }
+    var sideW=w*0.28;
+    ctx.fillStyle='rgba(26,26,26,0.02)'; ctx.fillRect(0,0,sideW,h);
+    ctx.strokeStyle='rgba(26,26,26,0.04)'; ctx.lineWidth=0.5;
+    ctx.beginPath(); ctx.moveTo(sideW,0); ctx.lineTo(sideW,h); ctx.stroke();
+    var avR=Math.min(sideW,h)*0.14,avX=sideW/2,avY=h*0.2;
+    ctx.beginPath(); ctx.arc(avX,avY,avR,0,Math.PI*2); ctx.fillStyle='rgba(26,26,26,0.05)'; ctx.fill();
+    ctx.beginPath(); ctx.arc(avX,avY,avR*0.5,0,Math.PI*2);
+    ctx.fillStyle='rgba('+V[0]+','+V[1]+','+V[2]+',0.12)'; ctx.fill();
+    ctx.fillStyle='rgba(26,26,26,0.12)';
+    ctx.beginPath(); ctx.roundRect(avX-22,avY+avR+12,44,4,2); ctx.fill();
+    ctx.fillStyle='rgba(26,26,26,0.06)';
+    ctx.beginPath(); ctx.roundRect(avX-16,avY+avR+22,32,3,1.5); ctx.fill();
+    var gridX=sideW+14,gridY=14,gapG=10,gw=w-sideW-28,gh=h-28;
+    var cellW=(gw-gapG)/2,cellH=(gh-gapG)/2;
+    for (var row=0;row<2;row++) for (var col=0;col<2;col++) {
+      var idx=row*2+col,bx=gridX+col*(cellW+gapG),by=gridY+row*(cellH+gapG);
+      var isH=idx===1,lift=isH?-2+Math.sin(t*1.5)*0.5:Math.sin(t*0.8+idx*1.2)*1;
+      ctx.save(); ctx.shadowColor=isH?'rgba(0,0,0,0.06)':'rgba(0,0,0,0.02)'; ctx.shadowBlur=isH?12:4;
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.roundRect(bx,by+lift,cellW,cellH,5); ctx.fill(); ctx.restore();
+      ctx.strokeStyle=isH?'rgba('+V[0]+','+V[1]+','+V[2]+',0.12)':'rgba(26,26,26,0.05)'; ctx.lineWidth=isH?1:0.5;
+      ctx.beginPath(); ctx.roundRect(bx,by+lift,cellW,cellH,5); ctx.stroke();
+      var thumbH=cellH*0.58;
+      ctx.fillStyle=['rgba(26,26,26,0.03)','rgba('+V[0]+','+V[1]+','+V[2]+',0.04)','rgba(60,60,120,0.03)','rgba(26,26,26,0.025)'][idx];
+      ctx.beginPath(); ctx.roundRect(bx+4,by+lift+4,cellW-8,thumbH,3); ctx.fill();
+      ctx.fillStyle='rgba(26,26,26,0.1)';
+      ctx.beginPath(); ctx.roundRect(bx+6,by+lift+thumbH+8,cellW*0.55,3.5,1.5); ctx.fill();
     }
   }
 
-  /* Waitlist */
   function drawWaitlist(ctx, w, h, t) {
-    var cx = w / 2, cy = h / 2;
-    for (var p = 0; p < 15; p++) {
-      var seed = p * 7.31;
-      var px = ((Math.sin(seed + t * 0.15) * 0.5 + 0.5)) * w;
-      var py = ((Math.cos(seed * 1.7 + t * 0.12) * 0.5 + 0.5)) * h;
-      ctx.beginPath(); ctx.arc(px, py, 1 + Math.sin(seed * 2.3 + t) * 0.5, 0, Math.PI * 2);
-      ctx.fillStyle = p % 4 === 0
-        ? 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.045)'
-        : 'rgba(26,26,26,0.03)';
-      ctx.fill();
-    }
-    var cardW = w * 0.78, cardH = h * 0.82;
-    var cardX = (w - cardW) / 2, cardY = (h - cardH) / 2;
-    ctx.save();
-    ctx.shadowColor = 'rgba(0,0,0,0.04)'; ctx.shadowBlur = 20; ctx.shadowOffsetY = 4;
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.beginPath(); ctx.roundRect(cardX, cardY, cardW, cardH, 8); ctx.fill();
-    ctx.restore();
-    ctx.strokeStyle = 'rgba(26,26,26,0.05)'; ctx.lineWidth = 0.5;
-    ctx.beginPath(); ctx.roundRect(cardX, cardY, cardW, cardH, 8); ctx.stroke();
-    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.08)';
-    ctx.beginPath(); ctx.roundRect(cardX, cardY, cardW, 2, [8, 8, 0, 0]); ctx.fill();
-    var badgeY = cardY + cardH * 0.1;
-    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.06)';
-    ctx.beginPath(); ctx.roundRect(cx - 24, badgeY, 48, 8, 4); ctx.fill();
-    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.2)';
-    ctx.beginPath(); ctx.roundRect(cx - 14, badgeY + 2.5, 28, 3, 1.5); ctx.fill();
-    var hlY = badgeY + 18;
-    ctx.fillStyle = 'rgba(26,26,26,0.14)';
-    ctx.beginPath(); ctx.roundRect(cx - 55, hlY, 110, 7, 3); ctx.fill();
-    ctx.fillStyle = 'rgba(26,26,26,0.06)';
-    ctx.beginPath(); ctx.roundRect(cx - 40, hlY + 14, 80, 4, 2); ctx.fill();
-    var inputY = hlY + 32;
-    var inputW = cardW * 0.7, inputH = 18, inputX = cx - inputW / 2;
-    ctx.save();
-    ctx.shadowColor = 'rgba(0,0,0,0.03)'; ctx.shadowBlur = 6;
-    ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.roundRect(inputX, inputY, inputW, inputH, 5); ctx.fill();
-    ctx.restore();
-    ctx.strokeStyle = 'rgba(26,26,26,0.08)'; ctx.lineWidth = 0.5;
-    ctx.beginPath(); ctx.roundRect(inputX, inputY, inputW, inputH, 5); ctx.stroke();
-    ctx.fillStyle = 'rgba(26,26,26,0.07)';
-    ctx.beginPath(); ctx.roundRect(inputX + 22, inputY + 7, 44, 3, 1.5); ctx.fill();
-    var cursorAlpha = Math.sin(t * 4) > 0 ? 0.5 : 0;
-    if (cursorAlpha > 0) {
-      ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',' + cursorAlpha + ')';
-      ctx.fillRect(inputX + 70, inputY + 4, 1, 10);
-    }
-    var btnY = inputY + inputH + 10;
-    var btnW = cardW * 0.4, btnH = 16, btnX = cx - btnW / 2;
-    ctx.save();
-    ctx.shadowColor = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',' + (0.12 + Math.sin(t * 2) * 0.06) + ')';
-    ctx.shadowBlur = 14;
-    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',' + (0.22 + Math.sin(t * 2) * 0.08) + ')';
-    ctx.beginPath(); ctx.roundRect(btnX, btnY, btnW, btnH, 5); ctx.fill();
-    ctx.restore();
-    ctx.fillStyle = 'rgba(255,255,255,0.65)';
-    ctx.beginPath(); ctx.roundRect(cx - 18, btnY + 6, 36, 3, 1.5); ctx.fill();
-    var counterY = btnY + btnH + 16;
-    ctx.font = '500 10px "JetBrains Mono", monospace';
-    ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(26,26,26,0.18)';
-    ctx.fillText(Math.floor(2847 + t * 0.3).toLocaleString() + ' on the list', cx, counterY + 4);
-    ctx.textAlign = 'start';
-    var barY = counterY + 12;
-    var barW = cardW * 0.45, barH = 3, barX = cx - barW / 2;
-    ctx.fillStyle = 'rgba(26,26,26,0.04)';
-    ctx.beginPath(); ctx.roundRect(barX, barY, barW, barH, 1.5); ctx.fill();
-    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.15)';
-    ctx.beginPath(); ctx.roundRect(barX, barY, barW * (0.72 + Math.sin(t * 0.3) * 0.02), barH, 1.5); ctx.fill();
-    var dotsY = barY + 12;
-    for (var d = 0; d < 5; d++) {
-      var dox = cx - 20 + d * 10;
-      ctx.save();
-      ctx.beginPath(); ctx.arc(dox, dotsY, 5, 0, Math.PI * 2);
-      ctx.fillStyle = '#fff'; ctx.fill();
-      ctx.restore();
-      ctx.beginPath(); ctx.arc(dox, dotsY, 4.5, 0, Math.PI * 2);
-      ctx.fillStyle = d < 3 ? 'rgba(26,26,26,' + (0.05 + d * 0.015) + ')' : 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.08)';
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = 1; ctx.stroke();
-    }
+    var cx=w/2,cy=h/2;
+    var cardW=w*0.78,cardH=h*0.82,cardX=(w-cardW)/2,cardY=(h-cardH)/2;
+    ctx.save(); ctx.shadowColor='rgba(0,0,0,0.04)'; ctx.shadowBlur=20; ctx.shadowOffsetY=4;
+    ctx.fillStyle='rgba(255,255,255,0.7)'; ctx.beginPath(); ctx.roundRect(cardX,cardY,cardW,cardH,8); ctx.fill(); ctx.restore();
+    ctx.strokeStyle='rgba(26,26,26,0.05)'; ctx.lineWidth=0.5;
+    ctx.beginPath(); ctx.roundRect(cardX,cardY,cardW,cardH,8); ctx.stroke();
+    ctx.fillStyle='rgba('+V[0]+','+V[1]+','+V[2]+',0.08)';
+    ctx.beginPath(); ctx.roundRect(cardX,cardY,cardW,2,[8,8,0,0]); ctx.fill();
+    var badgeY=cardY+cardH*0.1;
+    ctx.fillStyle='rgba('+V[0]+','+V[1]+','+V[2]+',0.06)';
+    ctx.beginPath(); ctx.roundRect(cx-24,badgeY,48,8,4); ctx.fill();
+    var hlY=badgeY+18;
+    ctx.fillStyle='rgba(26,26,26,0.14)';
+    ctx.beginPath(); ctx.roundRect(cx-55,hlY,110,7,3); ctx.fill();
+    ctx.fillStyle='rgba(26,26,26,0.06)';
+    ctx.beginPath(); ctx.roundRect(cx-40,hlY+14,80,4,2); ctx.fill();
+    var inputY=hlY+32,inputW=cardW*0.7,inputH=18,inputX=cx-inputW/2;
+    ctx.save(); ctx.shadowColor='rgba(0,0,0,0.03)'; ctx.shadowBlur=6;
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.roundRect(inputX,inputY,inputW,inputH,5); ctx.fill(); ctx.restore();
+    ctx.strokeStyle='rgba(26,26,26,0.08)'; ctx.lineWidth=0.5;
+    ctx.beginPath(); ctx.roundRect(inputX,inputY,inputW,inputH,5); ctx.stroke();
+    ctx.fillStyle='rgba(26,26,26,0.07)';
+    ctx.beginPath(); ctx.roundRect(inputX+22,inputY+7,44,3,1.5); ctx.fill();
+    if (Math.sin(t*4)>0) { ctx.fillStyle='rgba('+V[0]+','+V[1]+','+V[2]+',0.5)'; ctx.fillRect(inputX+70,inputY+4,1,10); }
+    var btnY2=inputY+inputH+10,btnW2=cardW*0.4,btnH2=16,btnX2=cx-btnW2/2;
+    ctx.save(); ctx.shadowColor='rgba('+V[0]+','+V[1]+','+V[2]+','+(0.12+Math.sin(t*2)*0.06)+')'; ctx.shadowBlur=14;
+    ctx.fillStyle='rgba('+V[0]+','+V[1]+','+V[2]+','+(0.22+Math.sin(t*2)*0.08)+')';
+    ctx.beginPath(); ctx.roundRect(btnX2,btnY2,btnW2,btnH2,5); ctx.fill(); ctx.restore();
+    ctx.fillStyle='rgba(255,255,255,0.65)';
+    ctx.beginPath(); ctx.roundRect(cx-18,btnY2+6,36,3,1.5); ctx.fill();
+    var counterY=btnY2+btnH2+16;
+    ctx.font='500 10px "JetBrains Mono", monospace'; ctx.textAlign='center';
+    ctx.fillStyle='rgba(26,26,26,0.18)';
+    ctx.fillText(Math.floor(2847+t*0.3).toLocaleString()+' on the list',cx,counterY+4);
+    ctx.textAlign='start';
   }
 
-  var animMap = {
-    dashboard: drawDashboard,
-    causal: drawCausal,
-    landing: drawLanding,
-    portfolio: drawPortfolio,
-    waitlist: drawWaitlist
-  };
-
+  var animMap = { dashboard: drawDashboard, causal: drawCausal, landing: drawLanding, portfolio: drawPortfolio, waitlist: drawWaitlist };
   document.querySelectorAll('canvas[data-anim]').forEach(function(c) {
     var key = c.getAttribute('data-anim');
     if (animMap[key]) initCanvas(c, animMap[key]);
