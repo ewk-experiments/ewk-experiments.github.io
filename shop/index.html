@@ -804,12 +804,12 @@ footer {
       var isH=idx===1,lift=isH?-2+Math.sin(t*1.5)*0.5:Math.sin(t*0.8+idx*1.2)*1;
       ctx.save(); ctx.shadowColor=isH?'rgba(0,0,0,0.06)':'rgba(0,0,0,0.02)'; ctx.shadowBlur=isH?12:4;
       ctx.fillStyle='#fff'; ctx.beginPath(); ctx.roundRect(bx,by+lift,cellW,cellH,5); ctx.fill(); ctx.restore();
-      ctx.strokeStyle=isH?'rgba('+V[0]+','+V[1]+','+V[2]+',0.12)':'rgba(26,26,26,0.05)'; ctx.lineWidth=isH?1:0.5;
+      ctx.strokeStyle=isH?'rgba('+V[0]+','+V[1]+','+V[2]+',0.12)':'rgba(26,26,26,0.18)'; ctx.lineWidth=isH?1:0.5;
       ctx.beginPath(); ctx.roundRect(bx,by+lift,cellW,cellH,5); ctx.stroke();
       var thumbH=cellH*0.58;
-      ctx.fillStyle=['rgba(26,26,26,0.03)','rgba('+V[0]+','+V[1]+','+V[2]+',0.04)','rgba(60,60,120,0.03)','rgba(26,26,26,0.025)'][idx];
+      ctx.fillStyle=['rgba(26,26,26,0.35)','rgba('+V[0]+','+V[1]+','+V[2]+',0.04)','rgba(60,60,120,0.03)','rgba(26,26,26,0.025)'][idx];
       ctx.beginPath(); ctx.roundRect(bx+4,by+lift+4,cellW-8,thumbH,3); ctx.fill();
-      ctx.fillStyle='rgba(26,26,26,0.1)';
+      ctx.fillStyle='rgba(26,26,26,0.3)';
       ctx.beginPath(); ctx.roundRect(bx+6,by+lift+thumbH+8,cellW*0.55,3.5,1.5); ctx.fill();
     }
   }
@@ -819,7 +819,7 @@ footer {
     var cardW=w*0.78,cardH=h*0.82,cardX=(w-cardW)/2,cardY=(h-cardH)/2;
     ctx.save(); ctx.shadowColor='rgba(0,0,0,0.04)'; ctx.shadowBlur=20; ctx.shadowOffsetY=4;
     ctx.fillStyle='rgba(255,255,255,0.7)'; ctx.beginPath(); ctx.roundRect(cardX,cardY,cardW,cardH,8); ctx.fill(); ctx.restore();
-    ctx.strokeStyle='rgba(26,26,26,0.05)'; ctx.lineWidth=0.5;
+    ctx.strokeStyle='rgba(26,26,26,0.18)'; ctx.lineWidth=0.5;
     ctx.beginPath(); ctx.roundRect(cardX,cardY,cardW,cardH,8); ctx.stroke();
     ctx.fillStyle='rgba('+V[0]+','+V[1]+','+V[2]+',0.08)';
     ctx.beginPath(); ctx.roundRect(cardX,cardY,cardW,2,[8,8,0,0]); ctx.fill();
@@ -829,12 +829,12 @@ footer {
     var hlY=badgeY+18;
     ctx.fillStyle='rgba(26,26,26,0.14)';
     ctx.beginPath(); ctx.roundRect(cx-55,hlY,110,7,3); ctx.fill();
-    ctx.fillStyle='rgba(26,26,26,0.06)';
+    ctx.fillStyle='rgba(26,26,26,0.2)';
     ctx.beginPath(); ctx.roundRect(cx-40,hlY+14,80,4,2); ctx.fill();
     var inputY=hlY+32,inputW=cardW*0.7,inputH=18,inputX=cx-inputW/2;
     ctx.save(); ctx.shadowColor='rgba(0,0,0,0.03)'; ctx.shadowBlur=6;
     ctx.fillStyle='#fff'; ctx.beginPath(); ctx.roundRect(inputX,inputY,inputW,inputH,5); ctx.fill(); ctx.restore();
-    ctx.strokeStyle='rgba(26,26,26,0.08)'; ctx.lineWidth=0.5;
+    ctx.strokeStyle='rgba(26,26,26,0.25)'; ctx.lineWidth=0.5;
     ctx.beginPath(); ctx.roundRect(inputX,inputY,inputW,inputH,5); ctx.stroke();
     ctx.fillStyle='rgba(26,26,26,0.07)';
     ctx.beginPath(); ctx.roundRect(inputX+22,inputY+7,44,3,1.5); ctx.fill();
