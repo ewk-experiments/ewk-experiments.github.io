@@ -18,8 +18,8 @@
   --text-secondary: #6B6B6B;
   --text-muted: #999999;
   --border: rgba(0,0,0,0.06);
-  --glass-bg: rgba(255,255,255,0.35);
-  --glass-bg-heavy: rgba(255,255,255,0.45);
+  --glass-bg: rgba(255,255,255,0.55);
+  --glass-bg-heavy: rgba(255,255,255,0.65);
   --glass-blur: blur(36px);
   --glass-border: rgba(255,255,255,0.5);
   --glass-border-outer: rgba(0,0,0,0.04);
@@ -50,11 +50,11 @@ body::before {
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(ellipse 700px 700px at 10% 15%, rgba(232,56,13,0.045), transparent),
-    radial-gradient(ellipse 600px 600px at 85% 25%, rgba(80,80,220,0.03), transparent),
-    radial-gradient(ellipse 500px 500px at 50% 55%, rgba(232,56,13,0.025), transparent),
-    radial-gradient(ellipse 600px 600px at 75% 80%, rgba(120,80,200,0.025), transparent),
-    radial-gradient(ellipse 400px 400px at 20% 85%, rgba(232,56,13,0.02), transparent);
+    radial-gradient(ellipse 800px 800px at 10% 15%, rgba(232,56,13,0.12), transparent),
+    radial-gradient(ellipse 700px 700px at 85% 25%, rgba(80,80,220,0.08), transparent),
+    radial-gradient(ellipse 600px 600px at 50% 55%, rgba(232,56,13,0.07), transparent),
+    radial-gradient(ellipse 700px 700px at 75% 80%, rgba(120,80,200,0.06), transparent),
+    radial-gradient(ellipse 500px 500px at 20% 85%, rgba(232,56,13,0.05), transparent);
 }
 
 /* Noise overlay */
@@ -260,7 +260,10 @@ body::after {
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: #fff;
+  background: var(--vermillion);
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
   margin-bottom: 0.5rem;
 }
 
@@ -273,14 +276,38 @@ body::after {
   letter-spacing: -0.025em;
 }
 
+/* ─── BRUTALIST: SLASH DIVIDER ─── */
+.slash-divider {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 2rem 0;
+  user-select: none;
+  opacity: 0.5;
+}
+
+/* ─── BRUTALIST: SPACED HEADER ─── */
+.spaced-header {
+  font-family: var(--font-mono);
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 500;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
 /* Glass divider strips */
 .glass-strip {
   height: 80px;
   margin: -40px 4rem;
   position: relative;
   z-index: 2;
-  background: rgba(255,255,255,0.3);
-  backdrop-filter: blur(40px);
+  background: rgba(255,255,255,0.5);
+  backdrop-filter: blur(40px) saturate(1.4);
   -webkit-backdrop-filter: blur(40px);
   border: 1px solid rgba(255,255,255,0.5);
   border-radius: 16px;
@@ -573,7 +600,10 @@ body::after {
   font-size: 0.65rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: #fff;
+  background: var(--vermillion);
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
   margin-bottom: 1rem;
 }
 
@@ -586,8 +616,9 @@ body::after {
 }
 
 .shop-cta-desc {
-  font-size: 0.92rem;
-  line-height: 1.7;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.8;
   color: var(--text-secondary);
   margin-bottom: 2rem;
   max-width: 480px;
@@ -774,7 +805,7 @@ footer {
 
 <!-- Glass Nav -->
 <nav class="glass-nav">
-  <a href="/" class="nav-mark">ewk labs</a>
+  <a href="/" class="nav-mark" style="font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.4em; text-transform: uppercase;">E W K &ensp; L A B S</a>
   <div class="nav-links">
     <a href="#projects">Projects</a>
     <a href="#field-studies">Studies</a>
@@ -932,8 +963,8 @@ footer {
 <!-- Shop CTA -->
 <section id="shop-cta">
   <div class="shop-cta-card reveal">
-    <p class="shop-cta-label">From the Lab</p>
-    <h2 class="shop-cta-title">Design Kits & Templates</h2>
+    <p class="shop-cta-label">FROM THE LAB</p>
+    <h2 class="shop-cta-title" style="font-family: var(--font-mono); letter-spacing: 0.3em; text-transform: uppercase; font-size: clamp(1.2rem, 3vw, 2rem);">D E S I G N&ensp;K I T S&ensp;+&ensp;T E M P L A T E S</h2>
     <p class="shop-cta-desc">Production-extracted components, templates, and tools from our experiments. Built for people who ship.</p>
     <a href="/shop/" class="shop-cta-btn">Browse the Store</a>
   </div>
