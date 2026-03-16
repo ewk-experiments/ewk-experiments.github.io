@@ -13,12 +13,14 @@
 
 :root {
   --vermillion: #E8380D;
-  --surface: #FAFAFA;
-  --surface-warm: #F2F0ED;
+  --surface: #FFFFFF;
   --text-primary: #1A1A1A;
   --text-secondary: #6B6B6B;
   --text-muted: #999999;
-  --border: #E0DEDA;
+  --border: rgba(0,0,0,0.05);
+  --glass-bg: rgba(255,255,255,0.6);
+  --glass-blur: blur(24px);
+  --glass-border: rgba(0,0,0,0.05);
   --font-serif: 'Instrument Serif', Georgia, serif;
   --font-sans: 'Inter', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -30,7 +32,7 @@ html { scroll-behavior: smooth; }
 body {
   font-family: var(--font-sans);
   color: var(--text-primary);
-  background: var(--surface);
+  background: #FFFFFF;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -43,10 +45,23 @@ body::after {
   inset: 0;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.03;
+  opacity: 0.02;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 256px 256px;
+}
+
+/* Subtle ambient gradient orbs for glassmorphism depth */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 600px 600px at 15% 20%, rgba(232,56,13,0.03), transparent),
+    radial-gradient(ellipse 500px 500px at 80% 60%, rgba(100,100,255,0.02), transparent),
+    radial-gradient(ellipse 400px 400px at 50% 90%, rgba(232,56,13,0.02), transparent);
 }
 
 #cursor {
@@ -87,7 +102,7 @@ body::after {
 .section-number {
   font-family: var(--font-serif);
   font-size: clamp(3rem, 5vw, 5rem);
-  color: var(--border);
+  color: rgba(0,0,0,0.06);
   line-height: 1;
   margin-bottom: 1rem;
 }
@@ -117,6 +132,13 @@ body::after {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--glass-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .store-nav a {
@@ -149,7 +171,7 @@ body::after {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  opacity: 0.35;
+  opacity: 0.25;
 }
 
 .hero-content { position: relative; z-index: 2; }
@@ -197,7 +219,7 @@ body::after {
 
 .catalog-entry {
   display: grid;
-  grid-template-columns: 80px 1fr 280px;
+  grid-template-columns: 1fr 280px;
   gap: 2rem;
   align-items: start;
   padding: 2.5rem 0;
@@ -207,20 +229,10 @@ body::after {
 }
 
 .catalog-entry:hover {
-  background: rgba(232, 56, 13, 0.02);
+  background: rgba(232, 56, 13, 0.015);
 }
 
-.catalog-entry:hover .entry-index { color: var(--vermillion); }
 .catalog-entry:hover .entry-cta { color: var(--vermillion); border-color: var(--vermillion); }
-
-.entry-index {
-  font-family: var(--font-serif);
-  font-size: 2.5rem;
-  color: var(--border);
-  transition: color 0.4s;
-  text-align: center;
-  padding-top: 0.25rem;
-}
 
 .entry-body { padding-right: 2rem; }
 
@@ -260,10 +272,12 @@ body::after {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
-  background: var(--surface-warm);
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   padding: 0.25rem 0.6rem;
   border-radius: 2px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--glass-border);
 }
 
 .entry-price-row {
@@ -287,23 +301,31 @@ body::after {
   color: var(--text-primary);
   text-decoration: none;
   padding: 0.55rem 1.5rem;
-  border: 1px solid var(--border);
-  transition: color 0.3s, border-color 0.3s;
+  border: 1px solid var(--glass-border);
+  border-radius: 4px;
+  transition: color 0.3s, border-color 0.3s, background 0.3s;
   display: inline-block;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .entry-cta:hover {
   color: var(--vermillion);
   border-color: var(--vermillion);
+  background: rgba(232,56,13,0.03);
 }
 
 .entry-visual {
   height: 180px;
   position: relative;
   overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: #fff;
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.02);
 }
 
 .entry-visual canvas {
@@ -320,6 +342,9 @@ footer {
   justify-content: space-between;
   align-items: center;
   border-top: 1px solid var(--border);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
 }
 
 .footer-links {
@@ -347,7 +372,7 @@ footer {
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .catalog-entry { grid-template-columns: 60px 1fr 220px; }
+  .catalog-entry { grid-template-columns: 1fr 220px; }
   .entry-visual { height: 150px; }
 }
 
@@ -362,7 +387,6 @@ footer {
     gap: 1.25rem;
     padding: 2rem 0;
   }
-  .entry-index { display: none; }
   .entry-body { padding-right: 0; }
   .entry-visual { height: 160px; }
   .entry-name { font-size: 1.35rem; }
@@ -396,7 +420,6 @@ footer {
   <div class="catalog-entries">
 
     <div class="catalog-entry reveal">
-      <div class="entry-index">A</div>
       <div class="entry-body">
         <p class="entry-type">Dashboard / Components</p>
         <h3 class="entry-name">AI Dashboard Starter Kit</h3>
@@ -416,7 +439,6 @@ footer {
     </div>
 
     <div class="catalog-entry reveal">
-      <div class="entry-index">B</div>
       <div class="entry-body">
         <p class="entry-type">Data Visualization / Graphs</p>
         <h3 class="entry-name">Causal Graph UI Kit</h3>
@@ -436,7 +458,6 @@ footer {
     </div>
 
     <div class="catalog-entry reveal">
-      <div class="entry-index">C</div>
       <div class="entry-body">
         <p class="entry-type">Landing Page / Templates</p>
         <h3 class="entry-name">AI Landing Page Kit</h3>
@@ -456,7 +477,6 @@ footer {
     </div>
 
     <div class="catalog-entry reveal">
-      <div class="entry-index">D</div>
       <div class="entry-body">
         <p class="entry-type">Portfolio / Templates</p>
         <h3 class="entry-name">Developer Portfolio Kit</h3>
@@ -476,7 +496,6 @@ footer {
     </div>
 
     <div class="catalog-entry reveal">
-      <div class="entry-index">E</div>
       <div class="entry-body">
         <p class="entry-type">Waitlist / Launch Page</p>
         <h3 class="entry-name">Waitlist Launch Page Kit</h3>
@@ -615,7 +634,6 @@ footer {
   /* Dashboard: mini chart cards + live sparkline */
   function drawDashboard(ctx, w, h, t) {
     var pad = 12;
-    // Top metric cards
     var cardW = (w - pad * 2 - 8 * 2) / 3;
     var cardH = h * 0.32;
     for (var i = 0; i < 3; i++) {
@@ -624,7 +642,6 @@ footer {
       ctx.beginPath(); ctx.roundRect(x, y, cardW, cardH, 4); ctx.fill();
       ctx.strokeStyle = 'rgba(26,26,26,0.06)'; ctx.lineWidth = 0.5;
       ctx.strokeRect(x, y, cardW, cardH);
-      // Mini bar chart inside
       var barCount = 5, barW = (cardW - 16) / barCount - 2;
       for (var b = 0; b < barCount; b++) {
         var bh = (0.3 + Math.abs(Math.sin(t * 1.5 + b * 0.8 + i * 2)) * 0.6) * (cardH * 0.5);
@@ -635,18 +652,15 @@ footer {
           : 'rgba(26,26,26,0.08)';
         ctx.beginPath(); ctx.roundRect(bx, by, barW, bh, 1.5); ctx.fill();
       }
-      // Metric label line
       ctx.fillStyle = 'rgba(26,26,26,0.1)';
       ctx.beginPath(); ctx.roundRect(x + 8, y + 8, cardW * 0.45, 3, 1.5); ctx.fill();
     }
-    // Bottom sparkline area
     var sparkY = pad + cardH + 12;
     var sparkH = h - sparkY - pad;
     ctx.fillStyle = 'rgba(26,26,26,0.02)';
     ctx.beginPath(); ctx.roundRect(pad, sparkY, w - pad * 2, sparkH, 4); ctx.fill();
     ctx.strokeStyle = 'rgba(26,26,26,0.06)'; ctx.lineWidth = 0.5;
     ctx.strokeRect(pad, sparkY, w - pad * 2, sparkH);
-    // Sparkline
     ctx.beginPath();
     var lineW = w - pad * 2 - 16;
     for (var s = 0; s <= 50; s++) {
@@ -657,7 +671,6 @@ footer {
     }
     ctx.strokeStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.4)';
     ctx.lineWidth = 1.5; ctx.stroke();
-    // Dot at end
     var endPx = pad + 8 + lineW;
     var endPy = sparkY + sparkH * 0.5 + Math.sin(t * 2 + 50 * 0.2) * sparkH * 0.25
                + Math.sin(t * 1.3 + 50 * 0.5) * sparkH * 0.1;
@@ -677,7 +690,6 @@ footer {
       { x: cx + w*0.32, y: cy - h*0.08 }
     ];
     var edges = [[0,2],[1,2],[2,3],[2,4],[1,5],[5,4]];
-    // Animate node positions slightly
     nodes.forEach(function(n, i) {
       n.x += Math.sin(t * 0.8 + i * 1.7) * 3;
       n.y += Math.cos(t * 0.6 + i * 2.3) * 2;
@@ -686,14 +698,12 @@ footer {
       var a = nodes[e[0]], b = nodes[e[1]];
       ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
       ctx.strokeStyle = 'rgba(26,26,26,0.1)'; ctx.lineWidth = 1; ctx.stroke();
-      // Arrowhead
       var dx = b.x-a.x, dy = b.y-a.y, len = Math.sqrt(dx*dx+dy*dy);
       var nx = dx/len, ny = dy/len;
       ctx.beginPath(); ctx.moveTo(b.x, b.y);
       ctx.lineTo(b.x-nx*6+ny*3, b.y-ny*6-nx*3);
       ctx.lineTo(b.x-nx*6-ny*3, b.y-ny*6+nx*3);
       ctx.closePath(); ctx.fillStyle = 'rgba(26,26,26,0.15)'; ctx.fill();
-      // Flow particles
       for (var p = 0; p < 3; p++) {
         var prog = ((t * 0.35 + p * 0.33 + i * 0.2) % 1);
         ctx.beginPath();
@@ -707,170 +717,460 @@ footer {
       ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
       ctx.fillStyle = i === 2 ? 'rgba('+V[0]+','+V[1]+','+V[2]+',0.4)' : 'rgba(26,26,26,0.18)';
       ctx.fill();
-      // Label line
       ctx.fillStyle = 'rgba(26,26,26,0.06)';
       ctx.beginPath(); ctx.roundRect(n.x + r + 4, n.y - 2, 16 + i * 3, 3, 1.5); ctx.fill();
     });
   }
 
-  /* Landing Page: wireframe with floating sections */
+  /* Landing Page: detailed miniature with nav, hero, CTA, feature cards, parallax */
   function drawLanding(ctx, w, h, t) {
-    var padX = w * 0.15, padY = h * 0.08;
+    var padX = w * 0.08, padY = h * 0.05;
     var pw = w - padX * 2, ph = h - padY * 2;
-    // Page frame
-    ctx.strokeStyle = 'rgba(26,26,26,0.06)'; ctx.lineWidth = 1;
-    ctx.strokeRect(padX, padY, pw, ph);
+
+    // Page frame with subtle shadow
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.04)';
+    ctx.shadowBlur = 12;
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.roundRect(padX, padY, pw, ph, 4); ctx.fill();
+    ctx.restore();
+    ctx.strokeStyle = 'rgba(26,26,26,0.06)'; ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.roundRect(padX, padY, pw, ph, 4); ctx.stroke();
+
     // Nav bar
-    var navH = 8;
-    ctx.fillStyle = 'rgba(26,26,26,0.03)';
-    ctx.fillRect(padX, padY, pw, navH);
-    // Logo dot
-    ctx.beginPath(); ctx.arc(padX + 10, padY + navH/2, 2, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba('+V[0]+','+V[1]+','+V[2]+',0.3)'; ctx.fill();
+    var navH = 10;
+    ctx.fillStyle = 'rgba(26,26,26,0.02)';
+    ctx.fillRect(padX + 1, padY + 1, pw - 2, navH);
+    ctx.strokeStyle = 'rgba(26,26,26,0.04)'; ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(padX, padY + navH); ctx.lineTo(padX + pw, padY + navH); ctx.stroke();
+
+    // Logo
+    ctx.beginPath(); ctx.arc(padX + 12, padY + navH / 2, 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.35)'; ctx.fill();
+    ctx.fillStyle = 'rgba(26,26,26,0.1)';
+    ctx.beginPath(); ctx.roundRect(padX + 18, padY + navH / 2 - 1.5, 18, 3, 1); ctx.fill();
+
     // Nav links
-    for (var n = 0; n < 3; n++) {
-      ctx.fillStyle = 'rgba(26,26,26,0.08)';
-      ctx.beginPath(); ctx.roundRect(padX + pw - 60 + n * 16, padY + 3, 10, 2, 1); ctx.fill();
+    for (var n = 0; n < 4; n++) {
+      ctx.fillStyle = 'rgba(26,26,26,0.07)';
+      ctx.beginPath(); ctx.roundRect(padX + pw - 80 + n * 18, padY + navH / 2 - 1, 12, 2, 1); ctx.fill();
     }
-    // Hero headline
-    var heroY = padY + navH + ph * 0.08;
-    ctx.fillStyle = 'rgba(26,26,26,0.12)';
-    ctx.beginPath(); ctx.roundRect(padX + pw*0.12, heroY, pw*0.76, 7, 3); ctx.fill();
+
+    // Hero section
+    var heroY = padY + navH + ph * 0.06;
+
+    // Overline / badge
+    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.08)';
+    ctx.beginPath(); ctx.roundRect(padX + (pw - 40) / 2, heroY, 40, 5, 2.5); ctx.fill();
+    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.25)';
+    ctx.beginPath(); ctx.roundRect(padX + (pw - 24) / 2, heroY + 1.25, 24, 2.5, 1); ctx.fill();
+
+    // Main headline (two lines)
+    var hlY = heroY + 12;
+    ctx.fillStyle = 'rgba(26,26,26,0.14)';
+    ctx.beginPath(); ctx.roundRect(padX + pw * 0.1, hlY, pw * 0.8, 7, 3); ctx.fill();
+    ctx.fillStyle = 'rgba(26,26,26,0.1)';
+    ctx.beginPath(); ctx.roundRect(padX + pw * 0.18, hlY + 12, pw * 0.64, 5, 2.5); ctx.fill();
+
+    // Subtitle
+    ctx.fillStyle = 'rgba(26,26,26,0.05)';
+    ctx.beginPath(); ctx.roundRect(padX + pw * 0.2, hlY + 24, pw * 0.6, 3, 1.5); ctx.fill();
+
+    // CTA button with glow
+    var btnY = hlY + 36;
+    var btnW = pw * 0.22, btnH = 11;
+    var btnX = padX + (pw - btnW) / 2;
+    // Glow
+    ctx.save();
+    ctx.shadowColor = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',' + (0.15 + Math.sin(t * 2.5) * 0.08) + ')';
+    ctx.shadowBlur = 10;
+    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',' + (0.2 + Math.sin(t * 2.5) * 0.06) + ')';
+    ctx.beginPath(); ctx.roundRect(btnX, btnY, btnW, btnH, 5.5); ctx.fill();
+    ctx.restore();
+    // Button label
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.beginPath(); ctx.roundRect(btnX + btnW * 0.25, btnY + 4, btnW * 0.5, 3, 1); ctx.fill();
+
+    // Secondary link
     ctx.fillStyle = 'rgba(26,26,26,0.06)';
-    ctx.beginPath(); ctx.roundRect(padX + pw*0.22, heroY + 14, pw*0.56, 4, 2); ctx.fill();
-    // CTA button (pulsing)
-    var btnY = heroY + 30;
-    var btnW = pw * 0.24, btnH = 12;
-    ctx.fillStyle = 'rgba('+V[0]+','+V[1]+','+V[2]+','+(0.15 + Math.sin(t*2)*0.06)+')';
-    ctx.beginPath(); ctx.roundRect(padX + (pw-btnW)/2, btnY, btnW, btnH, 6); ctx.fill();
-    // Feature cards
-    var cardY = btnY + 24;
-    var cardW = (pw - 16) / 3, cardH = ph * 0.3;
+    ctx.beginPath(); ctx.roundRect(padX + (pw - 30) / 2, btnY + btnH + 6, 30, 2.5, 1); ctx.fill();
+
+    // Feature cards with parallax float
+    var cardY = btnY + btnH + 20;
+    var cardW = (pw - 20) / 3, cardH = ph * 0.28;
     for (var i = 0; i < 3; i++) {
-      var cx = padX + 4 + i * (cardW + 4);
-      var fl = Math.sin(t * 1.2 + i * 1.5) * 2;
-      ctx.fillStyle = 'rgba(26,26,26,0.03)';
-      ctx.beginPath(); ctx.roundRect(cx, cardY + fl, cardW, cardH, 3); ctx.fill();
-      ctx.strokeStyle = 'rgba(26,26,26,0.05)';
-      ctx.strokeRect(cx, cardY + fl, cardW, cardH);
+      var cx2 = padX + 6 + i * (cardW + 4);
+      var parallax = Math.sin(t * 0.9 + i * 1.8) * 3;
+
+      // Card shadow
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,0.03)';
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetY = 2;
+      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      ctx.beginPath(); ctx.roundRect(cx2, cardY + parallax, cardW, cardH, 4); ctx.fill();
+      ctx.restore();
+
+      ctx.strokeStyle = 'rgba(26,26,26,0.04)'; ctx.lineWidth = 0.5;
+      ctx.beginPath(); ctx.roundRect(cx2, cardY + parallax, cardW, cardH, 4); ctx.stroke();
+
       // Icon circle
-      ctx.beginPath(); ctx.arc(cx + cardW/2, cardY + fl + cardH * 0.3, 6, 0, Math.PI*2);
-      ctx.fillStyle = i === 1 ? 'rgba('+V[0]+','+V[1]+','+V[2]+',0.1)' : 'rgba(26,26,26,0.05)';
+      var iconY = cardY + parallax + cardH * 0.15;
+      ctx.beginPath(); ctx.arc(cx2 + cardW / 2, iconY, 7, 0, Math.PI * 2);
+      ctx.fillStyle = i === 1
+        ? 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.1)'
+        : 'rgba(26,26,26,0.04)';
       ctx.fill();
-      // Text lines
-      ctx.fillStyle = 'rgba(26,26,26,0.06)';
-      ctx.beginPath(); ctx.roundRect(cx + cardW*0.2, cardY + fl + cardH*0.55, cardW*0.6, 3, 1); ctx.fill();
-      ctx.beginPath(); ctx.roundRect(cx + cardW*0.25, cardY + fl + cardH*0.65, cardW*0.5, 2, 1); ctx.fill();
+
+      // Icon inner detail
+      if (i === 0) {
+        // Grid icon
+        for (var gi = 0; gi < 4; gi++) {
+          var gx = cx2 + cardW / 2 - 3 + (gi % 2) * 4;
+          var gy = iconY - 3 + Math.floor(gi / 2) * 4;
+          ctx.fillStyle = 'rgba(26,26,26,0.08)';
+          ctx.fillRect(gx, gy, 2.5, 2.5);
+        }
+      } else if (i === 1) {
+        // Lightning bolt
+        ctx.strokeStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.25)';
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(cx2 + cardW/2 + 1, iconY - 4);
+        ctx.lineTo(cx2 + cardW/2 - 2, iconY + 1);
+        ctx.lineTo(cx2 + cardW/2 + 1, iconY + 1);
+        ctx.lineTo(cx2 + cardW/2 - 1, iconY + 4);
+        ctx.stroke();
+      } else {
+        // Chart icon
+        ctx.strokeStyle = 'rgba(26,26,26,0.08)'; ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(cx2 + cardW/2 - 3, iconY + 3);
+        ctx.lineTo(cx2 + cardW/2 - 1, iconY - 1);
+        ctx.lineTo(cx2 + cardW/2 + 1, iconY + 1);
+        ctx.lineTo(cx2 + cardW/2 + 3, iconY - 3);
+        ctx.stroke();
+      }
+
+      // Title line
+      ctx.fillStyle = 'rgba(26,26,26,0.09)';
+      ctx.beginPath(); ctx.roundRect(cx2 + cardW * 0.15, cardY + parallax + cardH * 0.45, cardW * 0.7, 3, 1.5); ctx.fill();
+
+      // Description lines
+      ctx.fillStyle = 'rgba(26,26,26,0.04)';
+      ctx.beginPath(); ctx.roundRect(cx2 + cardW * 0.1, cardY + parallax + cardH * 0.58, cardW * 0.8, 2, 1); ctx.fill();
+      ctx.beginPath(); ctx.roundRect(cx2 + cardW * 0.15, cardY + parallax + cardH * 0.66, cardW * 0.7, 2, 1); ctx.fill();
+      ctx.beginPath(); ctx.roundRect(cx2 + cardW * 0.2, cardY + parallax + cardH * 0.74, cardW * 0.6, 2, 1); ctx.fill();
+    }
+
+    // Bottom section hint
+    var btmY = padY + ph - 14;
+    ctx.fillStyle = 'rgba(26,26,26,0.03)';
+    ctx.fillRect(padX + 1, btmY, pw - 2, 12);
+    for (var dots = 0; dots < 3; dots++) {
+      ctx.beginPath(); ctx.arc(padX + pw / 2 - 6 + dots * 6, btmY + 6, 1.5, 0, Math.PI * 2);
+      ctx.fillStyle = dots === 0 ? 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.15)' : 'rgba(26,26,26,0.06)';
+      ctx.fill();
     }
   }
 
-  /* Portfolio: avatar + project grid */
+  /* Developer Portfolio: sidebar + refined project grid with hover effects */
   function drawPortfolio(ctx, w, h, t) {
-    var cx = w / 2;
     // Sidebar
-    var sideW = w * 0.3;
-    ctx.fillStyle = 'rgba(26,26,26,0.025)';
+    var sideW = w * 0.28;
+    ctx.fillStyle = 'rgba(26,26,26,0.02)';
     ctx.fillRect(0, 0, sideW, h);
-    ctx.strokeStyle = 'rgba(26,26,26,0.05)'; ctx.lineWidth = 0.5;
+    ctx.strokeStyle = 'rgba(26,26,26,0.04)'; ctx.lineWidth = 0.5;
     ctx.beginPath(); ctx.moveTo(sideW, 0); ctx.lineTo(sideW, h); ctx.stroke();
-    // Avatar
-    var avR = Math.min(sideW, h) * 0.15;
-    var avX = sideW / 2, avY = h * 0.25;
+
+    // Avatar with ring
+    var avR = Math.min(sideW, h) * 0.14;
+    var avX = sideW / 2, avY = h * 0.2;
+    // Outer ring
+    ctx.beginPath(); ctx.arc(avX, avY, avR + 2, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(26,26,26,0.04)'; ctx.lineWidth = 0.5; ctx.stroke();
+    // Avatar circle
     ctx.beginPath(); ctx.arc(avX, avY, avR, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(26,26,26,0.06)'; ctx.fill();
-    ctx.beginPath(); ctx.arc(avX, avY, avR * 0.4, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba('+V[0]+','+V[1]+','+V[2]+',0.15)'; ctx.fill();
+    ctx.fillStyle = 'rgba(26,26,26,0.05)'; ctx.fill();
+    // Inner accent ring
+    ctx.beginPath(); ctx.arc(avX, avY, avR * 0.5, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.12)'; ctx.fill();
+    // Initials hint
+    ctx.fillStyle = 'rgba(26,26,26,0.08)';
+    ctx.beginPath(); ctx.roundRect(avX - 4, avY - 2, 8, 4, 1); ctx.fill();
+
     // Name
-    ctx.fillStyle = 'rgba(26,26,26,0.1)';
-    ctx.beginPath(); ctx.roundRect(avX - 20, avY + avR + 10, 40, 4, 2); ctx.fill();
-    ctx.fillStyle = 'rgba(26,26,26,0.05)';
-    ctx.beginPath(); ctx.roundRect(avX - 14, avY + avR + 20, 28, 3, 1.5); ctx.fill();
-    // Nav lines
-    for (var n = 0; n < 4; n++) {
-      ctx.fillStyle = 'rgba(26,26,26,0.05)';
-      ctx.beginPath(); ctx.roundRect(sideW * 0.2, avY + avR + 40 + n * 14, sideW * 0.6, 3, 1.5); ctx.fill();
+    ctx.fillStyle = 'rgba(26,26,26,0.12)';
+    ctx.beginPath(); ctx.roundRect(avX - 22, avY + avR + 12, 44, 4, 2); ctx.fill();
+    // Role
+    ctx.fillStyle = 'rgba(26,26,26,0.06)';
+    ctx.beginPath(); ctx.roundRect(avX - 16, avY + avR + 22, 32, 3, 1.5); ctx.fill();
+
+    // Status indicator
+    ctx.beginPath(); ctx.arc(avX + avR - 2, avY + avR - 6, 3, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(52,199,89,' + (0.3 + Math.sin(t * 1.5) * 0.15) + ')'; ctx.fill();
+
+    // Nav items with active indicator
+    var navStartY = avY + avR + 44;
+    for (var n = 0; n < 5; n++) {
+      var ny = navStartY + n * 16;
+      var isActive = n === 0;
+      if (isActive) {
+        ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.05)';
+        ctx.beginPath(); ctx.roundRect(sideW * 0.1, ny - 3, sideW * 0.8, 12, 3); ctx.fill();
+        // Active bar
+        ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.3)';
+        ctx.fillRect(sideW * 0.1, ny - 3, 2, 12);
+      }
+      ctx.fillStyle = isActive ? 'rgba(26,26,26,0.12)' : 'rgba(26,26,26,0.06)';
+      ctx.beginPath(); ctx.roundRect(sideW * 0.2, ny, sideW * 0.55, 3, 1.5); ctx.fill();
     }
-    // Project grid on right
-    var gridX = sideW + 16, gridY = 16;
+
+    // Social icons at bottom
+    var socY = h - 20;
+    for (var s = 0; s < 3; s++) {
+      ctx.beginPath(); ctx.arc(sideW * 0.25 + s * 14, socY, 4, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(26,26,26,0.04)'; ctx.fill();
+      ctx.strokeStyle = 'rgba(26,26,26,0.06)'; ctx.lineWidth = 0.5; ctx.stroke();
+    }
+
+    // Project grid
+    var gridX = sideW + 14, gridY = 14;
     var cols = 2, gapG = 10;
-    var gw = w - sideW - 32, gh = h - 32;
+    var gw = w - sideW - 28, gh = h - 28;
     var cellW = (gw - gapG) / cols, cellH = (gh - gapG) / cols;
+
     for (var row = 0; row < 2; row++) {
       for (var col = 0; col < 2; col++) {
+        var idx = row * 2 + col;
         var bx = gridX + col * (cellW + gapG);
         var by = gridY + row * (cellH + gapG);
-        var fl = Math.sin(t + row * 2 + col) * 2;
-        ctx.fillStyle = 'rgba(26,26,26,0.03)';
-        ctx.beginPath(); ctx.roundRect(bx, by + fl, cellW, cellH, 4); ctx.fill();
-        ctx.strokeStyle = 'rgba(26,26,26,0.05)'; ctx.strokeRect(bx, by + fl, cellW, cellH);
-        // Thumbnail fill
-        ctx.fillStyle = (row === 0 && col === 1)
-          ? 'rgba('+V[0]+','+V[1]+','+V[2]+',0.04)'
-          : 'rgba(26,26,26,0.02)';
-        ctx.beginPath(); ctx.roundRect(bx + 4, by + fl + 4, cellW - 8, cellH * 0.6, 3); ctx.fill();
-        // Label
-        ctx.fillStyle = 'rgba(26,26,26,0.08)';
-        ctx.beginPath(); ctx.roundRect(bx + 6, by + fl + cellH * 0.72, cellW * 0.5, 3, 1.5); ctx.fill();
+
+        // Hover-like lift effect (one card is "hovered")
+        var isHovered = idx === 1;
+        var lift = isHovered ? -2 + Math.sin(t * 1.5) * 0.5 : Math.sin(t * 0.8 + idx * 1.2) * 1;
+
+        // Card shadow
+        ctx.save();
+        ctx.shadowColor = isHovered ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.02)';
+        ctx.shadowBlur = isHovered ? 12 : 4;
+        ctx.shadowOffsetY = isHovered ? 4 : 1;
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.roundRect(bx, by + lift, cellW, cellH, 5); ctx.fill();
+        ctx.restore();
+
+        ctx.strokeStyle = isHovered ? 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.12)' : 'rgba(26,26,26,0.05)';
+        ctx.lineWidth = isHovered ? 1 : 0.5;
+        ctx.beginPath(); ctx.roundRect(bx, by + lift, cellW, cellH, 5); ctx.stroke();
+
+        // Thumbnail area
+        var thumbH = cellH * 0.58;
+        var colors = ['rgba(26,26,26,0.03)', 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.04)', 'rgba(60,60,120,0.03)', 'rgba(26,26,26,0.025)'];
+        ctx.fillStyle = colors[idx];
+        ctx.beginPath(); ctx.roundRect(bx + 4, by + lift + 4, cellW - 8, thumbH, 3); ctx.fill();
+
+        // Thumbnail content (different per card)
+        if (idx === 0) {
+          // Code lines
+          for (var cl = 0; cl < 4; cl++) {
+            ctx.fillStyle = 'rgba(26,26,26,' + (0.04 + cl * 0.01) + ')';
+            var lw = (0.4 + Math.sin(cl * 2.1) * 0.25) * (cellW - 24);
+            ctx.beginPath(); ctx.roundRect(bx + 12, by + lift + 14 + cl * 8, lw, 2.5, 1); ctx.fill();
+          }
+        } else if (idx === 1) {
+          // Dashboard mini
+          ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.06)';
+          ctx.beginPath(); ctx.roundRect(bx + 8, by + lift + 10, cellW - 16, 14, 2); ctx.fill();
+          for (var mb = 0; mb < 3; mb++) {
+            var mbh = (8 + Math.sin(t * 1.2 + mb) * 4);
+            ctx.fillStyle = 'rgba(26,26,26,0.06)';
+            ctx.beginPath(); ctx.roundRect(bx + 10 + mb * ((cellW - 24) / 3), by + lift + 30, (cellW - 30) / 3, mbh, 1); ctx.fill();
+          }
+        } else if (idx === 2) {
+          // Image placeholder
+          ctx.fillStyle = 'rgba(26,26,26,0.03)';
+          ctx.beginPath(); ctx.roundRect(bx + 8, by + lift + 10, cellW - 16, thumbH - 14, 3); ctx.fill();
+          // Mountain icon
+          ctx.strokeStyle = 'rgba(26,26,26,0.06)'; ctx.lineWidth = 1;
+          ctx.beginPath();
+          var mcx = bx + cellW / 2, mcy = by + lift + thumbH * 0.5;
+          ctx.moveTo(mcx - 10, mcy + 5); ctx.lineTo(mcx - 3, mcy - 5); ctx.lineTo(mcx, mcy - 1);
+          ctx.lineTo(mcx + 4, mcy - 7); ctx.lineTo(mcx + 10, mcy + 5);
+          ctx.stroke();
+        } else {
+          // Grid of dots
+          for (var dy = 0; dy < 3; dy++) {
+            for (var dx = 0; dx < 4; dx++) {
+              ctx.beginPath();
+              ctx.arc(bx + 14 + dx * ((cellW - 28) / 3), by + lift + 14 + dy * 10, 2, 0, Math.PI * 2);
+              ctx.fillStyle = 'rgba(26,26,26,' + (0.04 + Math.sin(dx + dy + t) * 0.02) + ')';
+              ctx.fill();
+            }
+          }
+        }
+
+        // Project name
+        ctx.fillStyle = 'rgba(26,26,26,0.1)';
+        ctx.beginPath(); ctx.roundRect(bx + 6, by + lift + thumbH + 8, cellW * 0.55, 3.5, 1.5); ctx.fill();
+
+        // Tech tag
+        ctx.fillStyle = 'rgba(26,26,26,0.04)';
+        ctx.beginPath(); ctx.roundRect(bx + 6, by + lift + thumbH + 16, cellW * 0.3, 3, 1.5); ctx.fill();
+
+        // Hover arrow indicator
+        if (isHovered) {
+          ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.2)';
+          ctx.beginPath();
+          var ax = bx + cellW - 14, ay = by + lift + cellH - 14;
+          ctx.moveTo(ax, ay); ctx.lineTo(ax - 5, ay - 2); ctx.lineTo(ax - 2, ay - 5);
+          ctx.closePath(); ctx.fill();
+        }
       }
     }
   }
 
-  /* Waitlist: signup form with counter */
+  /* Waitlist: premium centered card with email, pulsing CTA, counter, particles */
   function drawWaitlist(ctx, w, h, t) {
     var cx = w / 2, cy = h / 2;
-    // Card background
-    ctx.fillStyle = 'rgba(26,26,26,0.02)';
-    ctx.beginPath(); ctx.roundRect(w*0.1, h*0.08, w*0.8, h*0.84, 6); ctx.fill();
-    ctx.strokeStyle = 'rgba(26,26,26,0.06)'; ctx.lineWidth = 0.5;
-    ctx.strokeRect(w*0.1, h*0.08, w*0.8, h*0.84);
-    // Headline
-    ctx.fillStyle = 'rgba(26,26,26,0.12)';
-    ctx.beginPath(); ctx.roundRect(cx - 50, h * 0.18, 100, 7, 3); ctx.fill();
-    ctx.fillStyle = 'rgba(26,26,26,0.06)';
-    ctx.beginPath(); ctx.roundRect(cx - 35, h * 0.18 + 14, 70, 4, 2); ctx.fill();
-    // Email input
-    var inputY = h * 0.42;
-    var inputW = w * 0.52, inputH = 18;
-    ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.roundRect(cx - inputW/2, inputY, inputW, inputH, 4); ctx.fill();
-    ctx.strokeStyle = 'rgba(26,26,26,0.1)'; ctx.lineWidth = 1;
-    ctx.strokeRect(cx - inputW/2, inputY, inputW, inputH);
-    // Placeholder text
-    ctx.fillStyle = 'rgba(26,26,26,0.08)';
-    ctx.beginPath(); ctx.roundRect(cx - inputW/2 + 8, inputY + 7, 40, 3, 1.5); ctx.fill();
-    // Blinking cursor in input
-    if (Math.sin(t * 4) > 0) {
-      ctx.fillStyle = 'rgba('+V[0]+','+V[1]+','+V[2]+',0.4)';
-      ctx.fillRect(cx - inputW/2 + 52, inputY + 4, 1, 10);
-    }
-    // Submit button
-    var btnY = inputY + inputH + 10;
-    var btnW = inputW * 0.45, btnH = 16;
-    var pulse = 0.2 + Math.sin(t * 2) * 0.05;
-    ctx.fillStyle = 'rgba('+V[0]+','+V[1]+','+V[2]+','+pulse+')';
-    ctx.beginPath(); ctx.roundRect(cx - btnW/2, btnY, btnW, btnH, 4); ctx.fill();
-    // Button label
-    ctx.fillStyle = 'rgba(255,255,255,0.6)';
-    ctx.beginPath(); ctx.roundRect(cx - 16, btnY + 6, 32, 3, 1.5); ctx.fill();
-    // Counter
-    var counterY = btnY + btnH + 18;
-    // Animated count
-    var count = Math.floor(1247 + Math.sin(t * 0.5) * 3);
-    ctx.font = '500 11px "JetBrains Mono", monospace';
-    ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(26,26,26,0.2)';
-    ctx.fillText(count + ' joined', cx, counterY + 4);
-    ctx.textAlign = 'start';
-    // Social proof dots
-    var dotsY = counterY + 14;
-    for (var d = 0; d < 5; d++) {
-      var dx = cx - 18 + d * 9;
-      ctx.beginPath(); ctx.arc(dx, dotsY, 4, 0, Math.PI * 2);
-      ctx.fillStyle = d < 3
-        ? 'rgba(26,26,26,' + (0.06 + d * 0.02) + ')'
-        : 'rgba('+V[0]+','+V[1]+','+V[2]+',0.1)';
+
+    // Ambient particles
+    for (var p = 0; p < 15; p++) {
+      var seed = p * 7.31;
+      var px = ((Math.sin(seed + t * 0.15) * 0.5 + 0.5)) * w;
+      var py = ((Math.cos(seed * 1.7 + t * 0.12) * 0.5 + 0.5)) * h;
+      var pSize = 1 + Math.sin(seed * 2.3 + t) * 0.5;
+      var pAlpha = 0.03 + Math.sin(t + seed) * 0.015;
+      ctx.beginPath(); ctx.arc(px, py, pSize, 0, Math.PI * 2);
+      ctx.fillStyle = p % 4 === 0
+        ? 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',' + pAlpha * 1.5 + ')'
+        : 'rgba(26,26,26,' + pAlpha + ')';
       ctx.fill();
     }
+
+    // Main card
+    var cardW = w * 0.78, cardH = h * 0.82;
+    var cardX = (w - cardW) / 2, cardY = (h - cardH) / 2;
+
+    // Card shadow + glass
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.04)';
+    ctx.shadowBlur = 20;
+    ctx.shadowOffsetY = 4;
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.beginPath(); ctx.roundRect(cardX, cardY, cardW, cardH, 8); ctx.fill();
+    ctx.restore();
+
+    ctx.strokeStyle = 'rgba(26,26,26,0.05)'; ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.roundRect(cardX, cardY, cardW, cardH, 8); ctx.stroke();
+
+    // Top decorative line
+    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.08)';
+    ctx.beginPath(); ctx.roundRect(cardX, cardY, cardW, 2, [8, 8, 0, 0]); ctx.fill();
+
+    // Badge / overline
+    var badgeY = cardY + cardH * 0.1;
+    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.06)';
+    ctx.beginPath(); ctx.roundRect(cx - 24, badgeY, 48, 8, 4); ctx.fill();
+    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.2)';
+    ctx.beginPath(); ctx.roundRect(cx - 14, badgeY + 2.5, 28, 3, 1.5); ctx.fill();
+
+    // Headline
+    var hlY = badgeY + 18;
+    ctx.fillStyle = 'rgba(26,26,26,0.14)';
+    ctx.beginPath(); ctx.roundRect(cx - 55, hlY, 110, 7, 3); ctx.fill();
+    // Subtitle
+    ctx.fillStyle = 'rgba(26,26,26,0.06)';
+    ctx.beginPath(); ctx.roundRect(cx - 40, hlY + 14, 80, 4, 2); ctx.fill();
+
+    // Email input field
+    var inputY = hlY + 32;
+    var inputW = cardW * 0.7, inputH = 18;
+    var inputX = cx - inputW / 2;
+
+    // Input shadow
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.03)';
+    ctx.shadowBlur = 6;
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.roundRect(inputX, inputY, inputW, inputH, 5); ctx.fill();
+    ctx.restore();
+
+    ctx.strokeStyle = 'rgba(26,26,26,0.08)'; ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.roundRect(inputX, inputY, inputW, inputH, 5); ctx.stroke();
+
+    // Email icon
+    ctx.strokeStyle = 'rgba(26,26,26,0.1)'; ctx.lineWidth = 0.8;
+    var iconX = inputX + 8, iconY2 = inputY + inputH / 2;
+    ctx.beginPath(); ctx.roundRect(iconX, iconY2 - 3, 8, 6, 1); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(iconX, iconY2 - 3); ctx.lineTo(iconX + 4, iconY2); ctx.lineTo(iconX + 8, iconY2 - 3); ctx.stroke();
+
+    // Placeholder text
+    ctx.fillStyle = 'rgba(26,26,26,0.07)';
+    ctx.beginPath(); ctx.roundRect(inputX + 22, inputY + 7, 44, 3, 1.5); ctx.fill();
+
+    // Blinking cursor
+    var cursorAlpha = Math.sin(t * 4) > 0 ? 0.5 : 0;
+    if (cursorAlpha > 0) {
+      ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',' + cursorAlpha + ')';
+      ctx.fillRect(inputX + 70, inputY + 4, 1, 10);
+    }
+
+    // Submit button with pulsing glow
+    var btnY = inputY + inputH + 10;
+    var btnW = cardW * 0.4, btnH = 16;
+    var btnX = cx - btnW / 2;
+    var pulseAlpha = 0.22 + Math.sin(t * 2) * 0.08;
+
+    // Button glow
+    ctx.save();
+    ctx.shadowColor = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',' + (0.12 + Math.sin(t * 2) * 0.06) + ')';
+    ctx.shadowBlur = 14;
+    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',' + pulseAlpha + ')';
+    ctx.beginPath(); ctx.roundRect(btnX, btnY, btnW, btnH, 5); ctx.fill();
+    ctx.restore();
+
+    // Button label
+    ctx.fillStyle = 'rgba(255,255,255,0.65)';
+    ctx.beginPath(); ctx.roundRect(cx - 18, btnY + 6, 36, 3, 1.5); ctx.fill();
+
+    // Animated counter
+    var counterY = btnY + btnH + 16;
+    var count = Math.floor(2847 + t * 0.3);
+    ctx.font = '500 10px "JetBrains Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(26,26,26,0.18)';
+    ctx.fillText(count.toLocaleString() + ' on the list', cx, counterY + 4);
+    ctx.textAlign = 'start';
+
+    // Progress bar
+    var barY = counterY + 12;
+    var barW = cardW * 0.45, barH = 3;
+    var barX = cx - barW / 2;
+    ctx.fillStyle = 'rgba(26,26,26,0.04)';
+    ctx.beginPath(); ctx.roundRect(barX, barY, barW, barH, 1.5); ctx.fill();
+    var progress = 0.72 + Math.sin(t * 0.3) * 0.02;
+    ctx.fillStyle = 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.15)';
+    ctx.beginPath(); ctx.roundRect(barX, barY, barW * progress, barH, 1.5); ctx.fill();
+
+    // Social proof avatars
+    var dotsY = barY + 12;
+    for (var d = 0; d < 5; d++) {
+      var dox = cx - 20 + d * 10;
+      // Overlap effect
+      ctx.save();
+      ctx.beginPath(); ctx.arc(dox, dotsY, 5, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff'; ctx.fill();
+      ctx.restore();
+      ctx.beginPath(); ctx.arc(dox, dotsY, 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = d < 3
+        ? 'rgba(26,26,26,' + (0.05 + d * 0.015) + ')'
+        : 'rgba(' + V[0] + ',' + V[1] + ',' + V[2] + ',0.08)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    // "+more" text
+    ctx.fillStyle = 'rgba(26,26,26,0.08)';
+    ctx.beginPath(); ctx.roundRect(cx + 16, dotsY - 2, 20, 3, 1.5); ctx.fill();
   }
 
   var animMap = {
