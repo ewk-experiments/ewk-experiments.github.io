@@ -113,8 +113,33 @@ body::before {
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: #fff;
+  background: var(--vermillion);
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
   margin-bottom: 0.5rem;
+}
+
+.slash-divider {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 1.5rem 0;
+  user-select: none;
+  opacity: 0.4;
+}
+
+.spaced-header {
+  font-family: var(--font-mono);
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 500;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  line-height: 1.2;
 }
 
 .section-title {
@@ -408,14 +433,15 @@ footer {
   <canvas id="hero-canvas"></canvas>
   <div class="hero-content">
     <h1 class="hero-title" id="hero-title"></h1>
-    <p class="hero-subtitle reveal reveal-delay-3">Design kits and templates extracted from our experiments</p>
+    <p class="hero-subtitle reveal reveal-delay-3" style="letter-spacing: 0.4em;">D E S I G N&ensp;K I T S&ensp;+&ensp;T E M P L A T E S&ensp;F R O M&ensp;O U R&ensp;E X P E R I M E N T S</p>
   </div>
 </section>
 
 <section class="catalog">
+  <div class="slash-divider reveal">////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</div>
   <div class="section-number reveal">03</div>
-  <p class="section-label reveal reveal-delay-1">Specimens</p>
-  <h2 class="section-title reveal reveal-delay-2">Digital Products</h2>
+  <p class="section-label reveal reveal-delay-1">SPECIMENS</p>
+  <h2 class="spaced-header reveal reveal-delay-2">D I G I T A L&ensp;&ensp;P R O D U C T S</h2>
 
   <div class="catalog-entries">
 
