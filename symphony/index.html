@@ -308,13 +308,15 @@
     const playerId = Math.random().toString(36).substr(2, 8);
 
     // ─── SCALE ──────────────────────────────────
-    // D minor pentatonic — only consonant intervals, impossible to clash
+    // D minor pentatonic — tightly curated per instrument so nothing clashes
+    // Bass: only root + fifth (always safe)
+    // Low instruments get fewer notes, high instruments get more freedom
     const SCALE = {
-      keys:    ['D4','F4','G4','A4','C5','D5','F5','G5','A5','C6'],
-      pads:    ['D3','F3','A3','D4','F4'],
-      bass:    ['D2','F2','G2','A2','C3'],
-      bells:   ['D5','F5','G5','A5','C6','D6','F6','G6'],
-      strings: ['D3','A3','D4','F4','A4','D5'],
+      keys:    ['D4','F4','A4','D5','F5','A5'],
+      pads:    ['D3','A3','D4'],
+      bass:    ['D2','A2','D3'],
+      bells:   ['D5','F5','A5','D6'],
+      strings: ['D3','A3','D4','A4'],
       perc:    ['C2','D2','E2','F2','G2','A2','B2','C3','D3']
     };
 
@@ -672,16 +674,17 @@
 
     function buildBassUI(instr) {
       const notes = SCALE.bass;
+      const labels = ['D low', 'A', 'D high'];
       const c = instr.color;
       area.innerHTML = '';
       const container = document.createElement('div');
       container.className = 'bass-container';
 
-      notes.forEach(note => {
+      notes.forEach((note, i) => {
         const bar = document.createElement('div');
         bar.className = 'bass-bar';
         bar.style.background = `rgba(${c[0]},${c[1]},${c[2]},0.08)`;
-        bar.textContent = note;
+        bar.textContent = labels[i] || note;
 
         bar.addEventListener('touchstart', (e) => {
           e.preventDefault();
