@@ -223,16 +223,39 @@
     // ─── RELAY ──────────────────────────────────
     const WS_URL = 'wss://but-tricks-comment-dressed.trycloudflare.com';
     let ws = null;
+    let pendingMessages = [];
+    let wsReady = false;
+
     function connectWS() {
       ws = new WebSocket(WS_URL);
-      ws.onopen = () => console.log('connected to relay');
-      ws.onclose = () => setTimeout(connectWS, 2000);
-      ws.onerror = () => {};
+      ws.onopen = () => {
+        console.log('connected to relay');
+        wsReady = true;
+        // Flush any pending messages
+        while (pendingMessages.length > 0) {
+          const msg = pendingMessages.shift();
+          ws.send(JSON.stringify(msg));
+          console.log('flushed pending:', msg.type);
+        }
+        // Re-send join if we already have an instrument (reconnect case)
+        if (currentInstrument) {
+          const joinMsg = { type: 'join', playerId, instrument: currentInstrument.id, name: currentInstrument.name, icon: currentInstrument.icon, color: currentInstrument.color };
+          ws.send(JSON.stringify(joinMsg));
+          console.log('re-sent join on reconnect');
+        }
+      };
+      ws.onclose = () => { wsReady = false; setTimeout(connectWS, 1000); };
+      ws.onerror = () => { wsReady = false; };
     }
     connectWS();
 
     function send(data) {
-      if (ws && ws.readyState === 1) ws.send(JSON.stringify(data));
+      if (ws && ws.readyState === 1) {
+        ws.send(JSON.stringify(data));
+      } else {
+        console.log('queued:', data.type);
+        pendingMessages.push(data);
+      }
     }
 
     // ─── CONFIG ──────────────────────────────────
