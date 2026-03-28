@@ -308,12 +308,12 @@
     const playerId = Math.random().toString(36).substr(2, 8);
 
     // ─── SCALE ──────────────────────────────────
-    // Orchestra in D minor: D E F G A Bb C
+    // D minor pentatonic — only consonant intervals, impossible to clash
     const SCALE = {
-      keys:    ['C4','D4','E4','F4','G4','A4','B4','C5','D5','E5'],
+      keys:    ['D4','F4','G4','A4','C5','D5','F5','G5','A5','C6'],
       pads:    ['D3','F3','A3','D4','F4'],
-      bass:    ['D1','E1','F1','G1','A1'],
-      bells:   ['D5','E5','F5','G5','A5','B5','C6','D6'],
+      bass:    ['D2','F2','G2','A2','C3'],
+      bells:   ['D5','F5','G5','A5','C6','D6','F6','G6'],
       strings: ['D3','A3','D4','F4','A4','D5'],
       perc:    ['C2','D2','E2','F2','G2','A2','B2','C3','D3']
     };
@@ -325,11 +325,11 @@
         color: [232, 56, 13],
         createSynth: () => {
           const s = new Tone.PolySynth(Tone.Synth, {
-            maxPolyphony: 8,
-            oscillator: { type: 'triangle' },
-            envelope: { attack: 0.005, decay: 0.8, sustain: 0.2, release: 1.5 }
+            maxPolyphony: 4,
+            oscillator: { type: 'triangle4' },
+            envelope: { attack: 0.01, decay: 1.2, sustain: 0.1, release: 2 }
           });
-          s.volume.value = -6;
+          s.volume.value = -10;
           return s;
         }
       },
@@ -338,13 +338,13 @@
         color: [245, 158, 11],
         createSynth: () => {
           const s = new Tone.PolySynth(Tone.AMSynth, {
-            maxPolyphony: 4, harmonicity: 2,
+            maxPolyphony: 3, harmonicity: 2,
             oscillator: { type: 'triangle' },
-            envelope: { attack: 0.4, decay: 0.5, sustain: 0.8, release: 2.5 },
+            envelope: { attack: 0.6, decay: 0.5, sustain: 0.8, release: 3 },
             modulation: { type: 'sine' },
-            modulationEnvelope: { attack: 0.5, decay: 0.3, sustain: 0.5, release: 1.5 }
+            modulationEnvelope: { attack: 0.8, decay: 0.3, sustain: 0.5, release: 2 }
           });
-          s.volume.value = -8;
+          s.volume.value = -12;
           return s;
         }
       },
@@ -353,11 +353,11 @@
         color: [100, 60, 255],
         createSynth: () => {
           const s = new Tone.PolySynth(Tone.Synth, {
-            maxPolyphony: 4,
+            maxPolyphony: 3,
             oscillator: { type: 'sine8' },
-            envelope: { attack: 1.2, decay: 0.5, sustain: 0.9, release: 4 }
+            envelope: { attack: 1.5, decay: 1, sustain: 0.9, release: 5 }
           });
-          s.volume.value = -10;
+          s.volume.value = -14;
           return s;
         }
       },
@@ -366,14 +366,14 @@
         color: [56, 189, 248],
         createSynth: () => {
           const s = new Tone.PolySynth(Tone.FMSynth, {
-            maxPolyphony: 6,
-            harmonicity: 8, modulationIndex: 2,
+            maxPolyphony: 4,
+            harmonicity: 6, modulationIndex: 1.5,
             oscillator: { type: 'sine' },
-            envelope: { attack: 0.001, decay: 2, sustain: 0, release: 2.5 },
+            envelope: { attack: 0.001, decay: 2.5, sustain: 0, release: 3 },
             modulation: { type: 'sine' },
-            modulationEnvelope: { attack: 0.001, decay: 1, sustain: 0, release: 1 }
+            modulationEnvelope: { attack: 0.001, decay: 1.5, sustain: 0, release: 1.5 }
           });
-          s.volume.value = -10;
+          s.volume.value = -14;
           return s;
         }
       },
@@ -382,12 +382,12 @@
         color: [217, 70, 239],
         createSynth: () => {
           const s = new Tone.MonoSynth({
-            oscillator: { type: 'sawtooth' },
-            filter: { Q: 3, type: 'lowpass', rolloff: -24 },
-            envelope: { attack: 0.06, decay: 0.3, sustain: 0.6, release: 1 },
-            filterEnvelope: { attack: 0.06, decay: 0.2, sustain: 0.3, release: 0.8, baseFrequency: 60, octaves: 2.5 }
+            oscillator: { type: 'triangle' },
+            filter: { Q: 2, type: 'lowpass', rolloff: -24 },
+            envelope: { attack: 0.08, decay: 0.4, sustain: 0.6, release: 1.5 },
+            filterEnvelope: { attack: 0.08, decay: 0.3, sustain: 0.3, release: 1, baseFrequency: 80, octaves: 2 }
           });
-          s.volume.value = -6;
+          s.volume.value = -8;
           return s;
         }
       },
@@ -396,11 +396,11 @@
         color: [34, 197, 94],
         createSynth: () => {
           const s = new Tone.MembraneSynth({
-            pitchDecay: 0.05, octaves: 5,
+            pitchDecay: 0.08, octaves: 4,
             oscillator: { type: 'sine' },
-            envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 1 }
+            envelope: { attack: 0.001, decay: 0.5, sustain: 0.01, release: 1.2 }
           });
-          s.volume.value = -4;
+          s.volume.value = -6;
           return s;
         }
       }
@@ -413,17 +413,25 @@
       if (synth) synth.dispose();
       if (filter) filter.dispose();
       if (reverb) reverb.dispose();
-      reverb = new Tone.Reverb({ decay: 3.5, wet: 0.25 }).toDestination();
-      filter = new Tone.Filter({ frequency: 3000, type: 'lowpass' }).connect(reverb);
+      reverb = new Tone.Reverb({ decay: 4, wet: 0.35 }).toDestination();
+      filter = new Tone.Filter({ frequency: 2500, type: 'lowpass' }).connect(reverb);
       synth = instr.createSynth();
       synth.connect(filter);
+    }
+
+    // Quantize to nearest 8th note so everyone stays on beat
+    function quantizedTime() {
+      if (Tone.Transport.state !== 'started') return Tone.now();
+      const q = Tone.Transport.nextSubdivision('8n');
+      return q;
     }
 
     function playNote(note, duration) {
       if (!synth) return;
       try {
-        if (duration) synth.triggerAttackRelease(note, duration);
-        else synth.triggerAttack(note);
+        const time = quantizedTime();
+        if (duration) synth.triggerAttackRelease(note, duration, time);
+        else synth.triggerAttack(note, time);
       } catch(e) {}
       send({ type: 'note', playerId, instrument: currentInstrument?.id, note, on: true });
     }
