@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Symphony — Stage</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      background: #0a0a0a;
+      color: #fafafa;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+    }
+
+    .stage-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      padding: 32px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .stage-title {
+      font-size: 24px;
+      font-weight: 300;
+      letter-spacing: 0.05em;
+    }
+
+    .stage-title span {
+      background: linear-gradient(135deg, #E8380D, #D946EF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 600;
+    }
+
+    .player-count {
+      font-size: 14px;
+      opacity: 0.5;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .player-count strong {
+      font-size: 24px;
+      opacity: 1;
+      background: linear-gradient(135deg, #E8380D, #D946EF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    canvas#stageCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .tracks-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 24px 40px 32px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+      z-index: 10;
+    }
+
+    .track-lane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .track-bar {
+      width: 100%;
+      height: 200px;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .track-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 0%;
+      transition: height 0.1s ease;
+      border-radius: 0 0 7px 7px;
+    }
+
+    .track-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.5;
+    }
+
+    .track-icon {
+      font-size: 20px;
+    }
+
+    .track-players {
+      font-size: 10px;
+      opacity: 0.3;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .qr-section {
+      position: fixed;
+      bottom: 32px;
+      right: 40px;
+      text-align: center;
+      z-index: 10;
+    }
+
+    .qr-section img {
+      width: 120px;
+      height: 120px;
+      border-radius: 8px;
+    }
+
+    .qr-label {
+      font-size: 11px;
+      opacity: 0.4;
+      margin-top: 8px;
+      letter-spacing: 0.05em;
+    }
+
+    .waiting-msg {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 300;
+      opacity: 0.3;
+      letter-spacing: 0.05em;
+    }
+
+    .url-display {
+      position: fixed;
+      bottom: 32px;
+      right: 40px;
+      text-align: right;
+      z-index: 10;
+    }
+
+    .url-display .url {
+      font-size: 16px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #E8380D, #D946EF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .url-display .scan {
+      font-size: 11px;
+      opacity: 0.4;
+      margin-top: 4px;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="stage-header">
+    <div class="stage-title"><span>symphony</span></div>
+    <div class="player-count"><strong id="playerNum">0</strong> players</div>
+  </div>
+
+  <canvas id="stageCanvas"></canvas>
+
+  <div class="tracks-container" id="tracks"></div>
+
+  <div class="url-display">
+    <div class="url">ewklabs.xyz/workshop</div>
+    <div class="scan">scan QR or visit on your phone</div>
+  </div>
+
+  <div class="waiting-msg" id="waitingMsg">waiting for players to join...</div>
+
+  <script>
+    // ─── CONFIG ──────────────────────────────────
+    const INSTRUMENTS = [
+      { id: 'keys', name: 'Keys', icon: '🎹', color: [232, 56, 13] },
+      { id: 'pads', name: 'Pads', icon: '🌊', color: [100, 60, 255] },
+      { id: 'bass', name: 'Bass', icon: '🔊', color: [217, 70, 239] },
+      { id: 'bells', name: 'Bells', icon: '🔔', color: [56, 189, 248] },
+      { id: 'strings', name: 'Strings', icon: '🎻', color: [245, 158, 11] },
+      { id: 'perc', name: 'Percussion', icon: '🥁', color: [34, 197, 94] }
+    ];
+
+    // ─── STATE ──────────────────────────────────
+    const players = new Map();
+    const noteEvents = [];
+
+    // ─── BROADCAST CHANNEL ──────────────────────
+    let bc;
+    try {
+      bc = new BroadcastChannel('symphony-sync');
+      bc.onmessage = (e) => {
+        const msg = e.data;
+        if (msg.type === 'join') {
+          players.set(msg.playerId, {
+            instrument: msg.instrument,
+            name: msg.name,
+            icon: msg.icon,
+            color: msg.color,
+            lastActive: Date.now()
+          });
+          updateUI();
+        }
+        if (msg.type === 'note' && msg.on) {
+          const p = players.get(msg.playerId);
+          const color = p?.color || [255,255,255];
+          noteEvents.push({
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            r: 0,
+            maxR: 100 + Math.random() * 200,
+            alpha: 0.5,
+            color,
+            instrument: msg.instrument
+          });
+          // Update activity
+          if (p) p.lastActive = Date.now();
+          updateTrackActivity(msg.instrument);
+        }
+      };
+    } catch(e) {}
+
+    // ─── TRACK BARS ─────────────────────────────
+    const trackActivity = {};
+    INSTRUMENTS.forEach(i => trackActivity[i.id] = 0);
+
+    function buildTracks() {
+      const container = document.getElementById('tracks');
+      container.innerHTML = '';
+      INSTRUMENTS.forEach(instr => {
+        const lane = document.createElement('div');
+        lane.className = 'track-lane';
+        lane.innerHTML = `
+          <div class="track-bar">
+            <div class="track-fill" id="fill-${instr.id}" style="background: rgba(${instr.color.join(',')},0.4);"></div>
+          </div>
+          <div class="track-icon">${instr.icon}</div>
+          <div class="track-label">${instr.name}</div>
+          <div class="track-players" id="count-${instr.id}">0</div>
+        `;
+        container.appendChild(lane);
+      });
+    }
+
+    function updateTrackActivity(instrumentId) {
+      trackActivity[instrumentId] = 1;
+    }
+
+    function decayActivity() {
+      Object.keys(trackActivity).forEach(id => {
+        trackActivity[id] *= 0.92;
+        const fill = document.getElementById(`fill-${id}`);
+        if (fill) fill.style.height = (trackActivity[id] * 100) + '%';
+      });
+    }
+
+    function updateUI() {
+      document.getElementById('playerNum').textContent = players.size;
+      document.getElementById('waitingMsg').style.display = players.size > 0 ? 'none' : 'flex';
+
+      // Count per instrument
+      const counts = {};
+      INSTRUMENTS.forEach(i => counts[i.id] = 0);
+      players.forEach(p => { if (counts[p.instrument] !== undefined) counts[p.instrument]++; });
+      INSTRUMENTS.forEach(i => {
+        const el = document.getElementById(`count-${i.id}`);
+        if (el) el.textContent = counts[i.id];
+      });
+    }
+
+    // ─── CANVAS VISUALIZATION ───────────────────
+    const canvas = document.getElementById('stageCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth * window.devicePixelRatio;
+      canvas.height = window.innerHeight * window.devicePixelRatio;
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    }
+
+    function drawStage() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      ctx.clearRect(0, 0, w, h);
+
+      // Draw note events
+      for (let i = noteEvents.length - 1; i >= 0; i--) {
+        const n = noteEvents[i];
+        n.r += 2;
+        n.alpha *= 0.97;
+
+        if (n.alpha < 0.01) {
+          noteEvents.splice(i, 1);
+          continue;
+        }
+
+        // Outer ring
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(${n.color[0]},${n.color[1]},${n.color[2]},${n.alpha})`;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Inner glow
+        const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r);
+        grad.addColorStop(0, `rgba(${n.color[0]},${n.color[1]},${n.color[2]},${n.alpha * 0.15})`);
+        grad.addColorStop(1, `rgba(${n.color[0]},${n.color[1]},${n.color[2]},0)`);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      }
+
+      decayActivity();
+      requestAnimationFrame(drawStage);
+    }
+
+    // ─── INIT ───────────────────────────────────
+    buildTracks();
+    resizeCanvas();
+    drawStage();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Cleanup stale players
+    setInterval(() => {
+      const now = Date.now();
+      players.forEach((p, id) => {
+        if (now - p.lastActive > 60000) players.delete(id);
+      });
+      updateUI();
+    }, 10000);
+  </script>
+</body>
+</html>
