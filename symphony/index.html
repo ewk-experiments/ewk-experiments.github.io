@@ -14,134 +14,195 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      -webkit-user-select: none;
+      user-select: none;
     }
 
     .header {
-      padding: 16px 20px;
+      padding: 12px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       z-index: 10;
     }
 
-    .instrument-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .instrument-name {
-      font-size: 14px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-
-    .instrument-icon { font-size: 24px; }
+    .instrument-label { display: flex; align-items: center; gap: 8px; }
+    .instrument-name { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
+    .instrument-icon { font-size: 22px; }
 
     .switch-btn {
       background: rgba(255,255,255,0.08);
       border: 1px solid rgba(255,255,255,0.15);
       color: #fafafa;
-      padding: 8px 14px;
+      padding: 7px 14px;
       border-radius: 8px;
-      font-size: 12px;
+      font-size: 11px;
       font-family: inherit;
       cursor: pointer;
       letter-spacing: 0.05em;
       text-transform: uppercase;
     }
-
     .switch-btn:active { background: rgba(255,255,255,0.15); }
 
-    .pad-container {
+    .instrument-area {
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding: 0 16px 16px;
-      gap: 8px;
+      padding: 8px 12px 12px;
+      overflow: hidden;
     }
 
-    .touch-pad {
+    /* ── KEYS ── */
+    .keys-container {
+      flex: 1;
+      display: flex;
+      gap: 3px;
+      align-items: stretch;
+    }
+    .key {
+      flex: 1;
+      border-radius: 0 0 10px 10px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 16px;
+      font-size: 11px;
+      font-weight: 500;
+      opacity: 0.4;
+      transition: opacity 0.1s;
+      cursor: pointer;
+      position: relative;
+    }
+    .key.white { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.08); }
+    .key.white.active { background: rgba(232,56,13,0.3); opacity: 1; }
+    .key.black {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      flex: 0.6;
+      margin: 0 -8px;
+      z-index: 2;
+      border-radius: 0 0 8px 8px;
+      max-height: 60%;
+    }
+    .key.black.active { background: rgba(232,56,13,0.4); opacity: 1; }
+
+    /* ── DRUM PADS ── */
+    .pads-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .drum-pad {
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: transform 0.05s, opacity 0.1s;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .drum-pad:active, .drum-pad.active { transform: scale(0.95); }
+    .drum-pad .pad-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.5; }
+    .drum-pad .pad-icon { font-size: 24px; }
+
+    /* ── STRINGS ── */
+    .strings-container {
+      flex: 1;
+      display: flex;
+      gap: 2px;
+      align-items: stretch;
+    }
+    .string-lane {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+    }
+    .string-line {
+      width: 2px;
+      height: 100%;
+      border-radius: 1px;
+      transition: width 0.1s, opacity 0.1s;
+    }
+    .string-lane.active .string-line { width: 6px; }
+    .string-label {
+      position: absolute;
+      bottom: 12px;
+      font-size: 10px;
+      opacity: 0.3;
+      letter-spacing: 0.1em;
+    }
+
+    /* ── PADS (synth) ── */
+    .synth-pad-area {
       flex: 1;
       border-radius: 16px;
       position: relative;
       overflow: hidden;
       cursor: pointer;
     }
+    .synth-pad-area canvas { width: 100%; height: 100%; display: block; }
 
-    .touch-pad canvas { width: 100%; height: 100%; display: block; }
-
-    .axis-label {
-      position: absolute;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      opacity: 0.3;
-      pointer-events: none;
-    }
-
-    .axis-label.pitch { bottom: 50%; right: 12px; writing-mode: vertical-rl; }
-    .axis-label.intensity { bottom: 12px; left: 50%; transform: translateX(-50%); }
-
-    .info-bar {
-      padding: 12px 20px;
-      text-align: center;
-      font-size: 11px;
-      opacity: 0.4;
-      letter-spacing: 0.05em;
-    }
-
-    .picker-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.92);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      z-index: 100;
+    /* ── BASS ── */
+    .bass-container {
+      flex: 1;
+      display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      padding: 40px 20px;
+      gap: 6px;
     }
-
-    .picker-overlay.active { display: flex; }
-
-    .picker-title {
-      font-size: 18px;
-      font-weight: 300;
-      margin-bottom: 16px;
-      letter-spacing: 0.05em;
-    }
-
-    .picker-option {
-      width: 100%;
-      max-width: 320px;
-      padding: 16px 20px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px;
-      color: #fafafa;
-      font-family: inherit;
-      font-size: 16px;
-      cursor: pointer;
+    .bass-bar {
+      flex: 1;
+      border-radius: 10px;
       display: flex;
       align-items: center;
-      gap: 12px;
-      transition: background 0.15s;
+      padding-left: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.1s;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .bass-bar:active, .bass-bar.active { opacity: 1; }
+
+    /* ── BELLS ── */
+    .bells-container {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .bell-btn {
+      position: absolute;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.1s;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .bell-btn:active, .bell-btn.active { transform: scale(0.9); }
+
+    .info-bar {
+      padding: 8px 20px;
+      text-align: center;
+      font-size: 10px;
+      opacity: 0.3;
+      letter-spacing: 0.05em;
     }
 
-    .picker-option:active, .picker-option.selected {
-      background: rgba(255,255,255,0.15);
-      border-color: rgba(255,255,255,0.3);
-    }
-
-    .picker-option .icon { font-size: 24px; }
-    .picker-option .label { font-weight: 500; }
-    .picker-option .desc { font-size: 12px; opacity: 0.5; margin-top: 2px; }
-
+    /* ── START + PICKER ── */
     .start-screen {
       display: flex;
       flex-direction: column;
@@ -152,13 +213,7 @@
       padding: 40px;
       text-align: center;
     }
-
-    .start-screen h1 {
-      font-size: 32px;
-      font-weight: 300;
-      letter-spacing: -0.02em;
-    }
-
+    .start-screen h1 { font-size: 32px; font-weight: 300; letter-spacing: -0.02em; }
     .start-screen h1 span {
       background: linear-gradient(135deg, #E8380D, #D946EF);
       -webkit-background-clip: text;
@@ -166,28 +221,39 @@
       background-clip: text;
       font-weight: 600;
     }
-
     .start-btn {
       background: linear-gradient(135deg, #E8380D, #D946EF);
-      border: none;
-      color: white;
-      padding: 16px 48px;
-      border-radius: 12px;
-      font-size: 18px;
-      font-family: inherit;
-      font-weight: 600;
-      cursor: pointer;
-      letter-spacing: 0.02em;
+      border: none; color: white;
+      padding: 16px 48px; border-radius: 12px;
+      font-size: 18px; font-family: inherit; font-weight: 600; cursor: pointer;
     }
-
-    .start-subtitle {
-      font-size: 14px;
-      opacity: 0.4;
-      max-width: 280px;
-    }
+    .start-subtitle { font-size: 14px; opacity: 0.4; max-width: 280px; }
 
     .playing-view { display: none; flex-direction: column; min-height: 100dvh; }
     .playing-view.active { display: flex; }
+
+    .picker-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      z-index: 100;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 10px; padding: 40px 20px;
+    }
+    .picker-overlay.active { display: flex; }
+    .picker-title { font-size: 18px; font-weight: 300; margin-bottom: 12px; letter-spacing: 0.05em; }
+    .picker-option {
+      width: 100%; max-width: 320px; padding: 14px 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; color: #fafafa;
+      font-family: inherit; font-size: 15px; cursor: pointer;
+      display: flex; align-items: center; gap: 12px; transition: background 0.15s;
+    }
+    .picker-option:active, .picker-option.selected { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); }
+    .picker-option .icon { font-size: 22px; }
+    .picker-option .label { font-weight: 500; }
+    .picker-option .desc { font-size: 11px; opacity: 0.5; margin-top: 2px; }
   </style>
 </head>
 <body>
@@ -206,14 +272,8 @@
       </div>
       <button class="switch-btn" id="switchBtn">switch</button>
     </div>
-    <div class="pad-container">
-      <div class="touch-pad" id="touchPad">
-        <canvas id="padCanvas"></canvas>
-        <span class="axis-label pitch">pitch →</span>
-        <span class="axis-label intensity">← intensity →</span>
-      </div>
-    </div>
-    <div class="info-bar">touch the pad to play</div>
+    <div class="instrument-area" id="instrumentArea"></div>
+    <div class="info-bar">volume up · ringer on</div>
   </div>
 
   <div class="picker-overlay" id="picker"></div>
@@ -224,235 +284,433 @@
     const WS_URL = 'wss://but-tricks-comment-dressed.trycloudflare.com';
     let ws = null;
     let pendingMessages = [];
-    let wsReady = false;
+    let currentInstrument = null;
 
     function connectWS() {
       ws = new WebSocket(WS_URL);
       ws.onopen = () => {
-        console.log('connected to relay');
-        wsReady = true;
-        // Flush any pending messages
-        while (pendingMessages.length > 0) {
-          const msg = pendingMessages.shift();
-          ws.send(JSON.stringify(msg));
-          console.log('flushed pending:', msg.type);
-        }
-        // Re-send join if we already have an instrument (reconnect case)
+        console.log('connected');
+        while (pendingMessages.length > 0) ws.send(JSON.stringify(pendingMessages.shift()));
         if (currentInstrument) {
-          const joinMsg = { type: 'join', playerId, instrument: currentInstrument.id, name: currentInstrument.name, icon: currentInstrument.icon, color: currentInstrument.color };
-          ws.send(JSON.stringify(joinMsg));
-          console.log('re-sent join on reconnect');
+          ws.send(JSON.stringify({ type: 'join', playerId, instrument: currentInstrument.id, name: currentInstrument.name, icon: currentInstrument.icon, color: currentInstrument.color }));
         }
       };
-      ws.onclose = () => { wsReady = false; setTimeout(connectWS, 1000); };
-      ws.onerror = () => { wsReady = false; };
+      ws.onclose = () => setTimeout(connectWS, 1000);
+      ws.onerror = () => {};
     }
     connectWS();
 
     function send(data) {
-      if (ws && ws.readyState === 1) {
-        ws.send(JSON.stringify(data));
-      } else {
-        console.log('queued:', data.type);
-        pendingMessages.push(data);
-      }
+      if (ws && ws.readyState === 1) ws.send(JSON.stringify(data));
+      else pendingMessages.push(data);
     }
 
-    // ─── CONFIG ──────────────────────────────────
+    const playerId = Math.random().toString(36).substr(2, 8);
+
+    // ─── SCALE ──────────────────────────────────
+    // Orchestra in D minor: D E F G A Bb C
+    const SCALE = {
+      keys:    ['C4','D4','E4','F4','G4','A4','B4','C5','D5','E5'],
+      pads:    ['D3','F3','A3','D4','F4'],
+      bass:    ['D1','E1','F1','G1','A1'],
+      bells:   ['D5','E5','F5','G5','A5','B5','C6','D6'],
+      strings: ['D3','A3','D4','F4','A4','D5'],
+      perc:    ['C2','D2','E2','F2','G2','A2','B2','C3','D3']
+    };
+
+    // ─── INSTRUMENTS ────────────────────────────
     const INSTRUMENTS = [
       {
-        id: 'keys', name: 'Keys', icon: '🎹', desc: 'Warm electric piano',
+        id: 'keys', name: 'Keys', icon: '🎹', desc: 'Grand piano',
         color: [232, 56, 13],
-        synth: () => new Tone.PolySynth(Tone.FMSynth, {
-          maxPolyphony: 6, harmonicity: 3, modulationIndex: 1.5,
-          oscillator: { type: 'sine' },
-          envelope: { attack: 0.01, decay: 0.4, sustain: 0.3, release: 1.2 },
-          modulation: { type: 'square' },
-          modulationEnvelope: { attack: 0.01, decay: 0.2, sustain: 0.2, release: 0.5 }
-        })
-      },
-      {
-        id: 'pads', name: 'Pads', icon: '🌊', desc: 'Ambient wash',
-        color: [100, 60, 255],
-        synth: () => new Tone.PolySynth(Tone.Synth, {
-          maxPolyphony: 4,
-          oscillator: { type: 'triangle8' },
-          envelope: { attack: 0.8, decay: 0.5, sustain: 0.8, release: 3 }
-        })
-      },
-      {
-        id: 'bass', name: 'Bass', icon: '🔊', desc: 'Deep sub bass',
-        color: [217, 70, 239],
-        synth: () => new Tone.MonoSynth({
-          oscillator: { type: 'sawtooth' },
-          filter: { Q: 2, type: 'lowpass', rolloff: -24 },
-          envelope: { attack: 0.05, decay: 0.3, sustain: 0.5, release: 0.8 },
-          filterEnvelope: { attack: 0.06, decay: 0.2, sustain: 0.3, release: 0.8, baseFrequency: 80, octaves: 2.5 }
-        })
-      },
-      {
-        id: 'bells', name: 'Bells', icon: '🔔', desc: 'Crystal chimes',
-        color: [56, 189, 248],
-        synth: () => new Tone.PolySynth(Tone.Synth, {
-          maxPolyphony: 6,
-          oscillator: { type: 'sine' },
-          envelope: { attack: 0.001, decay: 1.5, sustain: 0, release: 2 }
-        })
+        createSynth: () => {
+          const s = new Tone.PolySynth(Tone.Synth, {
+            maxPolyphony: 8,
+            oscillator: { type: 'triangle' },
+            envelope: { attack: 0.005, decay: 0.8, sustain: 0.2, release: 1.5 }
+          });
+          s.volume.value = -6;
+          return s;
+        }
       },
       {
         id: 'strings', name: 'Strings', icon: '🎻', desc: 'Lush orchestral',
         color: [245, 158, 11],
-        synth: () => new Tone.PolySynth(Tone.AMSynth, {
-          maxPolyphony: 4, harmonicity: 2,
-          oscillator: { type: 'triangle' },
-          envelope: { attack: 0.3, decay: 0.4, sustain: 0.7, release: 2 },
-          modulation: { type: 'sine' },
-          modulationEnvelope: { attack: 0.5, decay: 0.2, sustain: 0.5, release: 1 }
-        })
+        createSynth: () => {
+          const s = new Tone.PolySynth(Tone.AMSynth, {
+            maxPolyphony: 4, harmonicity: 2,
+            oscillator: { type: 'triangle' },
+            envelope: { attack: 0.4, decay: 0.5, sustain: 0.8, release: 2.5 },
+            modulation: { type: 'sine' },
+            modulationEnvelope: { attack: 0.5, decay: 0.3, sustain: 0.5, release: 1.5 }
+          });
+          s.volume.value = -8;
+          return s;
+        }
       },
       {
-        id: 'perc', name: 'Percussion', icon: '🥁', desc: 'Rhythmic hits',
+        id: 'pads', name: 'Pads', icon: '🌊', desc: 'Ambient wash',
+        color: [100, 60, 255],
+        createSynth: () => {
+          const s = new Tone.PolySynth(Tone.Synth, {
+            maxPolyphony: 4,
+            oscillator: { type: 'sine8' },
+            envelope: { attack: 1.2, decay: 0.5, sustain: 0.9, release: 4 }
+          });
+          s.volume.value = -10;
+          return s;
+        }
+      },
+      {
+        id: 'bells', name: 'Bells', icon: '🔔', desc: 'Crystal chimes',
+        color: [56, 189, 248],
+        createSynth: () => {
+          const s = new Tone.PolySynth(Tone.FMSynth, {
+            maxPolyphony: 6,
+            harmonicity: 8, modulationIndex: 2,
+            oscillator: { type: 'sine' },
+            envelope: { attack: 0.001, decay: 2, sustain: 0, release: 2.5 },
+            modulation: { type: 'sine' },
+            modulationEnvelope: { attack: 0.001, decay: 1, sustain: 0, release: 1 }
+          });
+          s.volume.value = -10;
+          return s;
+        }
+      },
+      {
+        id: 'bass', name: 'Bass', icon: '🔊', desc: 'Deep orchestral bass',
+        color: [217, 70, 239],
+        createSynth: () => {
+          const s = new Tone.MonoSynth({
+            oscillator: { type: 'sawtooth' },
+            filter: { Q: 3, type: 'lowpass', rolloff: -24 },
+            envelope: { attack: 0.06, decay: 0.3, sustain: 0.6, release: 1 },
+            filterEnvelope: { attack: 0.06, decay: 0.2, sustain: 0.3, release: 0.8, baseFrequency: 60, octaves: 2.5 }
+          });
+          s.volume.value = -6;
+          return s;
+        }
+      },
+      {
+        id: 'perc', name: 'Percussion', icon: '🥁', desc: 'Orchestral percussion',
         color: [34, 197, 94],
-        synth: () => new Tone.MembraneSynth({
-          pitchDecay: 0.05, octaves: 6,
-          oscillator: { type: 'sine' },
-          envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 1.2 }
-        })
+        createSynth: () => {
+          const s = new Tone.MembraneSynth({
+            pitchDecay: 0.05, octaves: 5,
+            oscillator: { type: 'sine' },
+            envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 1 }
+          });
+          s.volume.value = -4;
+          return s;
+        }
       }
     ];
 
-    const PENTATONIC = ['C', 'D', 'E', 'G', 'A'];
-    function getNote(nx, octaveBase) {
-      const idx = Math.floor(nx * PENTATONIC.length);
-      const note = PENTATONIC[Math.min(idx, PENTATONIC.length - 1)];
-      const octave = octaveBase + Math.floor(nx * 2);
-      return note + octave;
-    }
+    // ─── AUDIO STATE ────────────────────────────
+    let synth = null, reverb = null, filter = null;
 
-    // ─── STATE ──────────────────────────────────
-    let currentInstrument = null;
-    let synth = null, filter = null, reverb = null;
-    let activeNotes = new Map();
-    const playerId = Math.random().toString(36).substr(2, 8);
-    let ripples = [];
-
-    function getOctaveBase() {
-      if (!currentInstrument) return 4;
-      const m = { bass: 1, pads: 3, strings: 3, perc: 2 };
-      return m[currentInstrument.id] || 4;
-    }
-
-    // ─── AUDIO ──────────────────────────────────
-    function setupInstrument(instr) {
+    function setupAudio(instr) {
       if (synth) synth.dispose();
       if (filter) filter.dispose();
       if (reverb) reverb.dispose();
-
-      currentInstrument = instr;
-      reverb = new Tone.Reverb({ decay: 3, wet: 0.3 }).toDestination();
-      filter = new Tone.Filter({ frequency: 2000, type: 'lowpass' }).connect(reverb);
-      synth = instr.synth();
+      reverb = new Tone.Reverb({ decay: 3.5, wet: 0.25 }).toDestination();
+      filter = new Tone.Filter({ frequency: 3000, type: 'lowpass' }).connect(reverb);
+      synth = instr.createSynth();
       synth.connect(filter);
-      if (synth.volume) synth.volume.value = -8;
+    }
 
+    function playNote(note, duration) {
+      if (!synth) return;
+      try {
+        if (duration) synth.triggerAttackRelease(note, duration);
+        else synth.triggerAttack(note);
+      } catch(e) {}
+      send({ type: 'note', playerId, instrument: currentInstrument?.id, note, on: true });
+    }
+
+    function releaseNote(note) {
+      if (!synth) return;
+      try { synth.triggerRelease(note); } catch(e) {}
+      send({ type: 'note', playerId, instrument: currentInstrument?.id, note, on: false });
+    }
+
+    // ─── UI BUILDERS ────────────────────────────
+    const area = document.getElementById('instrumentArea');
+
+    function buildKeysUI(instr) {
+      const notes = SCALE.keys;
+      const c = instr.color;
+      area.innerHTML = '';
+      const container = document.createElement('div');
+      container.className = 'keys-container';
+
+      notes.forEach((note, i) => {
+        const key = document.createElement('div');
+        key.className = 'key white';
+        key.style.background = `rgba(${c[0]},${c[1]},${c[2]},0.06)`;
+        key.style.borderColor = `rgba(${c[0]},${c[1]},${c[2]},0.1)`;
+        key.textContent = note.replace(/\d/, '');
+        key.dataset.note = note;
+
+        key.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          key.classList.add('active');
+          key.style.background = `rgba(${c[0]},${c[1]},${c[2]},0.35)`;
+          playNote(note);
+        });
+        key.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          key.classList.remove('active');
+          key.style.background = `rgba(${c[0]},${c[1]},${c[2]},0.06)`;
+          releaseNote(note);
+        });
+        key.addEventListener('touchcancel', (e) => {
+          key.classList.remove('active');
+          key.style.background = `rgba(${c[0]},${c[1]},${c[2]},0.06)`;
+          releaseNote(note);
+        });
+
+        container.appendChild(key);
+      });
+
+      area.appendChild(container);
+    }
+
+    function buildPercUI(instr) {
+      const c = instr.color;
+      const pads = [
+        { label: 'Kick', note: 'C2' },
+        { label: 'Snare', note: 'D2' },
+        { label: 'Rim', note: 'E2' },
+        { label: 'Tom Hi', note: 'G2' },
+        { label: 'Tom Mid', note: 'F2' },
+        { label: 'Tom Lo', note: 'A2' },
+        { label: 'Hat', note: 'B2' },
+        { label: 'Crash', note: 'C3' },
+        { label: 'Ride', note: 'D3' }
+      ];
+      area.innerHTML = '';
+      const grid = document.createElement('div');
+      grid.className = 'pads-grid';
+
+      pads.forEach(p => {
+        const pad = document.createElement('div');
+        pad.className = 'drum-pad';
+        pad.style.background = `rgba(${c[0]},${c[1]},${c[2]},0.06)`;
+        pad.innerHTML = `<div class="pad-label">${p.label}</div>`;
+
+        pad.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          pad.classList.add('active');
+          pad.style.background = `rgba(${c[0]},${c[1]},${c[2]},0.3)`;
+          playNote(p.note, '8n');
+        });
+        pad.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          pad.classList.remove('active');
+          pad.style.background = `rgba(${c[0]},${c[1]},${c[2]},0.06)`;
+        });
+
+        grid.appendChild(pad);
+      });
+
+      area.appendChild(grid);
+    }
+
+    function buildStringsUI(instr) {
+      const notes = SCALE.strings;
+      const c = instr.color;
+      area.innerHTML = '';
+      const container = document.createElement('div');
+      container.className = 'strings-container';
+
+      notes.forEach(note => {
+        const lane = document.createElement('div');
+        lane.className = 'string-lane';
+        const line = document.createElement('div');
+        line.className = 'string-line';
+        line.style.background = `rgba(${c[0]},${c[1]},${c[2]},0.3)`;
+        const label = document.createElement('div');
+        label.className = 'string-label';
+        label.textContent = note.replace(/\d/, '');
+        lane.appendChild(line);
+        lane.appendChild(label);
+
+        lane.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          lane.classList.add('active');
+          line.style.background = `rgba(${c[0]},${c[1]},${c[2]},0.8)`;
+          playNote(note);
+        });
+        lane.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          lane.classList.remove('active');
+          line.style.background = `rgba(${c[0]},${c[1]},${c[2]},0.3)`;
+          releaseNote(note);
+        });
+        lane.addEventListener('touchcancel', (e) => {
+          lane.classList.remove('active');
+          line.style.background = `rgba(${c[0]},${c[1]},${c[2]},0.3)`;
+          releaseNote(note);
+        });
+
+        container.appendChild(lane);
+      });
+
+      area.appendChild(container);
+    }
+
+    function buildPadsUI(instr) {
+      const notes = SCALE.pads;
+      const c = instr.color;
+      area.innerHTML = '';
+      const canvas = document.createElement('canvas');
+      canvas.id = 'padCanvas';
+      const wrapper = document.createElement('div');
+      wrapper.className = 'synth-pad-area';
+      wrapper.appendChild(canvas);
+      area.appendChild(wrapper);
+
+      const ctx = canvas.getContext('2d');
+      const ripples = [];
+
+      function resize() {
+        const r = wrapper.getBoundingClientRect();
+        canvas.width = r.width * devicePixelRatio;
+        canvas.height = r.height * devicePixelRatio;
+        ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+      }
+      resize();
+
+      function draw() {
+        const w = wrapper.clientWidth, h = wrapper.clientHeight;
+        ctx.clearRect(0, 0, w, h);
+        const grad = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, w*0.7);
+        grad.addColorStop(0, `rgba(${c[0]},${c[1]},${c[2]},0.1)`);
+        grad.addColorStop(1, `rgba(${c[0]},${c[1]},${c[2]},0.02)`);
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+        for (let i = ripples.length - 1; i >= 0; i--) {
+          const r = ripples[i];
+          r.r += 2; r.alpha *= 0.96;
+          if (r.alpha < 0.01) { ripples.splice(i, 1); continue; }
+          ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, Math.PI*2);
+          ctx.strokeStyle = `rgba(${c[0]},${c[1]},${c[2]},${r.alpha})`;
+          ctx.lineWidth = 2; ctx.stroke();
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+
+      let activeNote = null;
+      wrapper.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const r = wrapper.getBoundingClientRect();
+        const t = e.changedTouches[0];
+        const x = (t.clientX - r.left) / r.width;
+        const idx = Math.min(notes.length - 1, Math.floor(x * notes.length));
+        activeNote = notes[idx];
+        playNote(activeNote);
+        ripples.push({ x: t.clientX - r.left, y: t.clientY - r.top, r: 0, alpha: 0.5 });
+      });
+      wrapper.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        if (activeNote) releaseNote(activeNote);
+        activeNote = null;
+      });
+      wrapper.addEventListener('touchcancel', (e) => {
+        if (activeNote) releaseNote(activeNote);
+        activeNote = null;
+      });
+
+      window.addEventListener('resize', resize);
+    }
+
+    function buildBellsUI(instr) {
+      const notes = SCALE.bells;
+      const c = instr.color;
+      area.innerHTML = '';
+      const container = document.createElement('div');
+      container.className = 'bells-container';
+
+      const radius = 110;
+      notes.forEach((note, i) => {
+        const angle = (i / notes.length) * Math.PI * 2 - Math.PI / 2;
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius;
+        const btn = document.createElement('div');
+        btn.className = 'bell-btn';
+        btn.style.background = `rgba(${c[0]},${c[1]},${c[2]},0.08)`;
+        btn.style.transform = `translate(${x}px, ${y}px)`;
+        btn.textContent = note.replace(/\d/, '');
+
+        btn.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          btn.classList.add('active');
+          btn.style.background = `rgba(${c[0]},${c[1]},${c[2]},0.35)`;
+          playNote(note, '4n');
+        });
+        btn.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          btn.classList.remove('active');
+          btn.style.background = `rgba(${c[0]},${c[1]},${c[2]},0.08)`;
+        });
+
+        container.appendChild(btn);
+      });
+
+      area.appendChild(container);
+    }
+
+    function buildBassUI(instr) {
+      const notes = SCALE.bass;
+      const c = instr.color;
+      area.innerHTML = '';
+      const container = document.createElement('div');
+      container.className = 'bass-container';
+
+      notes.forEach(note => {
+        const bar = document.createElement('div');
+        bar.className = 'bass-bar';
+        bar.style.background = `rgba(${c[0]},${c[1]},${c[2]},0.08)`;
+        bar.textContent = note;
+
+        bar.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          bar.classList.add('active');
+          bar.style.background = `rgba(${c[0]},${c[1]},${c[2]},0.3)`;
+          playNote(note);
+        });
+        bar.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          bar.classList.remove('active');
+          bar.style.background = `rgba(${c[0]},${c[1]},${c[2]},0.08)`;
+          releaseNote(note);
+        });
+
+        container.appendChild(bar);
+      });
+
+      area.appendChild(container);
+    }
+
+    const UI_BUILDERS = {
+      keys: buildKeysUI,
+      perc: buildPercUI,
+      strings: buildStringsUI,
+      pads: buildPadsUI,
+      bells: buildBellsUI,
+      bass: buildBassUI
+    };
+
+    // ─── SETUP ──────────────────────────────────
+    function setupInstrument(instr) {
+      currentInstrument = instr;
+      setupAudio(instr);
       document.getElementById('instrIcon').textContent = instr.icon;
       document.getElementById('instrName').textContent = instr.name;
-
+      (UI_BUILDERS[instr.id] || buildKeysUI)(instr);
       send({ type: 'join', playerId, instrument: instr.id, name: instr.name, icon: instr.icon, color: instr.color });
-    }
-
-    // ─── TOUCH ──────────────────────────────────
-    const padCanvas = document.getElementById('padCanvas');
-    const ctx = padCanvas.getContext('2d');
-    const touchPad = document.getElementById('touchPad');
-
-    function resizeCanvas() {
-      const rect = touchPad.getBoundingClientRect();
-      padCanvas.width = rect.width * window.devicePixelRatio;
-      padCanvas.height = rect.height * window.devicePixelRatio;
-      ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
-    }
-
-    function handleTouch(e, isStart) {
-      e.preventDefault();
-      const rect = touchPad.getBoundingClientRect();
-      const touches = e.changedTouches || [e];
-      for (let t of touches) {
-        const x = Math.max(0, Math.min(1, (t.clientX - rect.left) / rect.width));
-        const y = Math.max(0, Math.min(1, 1 - (t.clientY - rect.top) / rect.height));
-        const note = getNote(x, getOctaveBase());
-        if (filter) filter.frequency.rampTo(200 + y * 4000, 0.1);
-        if (isStart) {
-          if (currentInstrument?.id === 'perc') {
-            synth.triggerAttackRelease(note, '8n');
-          } else {
-            synth.triggerAttack(note);
-          }
-          activeNotes.set(t.identifier ?? 'mouse', note);
-          send({ type: 'note', playerId, instrument: currentInstrument?.id, note, x, y, on: true });
-        }
-        const c = currentInstrument?.color || [255,255,255];
-        ripples.push({ x: x * rect.width, y: (1-y) * rect.height, r: 0, maxR: 80+y*60, alpha: 0.6, color: c });
-      }
-    }
-
-    function handleTouchEnd(e) {
-      e.preventDefault();
-      const touches = e.changedTouches || [e];
-      for (let t of touches) {
-        const note = activeNotes.get(t.identifier ?? 'mouse');
-        if (note && currentInstrument?.id !== 'perc') synth.triggerRelease(note);
-        activeNotes.delete(t.identifier ?? 'mouse');
-        send({ type: 'note', playerId, instrument: currentInstrument?.id, note, on: false });
-      }
-    }
-
-    function handleTouchMove(e) {
-      e.preventDefault();
-      const rect = touchPad.getBoundingClientRect();
-      const touches = e.changedTouches || [e];
-      for (let t of touches) {
-        const y = Math.max(0, Math.min(1, 1 - (t.clientY - rect.top) / rect.height));
-        if (filter) filter.frequency.rampTo(200 + y * 4000, 0.1);
-      }
-    }
-
-    // ─── CANVAS ─────────────────────────────────
-    function drawPad() {
-      const w = touchPad.clientWidth, h = touchPad.clientHeight;
-      ctx.clearRect(0, 0, w, h);
-      const c = currentInstrument?.color || [255,255,255];
-
-      // Bg gradient
-      const grad = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, w*0.7);
-      grad.addColorStop(0, `rgba(${c[0]},${c[1]},${c[2]},0.08)`);
-      grad.addColorStop(1, `rgba(${c[0]},${c[1]},${c[2]},0.02)`);
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, w, h);
-
-      // Grid
-      ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-      ctx.lineWidth = 1;
-      for (let i = 1; i < 5; i++) { const gx = (w/5)*i; ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,h); ctx.stroke(); }
-      for (let i = 1; i < 4; i++) { const gy = (h/4)*i; ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(w,gy); ctx.stroke(); }
-
-      // Note labels
-      ctx.fillStyle = 'rgba(255,255,255,0.08)';
-      ctx.font = '11px system-ui';
-      ctx.textAlign = 'center';
-      for (let i = 0; i < 5; i++) ctx.fillText(PENTATONIC[i], (w/5)*i+(w/10), h-8);
-
-      // Ripples
-      ripples = ripples.filter(r => r.alpha > 0.01);
-      for (let r of ripples) {
-        r.r += 3; r.alpha *= 0.95;
-        ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, Math.PI*2);
-        ctx.strokeStyle = `rgba(${r.color[0]},${r.color[1]},${r.color[2]},${r.alpha})`;
-        ctx.lineWidth = 2; ctx.stroke();
-        ctx.fillStyle = `rgba(${r.color[0]},${r.color[1]},${r.color[2]},${r.alpha*0.15})`;
-        ctx.fill();
-      }
-      requestAnimationFrame(drawPad);
     }
 
     // ─── PICKER ─────────────────────────────────
@@ -473,8 +731,7 @@
       picker.classList.add('active');
     }
 
-    // ─── INIT ───────────────────────────────────
-    // ─── BACKING BEAT ─────────────────────────
+    // ─── BACKING BEAT ───────────────────────────
     let backingStarted = false;
     function startBackingBeat() {
       if (backingStarted) return;
@@ -485,39 +742,22 @@
         oscillator: { type: 'sine' },
         envelope: { attack: 0.001, decay: 0.25, sustain: 0, release: 0.4 }
       }).toDestination();
-      kick.volume.value = -6;
+      kick.volume.value = -8;
 
       const hat = new Tone.NoiseSynth({
         noise: { type: 'white' },
-        envelope: { attack: 0.001, decay: 0.08, sustain: 0, release: 0.05 }
+        envelope: { attack: 0.001, decay: 0.06, sustain: 0, release: 0.04 }
       }).toDestination();
-      hat.volume.value = -18;
+      hat.volume.value = -20;
 
-      const hihat2 = new Tone.NoiseSynth({
-        noise: { type: 'pink' },
-        envelope: { attack: 0.001, decay: 0.04, sustain: 0, release: 0.03 }
-      }).toDestination();
-      hihat2.volume.value = -22;
+      new Tone.Loop((time) => kick.triggerAttackRelease('C1', '8n', time), '2n').start(0);
+      new Tone.Loop((time) => hat.triggerAttackRelease('16n', time), '8n').start(0);
 
-      // Kick pattern: 1 and 3
-      new Tone.Loop((time) => {
-        kick.triggerAttackRelease('C1', '8n', time);
-      }, '2n').start(0);
-
-      // Hat on every 8th
-      new Tone.Loop((time) => {
-        hat.triggerAttackRelease('16n', time);
-      }, '8n').start(0);
-
-      // Ghost hat on 16ths (very quiet)
-      new Tone.Loop((time) => {
-        hihat2.triggerAttackRelease('32n', time);
-      }, '16n').start('16n');
-
-      Tone.Transport.bpm.value = 85;
+      Tone.Transport.bpm.value = 72;
       Tone.Transport.start();
     }
 
+    // ─── INIT ───────────────────────────────────
     document.getElementById('startBtn').addEventListener('click', async () => {
       await Tone.start();
       startBackingBeat();
@@ -525,21 +765,9 @@
       setupInstrument(randomInstr);
       document.getElementById('startScreen').style.display = 'none';
       document.getElementById('playingView').classList.add('active');
-      resizeCanvas();
-      drawPad();
-      touchPad.addEventListener('touchstart', e => handleTouch(e, true));
-      touchPad.addEventListener('touchmove', handleTouchMove);
-      touchPad.addEventListener('touchend', handleTouchEnd);
-      touchPad.addEventListener('touchcancel', handleTouchEnd);
-      touchPad.addEventListener('mousedown', e => handleTouch(e, true));
-      touchPad.addEventListener('mousemove', e => { if (e.buttons) handleTouchMove(e); });
-      touchPad.addEventListener('mouseup', handleTouchEnd);
     });
 
     document.getElementById('switchBtn').addEventListener('click', showPicker);
-    window.addEventListener('resize', () => {
-      if (document.getElementById('playingView').classList.contains('active')) resizeCanvas();
-    });
   </script>
 </body>
 </html>
