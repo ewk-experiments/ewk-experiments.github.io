@@ -451,8 +451,53 @@
     }
 
     // ─── INIT ───────────────────────────────────
+    // ─── BACKING BEAT ─────────────────────────
+    let backingStarted = false;
+    function startBackingBeat() {
+      if (backingStarted) return;
+      backingStarted = true;
+
+      const kick = new Tone.MembraneSynth({
+        pitchDecay: 0.05, octaves: 4,
+        oscillator: { type: 'sine' },
+        envelope: { attack: 0.001, decay: 0.25, sustain: 0, release: 0.4 }
+      }).toDestination();
+      kick.volume.value = -6;
+
+      const hat = new Tone.NoiseSynth({
+        noise: { type: 'white' },
+        envelope: { attack: 0.001, decay: 0.08, sustain: 0, release: 0.05 }
+      }).toDestination();
+      hat.volume.value = -18;
+
+      const hihat2 = new Tone.NoiseSynth({
+        noise: { type: 'pink' },
+        envelope: { attack: 0.001, decay: 0.04, sustain: 0, release: 0.03 }
+      }).toDestination();
+      hihat2.volume.value = -22;
+
+      // Kick pattern: 1 and 3
+      new Tone.Loop((time) => {
+        kick.triggerAttackRelease('C1', '8n', time);
+      }, '2n').start(0);
+
+      // Hat on every 8th
+      new Tone.Loop((time) => {
+        hat.triggerAttackRelease('16n', time);
+      }, '8n').start(0);
+
+      // Ghost hat on 16ths (very quiet)
+      new Tone.Loop((time) => {
+        hihat2.triggerAttackRelease('32n', time);
+      }, '16n').start('16n');
+
+      Tone.Transport.bpm.value = 85;
+      Tone.Transport.start();
+    }
+
     document.getElementById('startBtn').addEventListener('click', async () => {
       await Tone.start();
+      startBackingBeat();
       const randomInstr = INSTRUMENTS[Math.floor(Math.random() * INSTRUMENTS.length)];
       setupInstrument(randomInstr);
       document.getElementById('startScreen').style.display = 'none';
