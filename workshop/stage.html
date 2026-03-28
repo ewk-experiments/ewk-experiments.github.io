@@ -113,16 +113,30 @@
       font-variant-numeric: tabular-nums;
     }
 
-    .url-display {
+    .qr-section {
       position: fixed;
       bottom: 32px;
       right: 40px;
-      text-align: right;
+      text-align: center;
       z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
     }
 
-    .url-display .url {
-      font-size: 18px;
+    .qr-code {
+      background: white;
+      padding: 12px;
+      border-radius: 12px;
+    }
+
+    .qr-code canvas {
+      display: block;
+    }
+
+    .qr-url {
+      font-size: 16px;
       font-weight: 600;
       background: linear-gradient(135deg, #E8380D, #D946EF);
       -webkit-background-clip: text;
@@ -130,10 +144,9 @@
       background-clip: text;
     }
 
-    .url-display .scan {
+    .qr-hint {
       font-size: 11px;
       opacity: 0.4;
-      margin-top: 4px;
       letter-spacing: 0.05em;
     }
 
@@ -162,13 +175,15 @@
 
   <div class="tracks-container" id="tracks"></div>
 
-  <div class="url-display">
-    <div class="url">ewklabs.xyz/workshop</div>
-    <div class="scan">scan QR or visit on your phone</div>
+  <div class="qr-section" id="qrSection">
+    <div class="qr-code"><canvas id="qrCanvas"></canvas></div>
+    <div class="qr-url">ewklabs.xyz/workshop</div>
+    <div class="qr-hint">scan to join</div>
   </div>
 
   <div class="waiting-msg" id="waitingMsg">waiting for players...</div>
 
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
   <script>
     // ─── RELAY ──────────────────────────────────
     const WS_URL = 'wss://actors-recognition-ships-children.trycloudflare.com';
@@ -312,6 +327,13 @@
 
       requestAnimationFrame(drawStage);
     }
+
+    // ─── QR CODE ─────────────────────────────────
+    QRCode.toCanvas(document.getElementById('qrCanvas'), 'https://ewklabs.xyz/workshop/', {
+      width: 160,
+      margin: 0,
+      color: { dark: '#0a0a0a', light: '#ffffff' }
+    });
 
     // ─── INIT ───────────────────────────────────
     buildTracks();
