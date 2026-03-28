@@ -400,26 +400,16 @@
     ];
 
     // ─── AUDIO STATE ────────────────────────────
-    let synth = null, reverb = null, filter = null, chorus = null, compressor = null;
+    let synth = null, reverb = null;
 
     function setupAudio(instr) {
       if (synth) synth.dispose();
-      if (filter) filter.dispose();
       if (reverb) reverb.dispose();
-      if (chorus) chorus.dispose();
-      if (compressor) compressor.dispose();
 
-      // Slight random detune per player — creates orchestral thickness across phones
-      const detune = (Math.random() - 0.5) * 12; // ±6 cents
-
-      compressor = new Tone.Compressor({ threshold: -20, ratio: 4, attack: 0.1, release: 0.3 }).toDestination();
-      reverb = new Tone.Reverb({ decay: 6, wet: 0.45 }).connect(compressor);
-      chorus = new Tone.Chorus({ frequency: 0.5, delayTime: 3.5, depth: 0.6, wet: 0.3 }).connect(reverb);
-      filter = new Tone.Filter({ frequency: 2200, type: 'lowpass', rolloff: -12 }).connect(chorus);
-
+      // Light reverb — just enough room, not a cathedral
+      reverb = new Tone.Reverb({ decay: 2, wet: 0.15 }).toDestination();
       synth = instr.createSynth();
-      synth.connect(filter);
-      if (synth.set) synth.set({ detune });
+      synth.connect(reverb);
     }
 
     // Quantize to nearest 8th note so everyone stays on beat
