@@ -10,28 +10,34 @@ const server = http.createServer((req, res) => {
 const wss = new WebSocketServer({ server });
 
 const state = {
-  players: {},     // playerId -> { instrument, icon, color, name }
+  players: {},
 };
 
 function broadcast(data, excludeWs) {
   const msg = JSON.stringify(data);
+  let sent = 0;
   wss.clients.forEach(client => {
     if (client !== excludeWs && client.readyState === 1) {
       client.send(msg);
+      sent++;
     }
   });
+  console.log(`broadcast ${data.type} to ${sent} clients`);
 }
 
 wss.on('connection', (ws) => {
   let playerId = null;
+  console.log(`new connection, total clients: ${wss.clients.size}`);
 
   // Send current state to new connection
   ws.send(JSON.stringify({ type: 'state', players: state.players }));
+  console.log(`sent state with ${Object.keys(state.players).length} players`);
 
   ws.on('message', (raw) => {
     try {
       const msg = JSON.parse(raw);
       playerId = msg.playerId || playerId;
+      console.log(`msg: ${msg.type} from ${playerId} (instrument: ${msg.instrument || 'n/a'})`);
 
       if (msg.type === 'join') {
         state.players[playerId] = {
@@ -41,10 +47,11 @@ wss.on('connection', (ws) => {
           color: msg.color
         };
         broadcast(msg);
+        console.log(`players now: ${Object.keys(state.players).length}`);
       }
 
       if (msg.type === 'note') {
-        broadcast(msg, ws); // don't echo back to sender
+        broadcast(msg, ws);
       }
 
       if (msg.type === 'switch') {
@@ -56,13 +63,17 @@ wss.on('connection', (ws) => {
         }
         broadcast(msg);
       }
-    } catch(e) {}
+    } catch(e) {
+      console.error('parse error:', e.message);
+    }
   });
 
   ws.on('close', () => {
+    console.log(`disconnect: ${playerId}`);
     if (playerId && state.players[playerId]) {
       delete state.players[playerId];
       broadcast({ type: 'leave', playerId });
+      console.log(`players now: ${Object.keys(state.players).length}`);
     }
   });
 });
