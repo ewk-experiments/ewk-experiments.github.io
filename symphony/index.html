@@ -319,11 +319,8 @@
     };
 
     // ─── INSTRUMENTS ────────────────────────────
-    const SALAMANDER = 'https://tonejs.github.io/audio/salamander/';
     const SOUNDFONT = 'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/';
-
-    // Sample maps — Tone.js Sampler interpolates between these
-    const PIANO_SAMPLES = { A1:SALAMANDER+'A1.mp3', C2:SALAMANDER+'C2.mp3', A2:SALAMANDER+'A2.mp3', C3:SALAMANDER+'C3.mp3', A3:SALAMANDER+'A3.mp3', C4:SALAMANDER+'C4.mp3', A4:SALAMANDER+'A4.mp3', C5:SALAMANDER+'C5.mp3', A5:SALAMANDER+'A5.mp3', C6:SALAMANDER+'C6.mp3' };
+    const SALAMANDER = 'https://tonejs.github.io/audio/salamander/';
 
     const SF_NOTES = ['C2','D2','E2','F2','G2','A2','B2','C3','D3','E3','F3','G3','A3','B3','C4','D4','E4','F4','G4','A4','B4','C5','D5','E5','F5','G5','A5','B5','C6','D6'];
     function sfSamples(instrument) {
@@ -331,6 +328,8 @@
       SF_NOTES.forEach(n => { map[n] = SOUNDFONT + instrument + '/' + n + '.mp3'; });
       return map;
     }
+
+    const PIANO_SAMPLES = { A1:SALAMANDER+'A1.mp3', C2:SALAMANDER+'C2.mp3', A2:SALAMANDER+'A2.mp3', C3:SALAMANDER+'C3.mp3', A3:SALAMANDER+'A3.mp3', C4:SALAMANDER+'C4.mp3', A4:SALAMANDER+'A4.mp3', C5:SALAMANDER+'C5.mp3', A5:SALAMANDER+'A5.mp3', C6:SALAMANDER+'C6.mp3' };
 
     const INSTRUMENTS = [
       {
@@ -343,57 +342,47 @@
         }
       },
       {
-        id: 'strings', name: 'Strings', icon: '🎻', desc: 'String ensemble',
+        id: 'strings', name: 'Violin', icon: '🎻', desc: 'Solo violin',
         color: [245, 158, 11],
         createSynth: () => {
-          const s = new Tone.Sampler({ urls: sfSamples('string_ensemble_1-mp3'), release: 3 });
-          s.volume.value = -8;
+          const s = new Tone.Sampler({ urls: sfSamples('violin-mp3'), release: 2 });
+          s.volume.value = -6;
           return s;
         }
       },
       {
-        id: 'pads', name: 'Choir', icon: '🌊', desc: 'Ethereal voices',
+        id: 'pads', name: 'Cello', icon: '🌊', desc: 'Rich cello',
         color: [100, 60, 255],
         createSynth: () => {
-          const s = new Tone.Sampler({ urls: sfSamples('choir_aahs-mp3'), release: 4 });
-          s.volume.value = -10;
+          const s = new Tone.Sampler({ urls: sfSamples('cello-mp3'), release: 3 });
+          s.volume.value = -6;
           return s;
         }
       },
       {
-        id: 'bells', name: 'Bells', icon: '🔔', desc: 'Tubular bells',
+        id: 'bells', name: 'Harp', icon: '🔔', desc: 'Orchestral harp',
         color: [56, 189, 248],
         createSynth: () => {
-          const s = new Tone.Sampler({ urls: sfSamples('tubular_bells-mp3'), release: 3 });
-          s.volume.value = -10;
+          const s = new Tone.Sampler({ urls: sfSamples('orchestral_harp-mp3'), release: 2 });
+          s.volume.value = -6;
           return s;
         }
       },
       {
-        id: 'bass', name: 'Bass', icon: '🔊', desc: 'Deep contrabass',
+        id: 'bass', name: 'Contrabass', icon: '🔊', desc: 'Deep contrabass',
         color: [217, 70, 239],
         createSynth: () => {
-          // Keep synth for bass — samples don't go low enough cleanly
-          const s = new Tone.MonoSynth({
-            oscillator: { type: 'triangle' },
-            filter: { Q: 1, type: 'lowpass', rolloff: -12 },
-            envelope: { attack: 0.1, decay: 0.6, sustain: 0.7, release: 2 },
-            filterEnvelope: { attack: 0.1, decay: 0.4, sustain: 0.4, release: 1.5, baseFrequency: 100, octaves: 1.5 }
-          });
-          s.volume.value = -8;
+          const s = new Tone.Sampler({ urls: sfSamples('contrabass-mp3'), release: 2 });
+          s.volume.value = -4;
           return s;
         }
       },
       {
-        id: 'perc', name: 'Percussion', icon: '🥁', desc: 'Orchestral percussion',
+        id: 'perc', name: 'Timpani', icon: '🥁', desc: 'Orchestral timpani',
         color: [34, 197, 94],
         createSynth: () => {
-          const s = new Tone.MembraneSynth({
-            pitchDecay: 0.08, octaves: 4,
-            oscillator: { type: 'sine' },
-            envelope: { attack: 0.001, decay: 0.6, sustain: 0.01, release: 1.5 }
-          });
-          s.volume.value = -6;
+          const s = new Tone.Sampler({ urls: sfSamples('timpani-mp3'), release: 2 });
+          s.volume.value = -4;
           return s;
         }
       }
