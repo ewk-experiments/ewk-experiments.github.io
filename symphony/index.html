@@ -737,21 +737,16 @@
       if (backingStarted) return;
       backingStarted = true;
 
-      const kick = new Tone.MembraneSynth({
-        pitchDecay: 0.05, octaves: 4,
+      // Simple whole-note pulse — one deep tone every bar
+      const pulse = new Tone.Synth({
         oscillator: { type: 'sine' },
-        envelope: { attack: 0.001, decay: 0.25, sustain: 0, release: 0.4 }
+        envelope: { attack: 0.3, decay: 1.5, sustain: 0, release: 2 }
       }).toDestination();
-      kick.volume.value = -8;
+      pulse.volume.value = -14;
 
-      const hat = new Tone.NoiseSynth({
-        noise: { type: 'white' },
-        envelope: { attack: 0.001, decay: 0.06, sustain: 0, release: 0.04 }
-      }).toDestination();
-      hat.volume.value = -20;
-
-      new Tone.Loop((time) => kick.triggerAttackRelease('C1', '8n', time), '2n').start(0);
-      new Tone.Loop((time) => hat.triggerAttackRelease('16n', time), '8n').start(0);
+      new Tone.Loop((time) => {
+        pulse.triggerAttackRelease('D2', '2n', time);
+      }, '1n').start(0);
 
       Tone.Transport.bpm.value = 72;
       Tone.Transport.start();
