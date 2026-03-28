@@ -24,6 +24,12 @@
       z-index: 10;
     }
 
+    .instrument-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .instrument-name {
       font-size: 14px;
       font-weight: 600;
@@ -31,9 +37,7 @@
       letter-spacing: 0.1em;
     }
 
-    .instrument-icon {
-      font-size: 24px;
-    }
+    .instrument-icon { font-size: 24px; }
 
     .switch-btn {
       background: rgba(255,255,255,0.08);
@@ -48,9 +52,7 @@
       text-transform: uppercase;
     }
 
-    .switch-btn:active {
-      background: rgba(255,255,255,0.15);
-    }
+    .switch-btn:active { background: rgba(255,255,255,0.15); }
 
     .pad-container {
       flex: 1;
@@ -68,11 +70,7 @@
       cursor: pointer;
     }
 
-    .touch-pad canvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
+    .touch-pad canvas { width: 100%; height: 100%; display: block; }
 
     .axis-label {
       position: absolute;
@@ -94,12 +92,13 @@
       letter-spacing: 0.05em;
     }
 
-    /* Instrument picker overlay */
     .picker-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       z-index: 100;
       flex-direction: column;
       align-items: center;
@@ -193,23 +192,20 @@
 </head>
 <body>
 
-  <!-- Start Screen -->
   <div class="start-screen" id="startScreen">
     <h1>join the <span>symphony</span></h1>
     <p class="start-subtitle">Your phone becomes an instrument. Tap to play. Everyone plays together.</p>
     <button class="start-btn" id="startBtn">tap to join</button>
   </div>
 
-  <!-- Playing View -->
   <div class="playing-view" id="playingView">
     <div class="header">
-      <div>
+      <div class="instrument-label">
         <span class="instrument-icon" id="instrIcon">🎹</span>
         <span class="instrument-name" id="instrName">Keys</span>
       </div>
       <button class="switch-btn" id="switchBtn">switch</button>
     </div>
-
     <div class="pad-container">
       <div class="touch-pad" id="touchPad">
         <canvas id="padCanvas"></canvas>
@@ -217,28 +213,35 @@
         <span class="axis-label intensity">← intensity →</span>
       </div>
     </div>
-
-    <div class="info-bar">touch the pad to play · tilt for effects</div>
+    <div class="info-bar">touch the pad to play</div>
   </div>
 
-  <!-- Instrument Picker -->
-  <div class="picker-overlay" id="picker">
-    <div class="picker-title">choose your instrument</div>
-  </div>
+  <div class="picker-overlay" id="picker"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/tone@14/build/Tone.min.js"></script>
   <script>
+    // ─── RELAY ──────────────────────────────────
+    const WS_URL = 'wss://authors-examines-brands-got.trycloudflare.com';
+    let ws = null;
+    function connectWS() {
+      ws = new WebSocket(WS_URL);
+      ws.onopen = () => console.log('connected to relay');
+      ws.onclose = () => setTimeout(connectWS, 2000);
+      ws.onerror = () => {};
+    }
+    connectWS();
+
+    function send(data) {
+      if (ws && ws.readyState === 1) ws.send(JSON.stringify(data));
+    }
+
     // ─── CONFIG ──────────────────────────────────
     const INSTRUMENTS = [
       {
-        id: 'keys',
-        name: 'Keys',
-        icon: '🎹',
-        desc: 'Warm electric piano',
+        id: 'keys', name: 'Keys', icon: '🎹', desc: 'Warm electric piano',
         color: [232, 56, 13],
         synth: () => new Tone.PolySynth(Tone.FMSynth, {
-          harmonicity: 3,
-          modulationIndex: 1.5,
+          maxPolyphony: 6, harmonicity: 3, modulationIndex: 1.5,
           oscillator: { type: 'sine' },
           envelope: { attack: 0.01, decay: 0.4, sustain: 0.3, release: 1.2 },
           modulation: { type: 'square' },
@@ -246,21 +249,16 @@
         })
       },
       {
-        id: 'pads',
-        name: 'Pads',
-        icon: '🌊',
-        desc: 'Ambient wash',
+        id: 'pads', name: 'Pads', icon: '🌊', desc: 'Ambient wash',
         color: [100, 60, 255],
         synth: () => new Tone.PolySynth(Tone.Synth, {
+          maxPolyphony: 4,
           oscillator: { type: 'triangle8' },
           envelope: { attack: 0.8, decay: 0.5, sustain: 0.8, release: 3 }
         })
       },
       {
-        id: 'bass',
-        name: 'Bass',
-        icon: '🔊',
-        desc: 'Deep sub bass',
+        id: 'bass', name: 'Bass', icon: '🔊', desc: 'Deep sub bass',
         color: [217, 70, 239],
         synth: () => new Tone.MonoSynth({
           oscillator: { type: 'sawtooth' },
@@ -270,24 +268,19 @@
         })
       },
       {
-        id: 'bells',
-        name: 'Bells',
-        icon: '🔔',
-        desc: 'Crystal chimes',
+        id: 'bells', name: 'Bells', icon: '🔔', desc: 'Crystal chimes',
         color: [56, 189, 248],
         synth: () => new Tone.PolySynth(Tone.Synth, {
+          maxPolyphony: 6,
           oscillator: { type: 'sine' },
           envelope: { attack: 0.001, decay: 1.5, sustain: 0, release: 2 }
         })
       },
       {
-        id: 'strings',
-        name: 'Strings',
-        icon: '🎻',
-        desc: 'Lush orchestral',
+        id: 'strings', name: 'Strings', icon: '🎻', desc: 'Lush orchestral',
         color: [245, 158, 11],
         synth: () => new Tone.PolySynth(Tone.AMSynth, {
-          harmonicity: 2,
+          maxPolyphony: 4, harmonicity: 2,
           oscillator: { type: 'triangle' },
           envelope: { attack: 0.3, decay: 0.4, sustain: 0.7, release: 2 },
           modulation: { type: 'sine' },
@@ -295,57 +288,42 @@
         })
       },
       {
-        id: 'perc',
-        name: 'Percussion',
-        icon: '🥁',
-        desc: 'Rhythmic hits',
+        id: 'perc', name: 'Percussion', icon: '🥁', desc: 'Rhythmic hits',
         color: [34, 197, 94],
-        synth: () => {
-          const synth = new Tone.MembraneSynth({
-            pitchDecay: 0.05,
-            octaves: 6,
-            oscillator: { type: 'sine' },
-            envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 1.2 }
-          });
-          return synth;
-        }
+        synth: () => new Tone.MembraneSynth({
+          pitchDecay: 0.05, octaves: 6,
+          oscillator: { type: 'sine' },
+          envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 1.2 }
+        })
       }
     ];
 
-    // Pentatonic scale: C D E G A across octaves
     const PENTATONIC = ['C', 'D', 'E', 'G', 'A'];
-    function getNote(normalizedX, octaveBase) {
-      const idx = Math.floor(normalizedX * PENTATONIC.length);
+    function getNote(nx, octaveBase) {
+      const idx = Math.floor(nx * PENTATONIC.length);
       const note = PENTATONIC[Math.min(idx, PENTATONIC.length - 1)];
-      const octave = octaveBase + Math.floor(normalizedX * 2);
+      const octave = octaveBase + Math.floor(nx * 2);
       return note + octave;
     }
 
     // ─── STATE ──────────────────────────────────
     let currentInstrument = null;
-    let synth = null;
-    let filter = null;
-    let reverb = null;
+    let synth = null, filter = null, reverb = null;
     let activeNotes = new Map();
-    let playerId = Math.random().toString(36).substr(2, 8);
-    let bc = null; // BroadcastChannel for local sync
+    const playerId = Math.random().toString(36).substr(2, 8);
+    let ripples = [];
 
-    // ─── BROADCAST CHANNEL (same-origin sync) ──
-    try {
-      bc = new BroadcastChannel('symphony-sync');
-    } catch(e) {}
-
-    function broadcastEvent(type, data) {
-      if (!bc) return;
-      bc.postMessage({ type, playerId, instrument: currentInstrument?.id, ...data });
+    function getOctaveBase() {
+      if (!currentInstrument) return 4;
+      const m = { bass: 1, pads: 3, strings: 3, perc: 2 };
+      return m[currentInstrument.id] || 4;
     }
 
-    // ─── AUDIO SETUP ────────────────────────────
+    // ─── AUDIO ──────────────────────────────────
     function setupInstrument(instr) {
-      // Cleanup old
-      if (synth) { synth.dispose(); }
-      if (filter) { filter.dispose(); }
-      if (reverb) { reverb.dispose(); }
+      if (synth) synth.dispose();
+      if (filter) filter.dispose();
+      if (reverb) reverb.dispose();
 
       currentInstrument = instr;
       reverb = new Tone.Reverb({ decay: 3, wet: 0.3 }).toDestination();
@@ -354,56 +332,33 @@
       synth.connect(filter);
       if (synth.volume) synth.volume.value = -8;
 
-      // Update UI
       document.getElementById('instrIcon').textContent = instr.icon;
       document.getElementById('instrName').textContent = instr.name;
-      document.body.style.setProperty('--instr-r', instr.color[0]);
-      document.body.style.setProperty('--instr-g', instr.color[1]);
-      document.body.style.setProperty('--instr-b', instr.color[2]);
 
-      broadcastEvent('join', { name: instr.name, icon: instr.icon, color: instr.color });
+      send({ type: 'join', playerId, instrument: instr.id, name: instr.name, icon: instr.icon, color: instr.color });
     }
 
-    // ─── TOUCH PAD ──────────────────────────────
+    // ─── TOUCH ──────────────────────────────────
     const padCanvas = document.getElementById('padCanvas');
     const ctx = padCanvas.getContext('2d');
     const touchPad = document.getElementById('touchPad');
-    let ripples = [];
 
     function resizeCanvas() {
       const rect = touchPad.getBoundingClientRect();
       padCanvas.width = rect.width * window.devicePixelRatio;
       padCanvas.height = rect.height * window.devicePixelRatio;
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-    }
-
-    function getOctaveBase() {
-      if (!currentInstrument) return 4;
-      switch(currentInstrument.id) {
-        case 'bass': return 1;
-        case 'pads': return 3;
-        case 'strings': return 3;
-        case 'perc': return 2;
-        default: return 4;
-      }
+      ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
     }
 
     function handleTouch(e, isStart) {
       e.preventDefault();
       const rect = touchPad.getBoundingClientRect();
       const touches = e.changedTouches || [e];
-
       for (let t of touches) {
-        const x = (t.clientX - rect.left) / rect.width;
-        const y = 1 - (t.clientY - rect.top) / rect.height;
-        const clampX = Math.max(0, Math.min(1, x));
-        const clampY = Math.max(0, Math.min(1, y));
-
-        const note = getNote(clampX, getOctaveBase());
-
-        // Filter based on Y
-        if (filter) filter.frequency.rampTo(200 + clampY * 4000, 0.1);
-
+        const x = Math.max(0, Math.min(1, (t.clientX - rect.left) / rect.width));
+        const y = Math.max(0, Math.min(1, 1 - (t.clientY - rect.top) / rect.height));
+        const note = getNote(x, getOctaveBase());
+        if (filter) filter.frequency.rampTo(200 + y * 4000, 0.1);
         if (isStart) {
           if (currentInstrument?.id === 'perc') {
             synth.triggerAttackRelease(note, '8n');
@@ -411,19 +366,10 @@
             synth.triggerAttack(note);
           }
           activeNotes.set(t.identifier ?? 'mouse', note);
-          broadcastEvent('note', { note, x: clampX, y: clampY, on: true });
+          send({ type: 'note', playerId, instrument: currentInstrument?.id, note, x, y, on: true });
         }
-
-        // Ripple effect
         const c = currentInstrument?.color || [255,255,255];
-        ripples.push({
-          x: clampX * rect.width,
-          y: (1 - clampY) * rect.height,
-          r: 0,
-          maxR: 80 + clampY * 60,
-          alpha: 0.6,
-          color: c
-        });
+        ripples.push({ x: x * rect.width, y: (1-y) * rect.height, r: 0, maxR: 80+y*60, alpha: 0.6, color: c });
       }
     }
 
@@ -432,11 +378,9 @@
       const touches = e.changedTouches || [e];
       for (let t of touches) {
         const note = activeNotes.get(t.identifier ?? 'mouse');
-        if (note && currentInstrument?.id !== 'perc') {
-          synth.triggerRelease(note);
-        }
+        if (note && currentInstrument?.id !== 'perc') synth.triggerRelease(note);
         activeNotes.delete(t.identifier ?? 'mouse');
-        broadcastEvent('note', { note, on: false });
+        send({ type: 'note', playerId, instrument: currentInstrument?.id, note, on: false });
       }
     }
 
@@ -445,82 +389,60 @@
       const rect = touchPad.getBoundingClientRect();
       const touches = e.changedTouches || [e];
       for (let t of touches) {
-        const y = 1 - (t.clientY - rect.top) / rect.height;
-        const clampY = Math.max(0, Math.min(1, y));
-        if (filter) filter.frequency.rampTo(200 + clampY * 4000, 0.1);
+        const y = Math.max(0, Math.min(1, 1 - (t.clientY - rect.top) / rect.height));
+        if (filter) filter.frequency.rampTo(200 + y * 4000, 0.1);
       }
     }
 
-    // ─── CANVAS RENDERING ───────────────────────
+    // ─── CANVAS ─────────────────────────────────
     function drawPad() {
-      const w = touchPad.clientWidth;
-      const h = touchPad.clientHeight;
-
+      const w = touchPad.clientWidth, h = touchPad.clientHeight;
       ctx.clearRect(0, 0, w, h);
-
-      // Background gradient
       const c = currentInstrument?.color || [255,255,255];
-      const grad = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, w * 0.7);
+
+      // Bg gradient
+      const grad = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, w*0.7);
       grad.addColorStop(0, `rgba(${c[0]},${c[1]},${c[2]},0.08)`);
       grad.addColorStop(1, `rgba(${c[0]},${c[1]},${c[2]},0.02)`);
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, w, h);
 
-      // Grid lines
-      ctx.strokeStyle = `rgba(255,255,255,0.04)`;
+      // Grid
+      ctx.strokeStyle = 'rgba(255,255,255,0.04)';
       ctx.lineWidth = 1;
-      for (let i = 1; i < 5; i++) {
-        const x = (w / 5) * i;
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
-      }
-      for (let i = 1; i < 4; i++) {
-        const y = (h / 4) * i;
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
-      }
+      for (let i = 1; i < 5; i++) { const gx = (w/5)*i; ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,h); ctx.stroke(); }
+      for (let i = 1; i < 4; i++) { const gy = (h/4)*i; ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(w,gy); ctx.stroke(); }
 
       // Note labels
-      ctx.fillStyle = `rgba(255,255,255,0.08)`;
+      ctx.fillStyle = 'rgba(255,255,255,0.08)';
       ctx.font = '11px system-ui';
       ctx.textAlign = 'center';
-      for (let i = 0; i < 5; i++) {
-        const x = (w / 5) * i + (w / 10);
-        ctx.fillText(PENTATONIC[i], x, h - 8);
-      }
+      for (let i = 0; i < 5; i++) ctx.fillText(PENTATONIC[i], (w/5)*i+(w/10), h-8);
 
       // Ripples
       ripples = ripples.filter(r => r.alpha > 0.01);
       for (let r of ripples) {
-        r.r += 3;
-        r.alpha *= 0.95;
-        ctx.beginPath();
-        ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2);
+        r.r += 3; r.alpha *= 0.95;
+        ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, Math.PI*2);
         ctx.strokeStyle = `rgba(${r.color[0]},${r.color[1]},${r.color[2]},${r.alpha})`;
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        ctx.fillStyle = `rgba(${r.color[0]},${r.color[1]},${r.color[2]},${r.alpha * 0.15})`;
+        ctx.lineWidth = 2; ctx.stroke();
+        ctx.fillStyle = `rgba(${r.color[0]},${r.color[1]},${r.color[2]},${r.alpha*0.15})`;
         ctx.fill();
       }
-
       requestAnimationFrame(drawPad);
     }
 
-    // ─── INSTRUMENT PICKER ──────────────────────
+    // ─── PICKER ─────────────────────────────────
     function showPicker() {
       const picker = document.getElementById('picker');
       picker.innerHTML = '<div class="picker-title">choose your instrument</div>';
       INSTRUMENTS.forEach(instr => {
         const btn = document.createElement('button');
-        btn.className = 'picker-option';
-        if (currentInstrument?.id === instr.id) btn.classList.add('selected');
-        btn.innerHTML = `
-          <span class="icon">${instr.icon}</span>
-          <div>
-            <div class="label">${instr.name}</div>
-            <div class="desc">${instr.desc}</div>
-          </div>
-        `;
+        btn.className = 'picker-option' + (currentInstrument?.id === instr.id ? ' selected' : '');
+        btn.innerHTML = `<span class="icon">${instr.icon}</span><div><div class="label">${instr.name}</div><div class="desc">${instr.desc}</div></div>`;
         btn.onclick = () => {
           setupInstrument(instr);
+          send({ type: 'switch', playerId, instrument: instr.id, name: instr.name, icon: instr.icon, color: instr.color });
           picker.classList.remove('active');
         };
         picker.appendChild(btn);
@@ -531,25 +453,16 @@
     // ─── INIT ───────────────────────────────────
     document.getElementById('startBtn').addEventListener('click', async () => {
       await Tone.start();
-      Tone.Transport.bpm.value = 85;
-
-      // Random instrument assignment
       const randomInstr = INSTRUMENTS[Math.floor(Math.random() * INSTRUMENTS.length)];
       setupInstrument(randomInstr);
-
       document.getElementById('startScreen').style.display = 'none';
       document.getElementById('playingView').classList.add('active');
-
       resizeCanvas();
       drawPad();
-
-      // Touch events
       touchPad.addEventListener('touchstart', e => handleTouch(e, true));
-      touchPad.addEventListener('touchmove', e => handleTouchMove(e));
+      touchPad.addEventListener('touchmove', handleTouchMove);
       touchPad.addEventListener('touchend', handleTouchEnd);
       touchPad.addEventListener('touchcancel', handleTouchEnd);
-
-      // Mouse fallback
       touchPad.addEventListener('mousedown', e => handleTouch(e, true));
       touchPad.addEventListener('mousemove', e => { if (e.buttons) handleTouchMove(e); });
       touchPad.addEventListener('mouseup', handleTouchEnd);
