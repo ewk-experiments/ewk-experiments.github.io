@@ -329,7 +329,7 @@
           const s = new Tone.PolySynth(Tone.Synth, {
             maxPolyphony: 4,
             oscillator: { type: 'triangle4' },
-            envelope: { attack: 0.01, decay: 1.2, sustain: 0.1, release: 2 }
+            envelope: { attack: 0.02, decay: 2, sustain: 0.3, release: 3 }
           });
           s.volume.value = -10;
           return s;
@@ -342,9 +342,9 @@
           const s = new Tone.PolySynth(Tone.AMSynth, {
             maxPolyphony: 3, harmonicity: 2,
             oscillator: { type: 'triangle' },
-            envelope: { attack: 0.6, decay: 0.5, sustain: 0.8, release: 3 },
+            envelope: { attack: 0.8, decay: 1, sustain: 0.9, release: 4 },
             modulation: { type: 'sine' },
-            modulationEnvelope: { attack: 0.8, decay: 0.3, sustain: 0.5, release: 2 }
+            modulationEnvelope: { attack: 1, decay: 0.5, sustain: 0.6, release: 3 }
           });
           s.volume.value = -12;
           return s;
@@ -357,7 +357,7 @@
           const s = new Tone.PolySynth(Tone.Synth, {
             maxPolyphony: 3,
             oscillator: { type: 'sine8' },
-            envelope: { attack: 1.5, decay: 1, sustain: 0.9, release: 5 }
+            envelope: { attack: 2, decay: 1, sustain: 0.95, release: 6 }
           });
           s.volume.value = -14;
           return s;
@@ -369,11 +369,11 @@
         createSynth: () => {
           const s = new Tone.PolySynth(Tone.FMSynth, {
             maxPolyphony: 4,
-            harmonicity: 6, modulationIndex: 1.5,
+            harmonicity: 6, modulationIndex: 1.2,
             oscillator: { type: 'sine' },
-            envelope: { attack: 0.001, decay: 2.5, sustain: 0, release: 3 },
+            envelope: { attack: 0.001, decay: 3, sustain: 0.05, release: 4 },
             modulation: { type: 'sine' },
-            modulationEnvelope: { attack: 0.001, decay: 1.5, sustain: 0, release: 1.5 }
+            modulationEnvelope: { attack: 0.001, decay: 2, sustain: 0, release: 2 }
           });
           s.volume.value = -14;
           return s;
@@ -385,9 +385,9 @@
         createSynth: () => {
           const s = new Tone.MonoSynth({
             oscillator: { type: 'triangle' },
-            filter: { Q: 2, type: 'lowpass', rolloff: -24 },
-            envelope: { attack: 0.08, decay: 0.4, sustain: 0.6, release: 1.5 },
-            filterEnvelope: { attack: 0.08, decay: 0.3, sustain: 0.3, release: 1, baseFrequency: 80, octaves: 2 }
+            filter: { Q: 1, type: 'lowpass', rolloff: -12 },
+            envelope: { attack: 0.1, decay: 0.6, sustain: 0.7, release: 2 },
+            filterEnvelope: { attack: 0.1, decay: 0.4, sustain: 0.4, release: 1.5, baseFrequency: 100, octaves: 1.5 }
           });
           s.volume.value = -8;
           return s;
@@ -400,7 +400,7 @@
           const s = new Tone.MembraneSynth({
             pitchDecay: 0.08, octaves: 4,
             oscillator: { type: 'sine' },
-            envelope: { attack: 0.001, decay: 0.5, sustain: 0.01, release: 1.2 }
+            envelope: { attack: 0.001, decay: 0.6, sustain: 0.01, release: 1.5 }
           });
           s.volume.value = -6;
           return s;
@@ -409,16 +409,26 @@
     ];
 
     // ─── AUDIO STATE ────────────────────────────
-    let synth = null, reverb = null, filter = null;
+    let synth = null, reverb = null, filter = null, chorus = null, compressor = null;
 
     function setupAudio(instr) {
       if (synth) synth.dispose();
       if (filter) filter.dispose();
       if (reverb) reverb.dispose();
-      reverb = new Tone.Reverb({ decay: 4, wet: 0.35 }).toDestination();
-      filter = new Tone.Filter({ frequency: 2500, type: 'lowpass' }).connect(reverb);
+      if (chorus) chorus.dispose();
+      if (compressor) compressor.dispose();
+
+      // Slight random detune per player — creates orchestral thickness across phones
+      const detune = (Math.random() - 0.5) * 12; // ±6 cents
+
+      compressor = new Tone.Compressor({ threshold: -20, ratio: 4, attack: 0.1, release: 0.3 }).toDestination();
+      reverb = new Tone.Reverb({ decay: 6, wet: 0.45 }).connect(compressor);
+      chorus = new Tone.Chorus({ frequency: 0.5, delayTime: 3.5, depth: 0.6, wet: 0.3 }).connect(reverb);
+      filter = new Tone.Filter({ frequency: 2200, type: 'lowpass', rolloff: -12 }).connect(chorus);
+
       synth = instr.createSynth();
       synth.connect(filter);
+      if (synth.set) synth.set({ detune });
     }
 
     // Quantize to nearest 8th note so everyone stays on beat
