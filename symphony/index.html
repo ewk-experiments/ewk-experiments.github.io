@@ -321,68 +321,61 @@
     };
 
     // ─── INSTRUMENTS ────────────────────────────
+    const SALAMANDER = 'https://tonejs.github.io/audio/salamander/';
+    const SOUNDFONT = 'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/';
+
+    // Sample maps — Tone.js Sampler interpolates between these
+    const PIANO_SAMPLES = { A1:SALAMANDER+'A1.mp3', C2:SALAMANDER+'C2.mp3', A2:SALAMANDER+'A2.mp3', C3:SALAMANDER+'C3.mp3', A3:SALAMANDER+'A3.mp3', C4:SALAMANDER+'C4.mp3', A4:SALAMANDER+'A4.mp3', C5:SALAMANDER+'C5.mp3', A5:SALAMANDER+'A5.mp3', C6:SALAMANDER+'C6.mp3' };
+
+    const SF_NOTES = ['C2','D2','E2','F2','G2','A2','B2','C3','D3','E3','F3','G3','A3','B3','C4','D4','E4','F4','G4','A4','B4','C5','D5','E5','F5','G5','A5','B5','C6','D6'];
+    function sfSamples(instrument) {
+      const map = {};
+      SF_NOTES.forEach(n => { map[n] = SOUNDFONT + instrument + '/' + n + '.mp3'; });
+      return map;
+    }
+
     const INSTRUMENTS = [
       {
-        id: 'keys', name: 'Keys', icon: '🎹', desc: 'Grand piano',
+        id: 'keys', name: 'Piano', icon: '🎹', desc: 'Grand piano',
         color: [232, 56, 13],
         createSynth: () => {
-          const s = new Tone.PolySynth(Tone.Synth, {
-            maxPolyphony: 4,
-            oscillator: { type: 'triangle4' },
-            envelope: { attack: 0.02, decay: 2, sustain: 0.3, release: 3 }
-          });
+          const s = new Tone.Sampler({ urls: PIANO_SAMPLES, release: 2 });
+          s.volume.value = -6;
+          return s;
+        }
+      },
+      {
+        id: 'strings', name: 'Strings', icon: '🎻', desc: 'String ensemble',
+        color: [245, 158, 11],
+        createSynth: () => {
+          const s = new Tone.Sampler({ urls: sfSamples('string_ensemble_1-mp3'), release: 3 });
+          s.volume.value = -8;
+          return s;
+        }
+      },
+      {
+        id: 'pads', name: 'Choir', icon: '🌊', desc: 'Ethereal voices',
+        color: [100, 60, 255],
+        createSynth: () => {
+          const s = new Tone.Sampler({ urls: sfSamples('choir_aahs-mp3'), release: 4 });
           s.volume.value = -10;
           return s;
         }
       },
       {
-        id: 'strings', name: 'Strings', icon: '🎻', desc: 'Lush orchestral',
-        color: [245, 158, 11],
-        createSynth: () => {
-          const s = new Tone.PolySynth(Tone.AMSynth, {
-            maxPolyphony: 3, harmonicity: 2,
-            oscillator: { type: 'triangle' },
-            envelope: { attack: 0.8, decay: 1, sustain: 0.9, release: 4 },
-            modulation: { type: 'sine' },
-            modulationEnvelope: { attack: 1, decay: 0.5, sustain: 0.6, release: 3 }
-          });
-          s.volume.value = -12;
-          return s;
-        }
-      },
-      {
-        id: 'pads', name: 'Pads', icon: '🌊', desc: 'Ambient wash',
-        color: [100, 60, 255],
-        createSynth: () => {
-          const s = new Tone.PolySynth(Tone.Synth, {
-            maxPolyphony: 3,
-            oscillator: { type: 'sine8' },
-            envelope: { attack: 2, decay: 1, sustain: 0.95, release: 6 }
-          });
-          s.volume.value = -14;
-          return s;
-        }
-      },
-      {
-        id: 'bells', name: 'Bells', icon: '🔔', desc: 'Crystal chimes',
+        id: 'bells', name: 'Bells', icon: '🔔', desc: 'Tubular bells',
         color: [56, 189, 248],
         createSynth: () => {
-          const s = new Tone.PolySynth(Tone.FMSynth, {
-            maxPolyphony: 4,
-            harmonicity: 6, modulationIndex: 1.2,
-            oscillator: { type: 'sine' },
-            envelope: { attack: 0.001, decay: 3, sustain: 0.05, release: 4 },
-            modulation: { type: 'sine' },
-            modulationEnvelope: { attack: 0.001, decay: 2, sustain: 0, release: 2 }
-          });
-          s.volume.value = -14;
+          const s = new Tone.Sampler({ urls: sfSamples('tubular_bells-mp3'), release: 3 });
+          s.volume.value = -10;
           return s;
         }
       },
       {
-        id: 'bass', name: 'Bass', icon: '🔊', desc: 'Deep orchestral bass',
+        id: 'bass', name: 'Bass', icon: '🔊', desc: 'Deep contrabass',
         color: [217, 70, 239],
         createSynth: () => {
+          // Keep synth for bass — samples don't go low enough cleanly
           const s = new Tone.MonoSynth({
             oscillator: { type: 'triangle' },
             filter: { Q: 1, type: 'lowpass', rolloff: -12 },
