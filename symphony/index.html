@@ -745,16 +745,17 @@
       if (backingStarted) return;
       backingStarted = true;
 
-      // Simple whole-note pulse — one deep tone every bar
-      const pulse = new Tone.Synth({
-        oscillator: { type: 'sine' },
-        envelope: { attack: 0.3, decay: 1.5, sustain: 0, release: 2 }
+      // Simple metronome click — audible but not intrusive
+      const click = new Tone.NoiseSynth({
+        noise: { type: 'white' },
+        envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.03 }
       }).toDestination();
-      pulse.volume.value = -14;
+      click.volume.value = -8;
 
+      // Click on every beat (quarter note)
       new Tone.Loop((time) => {
-        pulse.triggerAttackRelease('D2', '2n', time);
-      }, '1n').start(0);
+        click.triggerAttackRelease('32n', time);
+      }, '4n').start(0);
 
       Tone.Transport.bpm.value = 72;
       Tone.Transport.start();
