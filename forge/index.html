@@ -1372,6 +1372,9 @@ async function generateStep1() {
     // Mark step 1 as completed
     document.querySelector('.step-tab[data-step="1"]').classList.add('completed');
 
+    // Save to localStorage
+    saveHistory();
+
     // Carry prompt to Step 2 description for better views
     const s2Prompt = document.getElementById('s2Prompt');
     if (!s2Prompt.value.trim()) {
@@ -2323,6 +2326,55 @@ document.getElementById('s1LoraSelect').addEventListener('change', (e) => {
 
 // Load available LoRAs on page load
 fetchAvailableLoras();
+
+// ═══════════════════════════════════════════════════
+// PERSISTENT HISTORY (localStorage)
+// ═══════════════════════════════════════════════════
+function saveHistory() {
+  try {
+    // Only save last 20 images to avoid quota issues
+    const toSave = state.s1.images.slice(-20);
+    localStorage.setItem('forge_history', JSON.stringify(toSave));
+    localStorage.setItem('forge_selected', state.s1.selectedIndex);
+  } catch(e) { console.log('History save failed:', e.message); }
+}
+
+function loadHistory() {
+  try {
+    const saved = localStorage.getItem('forge_history');
+    if (!saved) return;
+    const images = JSON.parse(saved);
+    if (!Array.isArray(images) || images.length === 0) return;
+    
+    state.s1.images = images;
+    const savedIdx = parseInt(localStorage.getItem('forge_selected') || '0');
+    state.s1.selectedIndex = Math.min(savedIdx, images.length - 1);
+    
+    // Rebuild history grid
+    const grid = document.getElementById('s1HistoryGrid');
+    images.forEach((img, i) => {
+      const thumb = document.createElement('div');
+      thumb.className = 's1-history-item' + (i === state.s1.selectedIndex ? ' selected' : '');
+      thumb.innerHTML = `<img src="${img}" alt="Generation ${i + 1}">`;
+      thumb.onclick = () => selectHistoryItem(i);
+      grid.appendChild(thumb);
+    });
+    
+    // Show the selected image
+    if (state.s1.selectedIndex >= 0) {
+      const img = document.getElementById('s1OutputImg');
+      img.src = images[state.s1.selectedIndex];
+      img.style.display = 'block';
+      document.getElementById('s1Empty').style.display = 'none';
+      document.getElementById('s1ToStep2').style.display = 'block';
+    }
+    
+    console.log(`Loaded ${images.length} images from history`);
+  } catch(e) { console.log('History load failed:', e.message); }
+}
+
+// Load on startup
+loadHistory();
 
 // Keyboard shortcuts
 document.addEventListener('keydown', (e) => {
