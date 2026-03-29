@@ -420,8 +420,8 @@ function createViewer(containerId, glbUrl) {
 
   const loader = new GLTFLoader();
   loader.load(glbUrl, (gltf) => {
-    const material = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.85, metalness: 0.0 });
-    gltf.scene.traverse((c) => { if (c.isMesh) c.material = material; });
+    const material = new THREE.MeshStandardMaterial({ color: 0x999999, roughness: 0.75, metalness: 0.0, side: THREE.DoubleSide });
+    gltf.scene.traverse((c) => { if (c.isMesh) { c.material = material; c.geometry.computeVertexNormals(); if (c.geometry.attributes.color) c.geometry.deleteAttribute('color'); } });
     const box = new THREE.Box3().setFromObject(gltf.scene);
     const center = box.getCenter(new THREE.Vector3());
     const size = box.getSize(new THREE.Vector3());
