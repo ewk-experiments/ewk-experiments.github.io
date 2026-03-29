@@ -229,11 +229,19 @@ html, body {
 .s1-history-grid {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 12px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 8px;
   align-content: start;
+  scrollbar-width: none;
+}
+
+.s1-history-grid::-webkit-scrollbar { display: none; }
+
+.s1-history-grid:empty {
+  overflow: hidden;
 }
 
 .s1-history-item {
@@ -1001,7 +1009,7 @@ html, body {
     <div class="s1-controls">
       <div class="s1-prompt-area">
         <span class="s1-prompt-label">Prompt</span>
-        <textarea id="s1Prompt" placeholder="Describe the shoe you want to create..." rows="2">A futuristic matte black rubber wedge sandal boot with architectural lines and bold geometric sole, product photography, centered on clean white background, subtle contact shadow, studio lighting</textarea>
+        <textarea id="s1Prompt" placeholder="Describe the shoe you want to create (product photography styling is added automatically)..." rows="2">A futuristic matte black rubber wedge sandal boot with architectural lines and bold geometric sole</textarea>
       </div>
       <div class="s1-params">
         <div class="param-group">
@@ -1307,8 +1315,13 @@ function switchStep(n) {
 // ═══════════════════════════════════════════════════
 async function generateStep1() {
   if (state.s1.generating) return;
-  const prompt = document.getElementById('s1Prompt').value.trim();
-  if (!prompt) { toast('Enter a prompt'); return; }
+  const rawPrompt = document.getElementById('s1Prompt').value.trim();
+  if (!rawPrompt) { toast('Enter a prompt'); return; }
+
+  // Auto-append product photography suffix if not already present
+  const photoSuffix = ', product photography, centered on clean white background, studio lighting, e-commerce product shot, sharp focus';
+  const hasPhotoTerms = /product photography|white background|studio lighting/i.test(rawPrompt);
+  const prompt = hasPhotoTerms ? rawPrompt : rawPrompt + photoSuffix;
 
   state.s1.generating = true;
   state.s1.abortController = new AbortController();
