@@ -1710,6 +1710,18 @@ async function generateStep3() {
     loader.load(url, (gltf) => {
       state.s3.scene = gltf.scene;
       
+      // Apply a clean material since Hunyuan outputs untextured mesh
+      const material = new THREE.MeshStandardMaterial({
+        color: 0x2A2A2A,
+        roughness: 0.7,
+        metalness: 0.1,
+      });
+      gltf.scene.traverse((child) => {
+        if (child.isMesh) {
+          child.material = material;
+        }
+      });
+      
       const box = new THREE.Box3().setFromObject(gltf.scene);
       const center = box.getCenter(new THREE.Vector3());
       const size = box.getSize(new THREE.Vector3());
