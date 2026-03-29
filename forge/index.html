@@ -363,6 +363,7 @@ html, body {
   grid-template-rows: 1fr 1fr auto;
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 .s2-ref {
@@ -378,6 +379,8 @@ html, body {
   cursor: pointer;
   transition: background 0.15s;
 }
+
+.s2-ref:hover .thumb-remove { opacity: 1; }
 
 .s2-ref img {
   max-width: 85%;
@@ -951,6 +954,7 @@ html, body {
       <div class="product-badge" id="s2ProductBadge"></div>
       <span class="angle-badge" id="s2AngleBadge"></span>
       <img id="s2RefImg" src="" alt="" style="display:none">
+      <span class="thumb-remove" id="s2RefRemove" style="display:none" onclick="event.stopPropagation(); clearS2Ref()">&times;</span>
       <span class="empty-state" id="s2RefEmpty">Drop reference image<br>or select from Step 1</span>
       <div class="analyzing-overlay" id="s2Analyzing" style="display:none">
         <div class="dot-matrix pattern-1"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
@@ -1112,13 +1116,11 @@ function switchStep(n) {
     const img = state.s1.images[state.s1.selectedIndex];
     if (state.s2.refImage !== img) {
       state.s2.refImage = img;
-      state.s2.analysis = null; // Reset analysis for new image
+      state.s2.analysis = null;
       const el = document.getElementById('s2RefImg');
       el.src = img;
       el.style.display = 'block';
-      document.getElementById('s2RefEmpty').style.display = 'none';
-      // Auto-analyze
-      analyzeImage(img);
+      document.getElementById('s2RefEmpty').style.display = 'none'; document.getElementById('s2RefRemove').style.display = 'block';
     }
   }
 
@@ -1334,8 +1336,15 @@ async function generateStep2() {
 
   // Full multi-view generation
   state.s2.generating = true;
-  setStatus('generating', 'GENERATING VIEWS');
+  setStatus('generating', 'RUNNING');
   document.getElementById('s2GenerateBtn').disabled = true;
+  document.getElementById('s2GenerateBtn').textContent = 'ANALYZING...';
+
+  // Analyze first if not already done
+  if (!state.s2.analysis) {
+    await analyzeImage(state.s2.refImage);
+  }
+
   document.getElementById('s2GenerateBtn').textContent = 'GENERATING...';
 
   // Show dot matrix loaders in view cells
@@ -1935,6 +1944,21 @@ document.addEventListener('keydown', (e) => {
   if (e.key === '3' && !e.target.matches('input, textarea')) switchStep(3);
 });
 
+function clearS2Ref() {
+  state.s2.refImage = null;
+  state.s2.analysis = null;
+  state.s2.views = {};
+  document.getElementById('s2RefImg').style.display = 'none';
+  document.getElementById('s2RefRemove').style.display = 'none';
+  document.getElementById('s2RefEmpty').style.display = '';
+  document.getElementById('s2ProductBadge').classList.remove('visible');
+  document.getElementById('s2AngleBadge').classList.remove('visible');
+  // Clear view cells
+  ['viewFront', 'viewRight', 'viewBack', 'viewLeft'].forEach(id => {
+    document.getElementById(id).innerHTML = '';
+  });
+}
+
 // Drag & drop on Step 2 reference area
 const s2Ref = document.getElementById('s2Ref');
 s2Ref.addEventListener('dragover', (e) => { e.preventDefault(); s2Ref.style.background = '#F0F0F0'; });
@@ -1950,9 +1974,8 @@ s2Ref.addEventListener('drop', (e) => {
       state.s2.analysis = null;
       document.getElementById('s2RefImg').src = ev.target.result;
       document.getElementById('s2RefImg').style.display = 'block';
-      document.getElementById('s2RefEmpty').style.display = 'none';
+      document.getElementById('s2RefEmpty').style.display = 'none'; document.getElementById('s2RefRemove').style.display = 'block';
       toast('Reference image loaded');
-      analyzeImage(ev.target.result);
     };
     reader.readAsDataURL(file);
   }
@@ -1973,8 +1996,7 @@ s2Ref.addEventListener('click', () => {
         state.s2.analysis = null;
         document.getElementById('s2RefImg').src = ev.target.result;
         document.getElementById('s2RefImg').style.display = 'block';
-        document.getElementById('s2RefEmpty').style.display = 'none';
-        analyzeImage(ev.target.result);
+        document.getElementById('s2RefEmpty').style.display = 'none'; document.getElementById('s2RefRemove').style.display = 'block';
       };
       reader.readAsDataURL(file);
     }
