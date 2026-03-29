@@ -1690,10 +1690,11 @@ async function generateStep2() {
       if (!res.ok) { toast(data.error || 'View generation failed'); return; }
       state.s2.views = data.views;
     }
-    document.getElementById('viewFront').innerHTML = `<img src="${data.views.front}" alt="Front">`;
-    document.getElementById('viewBack').innerHTML = `<img src="${data.views.back}" alt="Back">`;
-    document.getElementById('viewTop').innerHTML = `<img src="${data.views.top}" alt="Top">`;
-    document.getElementById('viewBottom').innerHTML = `<img src="${data.views.bottom}" alt="Bottom">`;
+    const views = state.s2.views;
+    document.getElementById('viewFront').innerHTML = `<img src="${views.front}" alt="Front">`;
+    document.getElementById('viewBack').innerHTML = `<img src="${views.back}" alt="Back">`;
+    document.getElementById('viewTop').innerHTML = `<img src="${views.top}" alt="Top">`;
+    document.getElementById('viewBottom').innerHTML = `<img src="${views.bottom}" alt="Bottom">`;
 
     document.querySelector('.step-tab[data-step="2"]').classList.add('completed');
     setStatus('ready', 'VIEWS COMPLETE');
