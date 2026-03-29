@@ -241,7 +241,7 @@ html, body {
       <div class="pipeline-step-num">STEP 02</div>
       <div class="pipeline-step-name">Multi-View</div>
       <div class="pipeline-step-desc">Front, back, top, bottom synthesis</div>
-      <div class="pipeline-step-model">FLUX.2 Klein 4B + Qwen2-VL</div>
+      <div class="pipeline-step-model">FLUX.2 Klein 4B / Zero123++ v1.2</div>
     </div>
     <div class="pipeline-step">
       <div class="pipeline-step-num">STEP 03</div>
@@ -279,20 +279,20 @@ html, body {
 
   <div class="model-card">
     <div class="model-card-header">
-      <span class="model-name">Qwen2-VL-7B</span>
-      <span class="model-role">Step 02 / Vision Analysis</span>
+      <span class="model-name">Zero123++ v1.2</span>
+      <span class="model-role">Step 02 / Geometric Multi-View</span>
     </div>
     <div class="model-body">
       <p class="model-desc">
-        Vision-language model that analyzes uploaded product images to detect product type, viewing angle, materials, and construction details. Generates intelligent view-specific prompts for multi-view synthesis. Knows the difference between a platform mule and a wedge boot.
+        Single image to 6 geometrically consistent views at precise camera angles. Generates views with true 3D awareness — actual camera rotations rather than text-guided editing. Produces views optimized for 3D reconstruction with background removal via rembg.
       </p>
       <div class="model-meta">
-        <span class="model-meta-key">Parameters</span>
-        <span class="model-meta-val">7B (vision-language)</span>
-        <span class="model-meta-key">Capabilities</span>
-        <span class="model-meta-val">Product detection, angle identification, feature description</span>
+        <span class="model-meta-key">Views</span>
+        <span class="model-meta-val">6 views at fixed azimuth/elevation angles</span>
+        <span class="model-meta-key">Pipeline</span>
+        <span class="model-meta-val">Stable Diffusion + camera conditioning</span>
         <span class="model-meta-key">By</span>
-        <span class="model-meta-val"><a href="https://huggingface.co/Qwen/Qwen2-VL-7B-Instruct" target="_blank">Alibaba Qwen</a></span>
+        <span class="model-meta-val"><a href="https://github.com/SUDO-AI-3D/zero123plus" target="_blank">SUDO AI</a></span>
       </div>
     </div>
   </div>
