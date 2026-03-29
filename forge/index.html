@@ -2553,7 +2553,14 @@ async function processForPrint() {
   try {
     // Convert blob to base64
     const arrayBuf = await state.s3.glbBlob.arrayBuffer();
-    const glbB64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuf)));
+    // Convert blob to base64 in chunks (spread operator overflows on large arrays)
+    const bytes = new Uint8Array(arrayBuf);
+    let binary = '';
+    const chunkSize = 8192;
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+    }
+    const glbB64 = btoa(binary);
 
     document.getElementById('s4ProgressFill').style.width = '40%';
 
