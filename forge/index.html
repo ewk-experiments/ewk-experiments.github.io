@@ -1137,7 +1137,7 @@ html, body {
     <div class="s1-controls">
       <div class="s1-prompt-area">
         <span class="s1-prompt-label">Prompt</span>
-        <textarea id="s1Prompt" placeholder="Describe the shoe you want to create (product photography styling is added automatically)..." rows="2">A futuristic matte black rubber wedge sandal boot with architectural lines and bold geometric sole</textarea>
+        <textarea id="s1Prompt" placeholder="Describe the shoe you want to create (right side profile view is added automatically)..." rows="2">A futuristic matte black rubber wedge sandal boot with architectural lines and bold geometric sole</textarea>
       </div>
       <div class="s1-params">
         <div class="param-group">
@@ -1456,7 +1456,7 @@ async function generateStep1() {
   }
 
   // Auto-append product photography suffix if not already present
-  const photoSuffix = ', product photography, centered on clean white background, studio lighting, e-commerce product shot, sharp focus';
+  const photoSuffix = ', right shoe only, right side profile view, perfectly orthogonal lateral view, product photography, centered on clean white background, studio lighting, e-commerce product shot, sharp focus, no 3/4 angle';
   const hasPhotoTerms = /product photography|white background|studio lighting/i.test(styledPrompt);
   const prompt = hasPhotoTerms ? styledPrompt : styledPrompt + photoSuffix;
 
