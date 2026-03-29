@@ -1079,7 +1079,7 @@ const API = {
     multiview: 'https://heyitskim-ai--flux2-klein-shoe-fluxkleinservice-multiview.modal.run',
   },
   hunyuan: {
-    generate: 'https://heyitskim-ai--hunyuan3d-shoe-web-hunyuan3dservice-generate.modal.run',
+    generate: 'https://heyitskim-ai--hunyuan3d-shoe-web-hunyuan3dservice-serve.modal.run',
   },
   vision: {
     analyze: 'https://heyitskim-ai--forge-vision-visionservice-analyze.modal.run',
@@ -1487,6 +1487,8 @@ async function generateStep3() {
     const res = await fetch(API.hunyuan.generate, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      mode: 'cors',
+      redirect: 'follow',
       body: JSON.stringify({
         image: inputImage,
         views: viewsToSend,
