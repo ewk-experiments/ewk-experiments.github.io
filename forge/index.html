@@ -147,8 +147,8 @@ html, body {
   margin-right: 6px;
 }
 
-.status-dot.ready { background: var(--success); border-color: var(--success); }
-.status-dot.generating { background: #3B82F6; border-color: #3B82F6; animation: pulse 1s infinite; }
+.status-dot.ready { background: #3B82F6; border-color: #3B82F6; }
+.status-dot.generating { background: var(--success); border-color: var(--success); animation: pulse 1s infinite; }
 .status-dot.error { background: var(--danger); border-color: var(--danger); }
 
 @keyframes pulse {
@@ -1347,6 +1347,8 @@ async function generateStep2() {
     await analyzeImage(state.s2.refImage);
   }
 
+  // Set status to generating AFTER analysis completes
+  setStatus('generating', 'RUNNING');
   document.getElementById('s2GenerateBtn').textContent = 'GENERATING...';
 
   // Show dot matrix loaders in view cells
