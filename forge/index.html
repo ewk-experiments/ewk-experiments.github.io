@@ -932,6 +932,15 @@ html, body {
 }
 
 .s3-info-key:hover .tip-text { display: block; }
+/* ─── Next Step Buttons ─── */
+.step-next-btn,
+#s0ToStep1, #s1ToStep2, #s2ToStep3, #s3ToStep4 {
+  transition: background 0.15s ease;
+}
+#s0ToStep1:hover, #s1ToStep2:hover, #s2ToStep3:hover, #s3ToStep4:hover {
+  background: var(--accent-active) !important;
+}
+
 /* ─── Image Lightbox ─── */
 .lightbox {
   display: none;
@@ -1086,6 +1095,7 @@ html, body {
         <div id="s0ImageGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;align-content:start"></div>
       </div>
       <span class="empty-state" id="s0Empty">Drop 20-50 reference images<br>to train your style</span>
+      <button id="s0ToStep1" onclick="event.stopPropagation(); switchStep(1)" style="display:none;position:absolute;bottom:16px;right:16px;padding:6px 14px;background:var(--text);color:var(--bg);border:none;font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;cursor:pointer;z-index:6;text-transform:uppercase">→ Generate</button>
     </div>
     <div class="s1-history" style="display:flex;flex-direction:column">
       <div class="s1-history-label">TRAINING CONFIG</div>
@@ -1130,7 +1140,7 @@ html, body {
     <div class="s1-output" id="s1Output">
       <span class="cell-label-abs">OUTPUT</span>
       <img id="s1OutputImg" src="" alt="" style="display:none">
-      <button id="s1ToStep2" onclick="switchStep(2)" style="display:none;position:absolute;bottom:16px;right:16px;padding:6px 14px;background:var(--text);color:var(--bg);border:none;font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;cursor:pointer;z-index:2;text-transform:uppercase">→ Multi-View</button>
+      <button id="s1ToStep2" onclick="event.stopPropagation(); switchStep(2)" style="display:none;position:absolute;bottom:16px;right:16px;padding:6px 14px;background:var(--text);color:var(--bg);border:none;font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;cursor:pointer;z-index:2;text-transform:uppercase">→ Multi-View</button>
       <span class="empty-state" id="s1Empty">Generate an image</span>
     </div>
     <div class="s1-history">
@@ -1171,6 +1181,7 @@ html, body {
       <img id="s2RefImg" src="" alt="" style="display:none">
       <span class="thumb-remove" id="s2RefRemove" style="display:none" onclick="event.stopPropagation(); clearS2Ref()">&times;</span>
       <span class="empty-state" id="s2RefEmpty" style="font-size:24px;color:var(--border-strong)">+</span>
+      <button id="s2ToStep3" onclick="event.stopPropagation(); switchStep(3)" style="display:none;position:absolute;bottom:16px;right:16px;padding:6px 14px;background:var(--text);color:var(--bg);border:none;font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;cursor:pointer;z-index:6;text-transform:uppercase">→ 3D Model</button>
       <div class="analyzing-overlay" id="s2Analyzing" style="display:none">
         <div class="dot-matrix pattern-1"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
         <span class="analyzing-text">Analyzing product...</span>
@@ -1215,6 +1226,7 @@ html, body {
       <span class="empty-state" id="s3Empty">Generate views in Step 2<br>then reconstruct here</span>
       <canvas id="s3Canvas" style="display:none"></canvas>
       <canvas id="s3LoadingCanvas" style="display:none;position:absolute;inset:0;z-index:1"></canvas>
+      <button id="s3ToStep4" onclick="switchStep(4)" style="display:none;position:absolute;bottom:16px;right:16px;padding:6px 14px;background:var(--text);color:var(--bg);border:none;font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;cursor:pointer;z-index:6;text-transform:uppercase">→ Print-Ready</button>
     </div>
     <div class="s3-panel">
       <div class="s3-panel-section" id="s3RefSection" style="display:none">
@@ -1719,6 +1731,7 @@ async function generateStep2() {
     document.getElementById('viewBottom').innerHTML = `<img src="${views.bottom}" alt="Bottom">`;
 
     document.querySelector('.step-tab[data-step="2"]').classList.add('completed');
+    document.getElementById('s2ToStep3').style.display = 'block';
     setStatus('ready', 'VIEWS COMPLETE');
   } catch (err) {
     toast('Error: ' + err.message);
@@ -2139,6 +2152,7 @@ async function generateStep3() {
     document.getElementById('s3ModelInfo').style.display = 'block';
     document.getElementById('s3DownloadBtn').style.display = 'inline-block';
     document.querySelector('.step-tab[data-step="3"]').classList.add('completed');
+    document.getElementById('s3ToStep4').style.display = 'block';
     document.getElementById('s3PhaseText').style.display = 'none';
     setStatus('ready', 'IDLE');
     
@@ -2426,8 +2440,8 @@ async function startTraining() {
       await fetchAvailableLoras();
       document.getElementById('s1LoraSelect').value = styleName;
       
-      // Auto-switch to Step 1 after a brief moment
-      setTimeout(() => switchStep(1), 1500);
+      // Show next step button
+      document.getElementById('s0ToStep1').style.display = 'block';
     } else {
       progressFill.style.width = '0%';
       phaseText.textContent = 'FAILED';
