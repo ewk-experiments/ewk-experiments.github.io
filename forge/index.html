@@ -2294,7 +2294,10 @@ document.getElementById('s0StyleName').addEventListener('input', (e) => {
 // Fetch available trained LoRAs
 async function fetchAvailableLoras() {
   try {
-    const res = await fetch(API.train.start + '/loras');
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
+    const res = await fetch(API.train.start + '/loras', { signal: controller.signal });
+    clearTimeout(timeout);
     const data = await res.json();
     const select = document.getElementById('s1LoraSelect');
     const currentVal = select.value;
