@@ -627,6 +627,27 @@ html, body {
 
 .s3-views-preview .thumb:hover { border-color: var(--text); }
 
+.thumb-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 12px;
+  cursor: pointer;
+  z-index: 3;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.s3-views-preview .thumb:hover .thumb-remove { opacity: 1; }
+
 .s3-views-preview .thumb img {
   width: 100%;
   height: 100%;
@@ -1564,6 +1585,7 @@ function downloadGLB() {
 
 // Direct view upload for Step 3
 const s3DirectViews = {};
+let s3AnalysisPending = 0;
 
 function uploadS3View(thumbEl) {
   const input = document.createElement('input');
@@ -1576,10 +1598,25 @@ function uploadS3View(thumbEl) {
     reader.onload = async (ev) => {
       const imageData = ev.target.result;
       
-      // Show image immediately
-      thumbEl.innerHTML = `<img src="${imageData}" alt="view">`;
+      // Immediately store with a temp key so reconstruct can work
+      const tempKey = 'view_' + Date.now();
+      s3DirectViews[tempKey] = imageData;
+      
+      // Show image immediately with loading indicator
+      thumbEl.innerHTML = `<img src="${imageData}" alt="view" style="width:100%;height:100%;object-fit:cover">`;
+      thumbEl.style.position = 'relative';
+      thumbEl.dataset.tempKey = tempKey;
+      
+      // Add X button to remove
+      thumbEl.insertAdjacentHTML('beforeend', `<span class="thumb-remove" onclick="event.stopPropagation(); removeS3View(this.parentElement, '${tempKey}')">&times;</span>`);
+      
+      // Update generate button state
+      updateS3GenerateBtn();
       
       // Analyze with vision LLM to detect angle
+      s3AnalysisPending++;
+      updateS3GenerateBtn();
+      
       try {
         const res = await fetch(API.vision.analyze, {
           method: 'POST',
@@ -1588,7 +1625,6 @@ function uploadS3View(thumbEl) {
         });
         const data = await res.json();
         if (res.ok && data.current_angle) {
-          // Map detected angle to view key
           let viewKey = 'front';
           const angle = data.current_angle.toLowerCase();
           if (angle.includes('right')) viewKey = 'right';
@@ -1597,31 +1633,55 @@ function uploadS3View(thumbEl) {
           else if (angle.includes('front')) viewKey = 'front';
           else if (angle.includes('side')) viewKey = 'right';
           
+          // Move from temp key to proper key
+          delete s3DirectViews[tempKey];
           s3DirectViews[viewKey] = imageData;
-          thumbEl.dataset.view = viewKey;
-          // Add small label
-          thumbEl.insertAdjacentHTML('afterbegin', `<span style="position:absolute;top:4px;left:4px;font-family:var(--font-mono);font-size:7px;letter-spacing:0.1em;color:var(--text-label);z-index:2;text-transform:uppercase">${viewKey}</span>`);
-          thumbEl.style.position = 'relative';
-          toast(`Detected: ${angle} → ${viewKey} (${Object.keys(s3DirectViews).length}/4)`);
-        } else {
-          // Fallback: assign to next empty slot
-          const slots = ['front', 'right', 'back', 'left'];
-          const nextSlot = slots.find(s => !s3DirectViews[s]) || 'front';
-          s3DirectViews[nextSlot] = imageData;
-          thumbEl.dataset.view = nextSlot;
-          toast(`View uploaded as ${nextSlot} (${Object.keys(s3DirectViews).length}/4)`);
+          thumbEl.dataset.viewKey = viewKey;
+          delete thumbEl.dataset.tempKey;
+          
+          // Update remove button with correct key
+          const removeBtn = thumbEl.querySelector('.thumb-remove');
+          if (removeBtn) removeBtn.setAttribute('onclick', `event.stopPropagation(); removeS3View(this.parentElement, '${viewKey}')`);
+          
+          toast(`Detected: ${viewKey} (${Object.keys(s3DirectViews).length} views)`);
         }
       } catch (err) {
-        // Fallback without LLM
-        const slots = ['front', 'right', 'back', 'left'];
-        const nextSlot = slots.find(s => !s3DirectViews[s]) || 'front';
-        s3DirectViews[nextSlot] = imageData;
-        toast(`View uploaded (${Object.keys(s3DirectViews).length}/4)`);
+        console.error('Analysis failed, keeping temp key:', err);
+      } finally {
+        s3AnalysisPending--;
+        updateS3GenerateBtn();
       }
     };
     reader.readAsDataURL(file);
   };
   input.click();
+}
+
+function removeS3View(thumbEl, key) {
+  delete s3DirectViews[key];
+  thumbEl.innerHTML = `<span style="font-family:var(--font-mono);font-size:16px;color:var(--border-strong)">+</span>`;
+  thumbEl.style.position = '';
+  delete thumbEl.dataset.viewKey;
+  delete thumbEl.dataset.tempKey;
+  updateS3GenerateBtn();
+  toast(`View removed (${Object.keys(s3DirectViews).length} views)`);
+}
+
+function updateS3GenerateBtn() {
+  const btn = document.getElementById('s3GenerateBtn');
+  const hasViews = Object.keys(s3DirectViews).length > 0 || (state.s2.views.front);
+  const analyzing = s3AnalysisPending > 0;
+  
+  if (analyzing) {
+    btn.textContent = 'ANALYZING...';
+    btn.disabled = true;
+  } else if (hasViews) {
+    btn.textContent = `RECONSTRUCT 3D (${Object.keys(s3DirectViews).length} VIEWS)`;
+    btn.disabled = false;
+  } else {
+    btn.textContent = 'RECONSTRUCT 3D';
+    btn.disabled = false;
+  }
 }
 
 // ═══════════════════════════════════════════════════
