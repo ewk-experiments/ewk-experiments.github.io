@@ -909,6 +909,77 @@ html, body {
 }
 
 .s3-info-key:hover .tip-text { display: block; }
+/* ─── Image Lightbox ─── */
+.lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 9999;
+  cursor: zoom-out;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox.open { display: flex; }
+
+.lightbox-inner {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+  cursor: grab;
+}
+
+.lightbox-inner:active { cursor: grabbing; }
+
+.lightbox-inner img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  transform-origin: center center;
+  transition: transform 0.15s ease;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.lightbox-toolbar {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+  z-index: 10000;
+}
+
+.lightbox-btn {
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.lightbox-btn:hover { background: rgba(255,255,255,0.2); }
+
+.lightbox-label {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.5);
+  z-index: 10000;
+}
 </style>
 </head>
 <body>
@@ -1097,7 +1168,7 @@ html, body {
       <div class="s3-panel-section" id="s3RefSection" style="display:none">
         <div class="s3-panel-label">Reference</div>
         <div style="padding:0 4px">
-          <img id="s3RefImg" src="" alt="" style="width:100%;border:1px solid var(--border);display:block">
+          <img id="s3RefImg" src="" alt="" style="width:100%;border:1px solid var(--border);display:block;cursor:pointer" onclick="openLightbox(this.src, 'REFERENCE')">
         </div>
       </div>
       <div class="s3-panel-section">
@@ -2090,6 +2161,14 @@ function downloadUSDZ() {
 // Direct view upload for Step 3
 const s3DirectViews = {};
 function uploadS3View(thumbEl) {
+  // If thumb already has an image, open lightbox instead
+  const existingImg = thumbEl.querySelector('img');
+  if (existingImg && existingImg.src) {
+    const viewKey = thumbEl.dataset.viewKey || '';
+    openLightbox(existingImg.src, viewKey.toUpperCase() + ' VIEW');
+    return;
+  }
+
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
@@ -2656,6 +2735,82 @@ s2Ref.addEventListener('click', () => {
   input.click();
 });
 
+// ═══════════════════════════════════════════════════
+// IMAGE LIGHTBOX (zoom, pan, download)
+// ═══════════════════════════════════════════════════
+let lbScale = 1, lbX = 0, lbY = 0, lbDragging = false, lbStartX, lbStartY, lbSrc = '';
+
+function openLightbox(src, label) {
+  lbSrc = src;
+  lbScale = 1; lbX = 0; lbY = 0;
+  const img = document.getElementById('lightboxImg');
+  img.src = src;
+  img.style.transform = 'scale(1) translate(0px, 0px)';
+  document.getElementById('lightboxLabel').textContent = label || '';
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(e) {
+  if (e && e.target && e.target.closest('.lightbox-inner')) return;
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function zoomLightbox(factor) {
+  lbScale = Math.max(0.5, Math.min(10, lbScale * factor));
+  applyLightboxTransform();
+}
+
+function resetLightbox() {
+  lbScale = 1; lbX = 0; lbY = 0;
+  applyLightboxTransform();
+}
+
+function applyLightboxTransform() {
+  document.getElementById('lightboxImg').style.transform = `scale(${lbScale}) translate(${lbX}px, ${lbY}px)`;
+}
+
+function downloadLightbox() {
+  if (!lbSrc) return;
+  const a = document.createElement('a');
+  a.href = lbSrc;
+  a.download = 'forge-view.png';
+  a.click();
+}
+
+// Pan with mouse drag
+const lbInner = document.getElementById('lightboxInner');
+lbInner.addEventListener('mousedown', (e) => {
+  if (lbScale <= 1) return;
+  lbDragging = true;
+  lbStartX = e.clientX - lbX * lbScale;
+  lbStartY = e.clientY - lbY * lbScale;
+  e.preventDefault();
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (!lbDragging) return;
+  lbX = (e.clientX - lbStartX) / lbScale;
+  lbY = (e.clientY - lbStartY) / lbScale;
+  applyLightboxTransform();
+});
+
+window.addEventListener('mouseup', () => { lbDragging = false; });
+
+// Zoom with scroll wheel
+document.getElementById('lightbox').addEventListener('wheel', (e) => {
+  e.preventDefault();
+  zoomLightbox(e.deltaY < 0 ? 1.15 : 0.87);
+}, { passive: false });
+
+// Close with Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('lightbox').classList.contains('open')) {
+    closeLightbox();
+  }
+});
+
 // View cell click — select for spot editing
 document.querySelectorAll('.view-cell').forEach(cell => {
   cell.addEventListener('click', () => {
@@ -2678,6 +2833,21 @@ document.querySelectorAll('.view-cell').forEach(cell => {
   });
 });
 </script>
+
+<!-- Image Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <div class="lightbox-toolbar">
+    <button class="lightbox-btn" onclick="event.stopPropagation(); zoomLightbox(1.5)" title="Zoom In">+</button>
+    <button class="lightbox-btn" onclick="event.stopPropagation(); zoomLightbox(0.67)" title="Zoom Out">&minus;</button>
+    <button class="lightbox-btn" onclick="event.stopPropagation(); resetLightbox()" title="Reset">1:1</button>
+    <button class="lightbox-btn" onclick="event.stopPropagation(); downloadLightbox()" title="Download">&#8595;</button>
+    <button class="lightbox-btn" onclick="event.stopPropagation(); closeLightbox()" title="Close">&times;</button>
+  </div>
+  <div class="lightbox-inner" id="lightboxInner">
+    <img id="lightboxImg" src="" alt="" draggable="false">
+  </div>
+  <div class="lightbox-label" id="lightboxLabel"></div>
+</div>
 
 </body>
 </html>
