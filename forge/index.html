@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ewk labs / forge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #FFFFFF;
+  --surface: #F8F8F8;
+  --surface-alt: #F0F0F0;
+  --border: #E0E0E0;
+  --border-strong: #C0C0C0;
+  --text: #0A0A0A;
+  --text-dim: #666666;
+  --text-label: #999999;
+  --accent: #0A0A0A;
+  --accent-active: #E8380D;
+  --danger: #E8380D;
+  --success: #22C55E;
+  --font-ui: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Top Bar ─── */
+.topbar {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+  gap: 16px;
+  background: var(--bg);
+  position: relative;
+  z-index: 100;
+}
+
+.topbar-brand {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.topbar-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+}
+
+.topbar-steps {
+  display: flex;
+  gap: 0;
+  flex: 1;
+}
+
+.step-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  height: 44px;
+  border-right: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.1s;
+  background: var(--bg);
+  position: relative;
+  user-select: none;
+}
+
+.step-tab:hover { background: var(--surface); }
+
+.step-tab.active {
+  background: var(--surface);
+}
+
+.step-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+}
+
+.step-tab.completed .step-num {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.step-num {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-strong);
+  flex-shrink: 0;
+}
+
+.step-name {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.step-tab.active .step-name { color: var(--text); font-weight: 500; }
+
+.topbar-status {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-label);
+  white-space: nowrap;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border: 1px solid var(--border-strong);
+  margin-right: 6px;
+}
+
+.status-dot.ready { background: var(--success); border-color: var(--success); }
+.status-dot.generating { background: var(--accent-active); border-color: var(--accent-active); animation: pulse 1s infinite; }
+.status-dot.error { background: var(--danger); border-color: var(--danger); }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ─── Step Panels ─── */
+.step-panel {
+  display: none;
+  height: calc(100vh - 44px);
+}
+
+.step-panel.active { display: flex; }
+
+/* ═══════════════════════════════════════════════════
+   STEP 1 — IMAGE GENERATION
+   ═══════════════════════════════════════════════════ */
+.s1-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr auto;
+  width: 100%;
+  height: 100%;
+}
+
+.s1-output {
+  border-right: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  position: relative;
+  overflow: hidden;
+}
+
+.s1-output-label {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-label);
+  z-index: 2;
+}
+
+.s1-output img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
+.s1-output .empty-state {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--text-label);
+  text-transform: uppercase;
+}
+
+.s1-history {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.s1-history-label {
+  padding: 14px 16px 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-label);
+  border-bottom: 1px solid var(--border);
+}
+
+.s1-history-grid {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+  align-content: start;
+}
+
+.s1-history-item {
+  aspect-ratio: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.s1-history-item:hover { border-color: var(--text); }
+.s1-history-item.selected { border-color: var(--accent-active); border-width: 2px; }
+.s1-history-item img { width: 100%; height: 100%; object-fit: cover; }
+
+.s1-controls {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: stretch;
+  height: 80px;
+}
+
+.s1-prompt-area {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  border-right: 1px solid var(--border);
+  position: relative;
+}
+
+.s1-prompt-label {
+  position: absolute;
+  top: 10px;
+  left: 16px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--text-label);
+  text-transform: uppercase;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.s1-prompt-area textarea {
+  width: 100%;
+  padding: 28px 16px 12px;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+}
+
+.s1-prompt-area textarea::placeholder {
+  color: var(--text-label);
+}
+
+.s1-params {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px;
+}
+
+.param-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.param-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--text-label);
+  text-transform: uppercase;
+}
+
+.param-input {
+  width: 70px;
+  padding: 4px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.param-input::-webkit-inner-spin-button,
+.param-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+.param-input:focus { border-color: var(--text); }
+
+.btn-generate {
+  padding: 0 32px;
+  height: 100%;
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.1s;
+  white-space: nowrap;
+}
+
+.btn-generate:hover { background: var(--accent-active); }
+.btn-generate:disabled { opacity: 0.3; cursor: not-allowed; }
+.btn-generate:disabled:hover { background: var(--text); }
+
+/* ═══════════════════════════════════════════════════
+   STEP 2 — MULTI-VIEW
+   ═══════════════════════════════════════════════════ */
+.s2-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr auto;
+  width: 100%;
+  height: 100%;
+}
+
+.s2-ref {
+  grid-column: 1 / 3;
+  grid-row: 1 / 3;
+  border-right: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  position: relative;
+  overflow: hidden;
+}
+
+.s2-ref img {
+  max-width: 85%;
+  max-height: 85%;
+  object-fit: contain;
+}
+
+.s2-ref .empty-state {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.view-cell {
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.view-cell:nth-child(3) { grid-column: 3; grid-row: 1; }
+.view-cell:nth-child(4) { grid-column: 4; grid-row: 1; border-right: none; }
+.view-cell:nth-child(5) { grid-column: 3; grid-row: 2; }
+.view-cell:nth-child(6) { grid-column: 4; grid-row: 2; border-right: none; }
+
+.view-cell .cell-label {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--text-label);
+  z-index: 2;
+  text-transform: uppercase;
+}
+
+.view-cell img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
+.view-cell.selected { outline: 2px solid var(--accent-active); outline-offset: -2px; }
+
+.view-cell .spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border);
+  border-top-color: var(--text);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.s2-controls {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: stretch;
+  height: 80px;
+}
+
+/* ═══════════════════════════════════════════════════
+   STEP 3 — 3D MODEL
+   ═══════════════════════════════════════════════════ */
+.s3-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  grid-template-rows: 1fr auto;
+  width: 100%;
+  height: 100%;
+}
+
+.s3-viewer {
+  background: var(--surface);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.s3-viewer canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.s3-viewer .empty-state {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-align: center;
+  line-height: 2;
+}
+
+.s3-panel {
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  overflow-y: auto;
+}
+
+.s3-panel-section {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.s3-panel-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--text-label);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.s3-views-preview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.s3-views-preview .thumb {
+  aspect-ratio: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.s3-views-preview .thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.s3-info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 12px;
+}
+
+.s3-info-key {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-label);
+  letter-spacing: 0.05em;
+}
+
+.s3-info-val {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text);
+}
+
+.s3-controls {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 56px;
+  gap: 12px;
+}
+
+.btn-action {
+  padding: 8px 24px;
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.btn-action:hover { background: var(--accent-active); }
+.btn-action:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.btn-outline {
+  padding: 8px 24px;
+  background: none;
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.btn-outline:hover { border-color: var(--text); }
+
+/* ─── Progress bar ─── */
+.progress-bar {
+  height: 2px;
+  background: var(--border);
+  position: relative;
+  flex: 1;
+  max-width: 300px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--text);
+  width: 0%;
+  transition: width 0.3s;
+}
+
+/* ─── Shared label ─── */
+.cell-label-abs {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-label);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ─── Toast ─── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  padding: 10px 24px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="topbar">
+  <span class="topbar-brand">ewk labs / forge</span>
+  <div class="topbar-sep"></div>
+  <div class="topbar-steps">
+    <div class="step-tab active" data-step="1" onclick="switchStep(1)">
+      <span class="step-num">01</span>
+      <span class="step-name">Generate</span>
+    </div>
+    <div class="step-tab" data-step="2" onclick="switchStep(2)">
+      <span class="step-num">02</span>
+      <span class="step-name">Multi-View</span>
+    </div>
+    <div class="step-tab" data-step="3" onclick="switchStep(3)">
+      <span class="step-num">03</span>
+      <span class="step-name">3D Model</span>
+    </div>
+  </div>
+  <div class="topbar-status">
+    <span class="status-dot ready" id="statusDot"></span>
+    <span id="statusText">IDLE</span>
+  </div>
+</div>
+
+<!-- Step 1: Generate -->
+<div class="step-panel active" id="panel-1">
+  <div class="s1-layout">
+    <div class="s1-output" id="s1Output">
+      <span class="cell-label-abs">OUTPUT</span>
+      <img id="s1OutputImg" src="" alt="" style="display:none">
+      <span class="empty-state" id="s1Empty">Generate an image</span>
+    </div>
+    <div class="s1-history">
+      <div class="s1-history-label">HISTORY</div>
+      <div class="s1-history-grid" id="s1HistoryGrid"></div>
+    </div>
+    <div class="s1-controls">
+      <div class="s1-prompt-area">
+        <span class="s1-prompt-label">Prompt</span>
+        <textarea id="s1Prompt" placeholder="Describe the shoe you want to create..." rows="2">A futuristic matte black rubber wedge sandal boot with architectural lines and bold geometric sole, product photography, centered on clean white background, subtle contact shadow, studio lighting</textarea>
+      </div>
+      <div class="s1-params">
+        <div class="param-group">
+          <span class="param-label">Seed</span>
+          <input type="number" class="param-input" id="s1Seed" value="42">
+        </div>
+        <div class="param-group">
+          <span class="param-label">Steps</span>
+          <input type="number" class="param-input" id="s1Steps" value="4">
+        </div>
+      </div>
+      <button class="btn-generate" id="s1GenerateBtn" onclick="generateStep1()">Generate</button>
+    </div>
+  </div>
+</div>
+
+<!-- Step 2: Multi-View -->
+<div class="step-panel" id="panel-2">
+  <div class="s2-layout">
+    <div class="s2-ref" id="s2Ref">
+      <span class="cell-label-abs">REFERENCE</span>
+      <img id="s2RefImg" src="" alt="" style="display:none">
+      <span class="empty-state" id="s2RefEmpty">Select image from Step 1</span>
+    </div>
+    <div class="view-cell" data-view="front">
+      <span class="cell-label">FRONT</span>
+      <div class="view-content" id="viewFront"></div>
+    </div>
+    <div class="view-cell" data-view="right">
+      <span class="cell-label">RIGHT</span>
+      <div class="view-content" id="viewRight"></div>
+    </div>
+    <div class="view-cell" data-view="back">
+      <span class="cell-label">BACK</span>
+      <div class="view-content" id="viewBack"></div>
+    </div>
+    <div class="view-cell" data-view="left">
+      <span class="cell-label">LEFT</span>
+      <div class="view-content" id="viewLeft"></div>
+    </div>
+    <div class="s2-controls">
+      <div class="s1-prompt-area">
+        <span class="s1-prompt-label">Edit Prompt (optional)</span>
+        <textarea id="s2Prompt" placeholder="Describe modifications to the views..." rows="2"></textarea>
+      </div>
+      <div class="s1-params">
+        <div class="param-group">
+          <span class="param-label">Seed</span>
+          <input type="number" class="param-input" id="s2Seed" value="42">
+        </div>
+      </div>
+      <button class="btn-generate" id="s2GenerateBtn" onclick="generateStep2()">Generate Views</button>
+    </div>
+  </div>
+</div>
+
+<!-- Step 3: 3D Model -->
+<div class="step-panel" id="panel-3">
+  <div class="s3-layout">
+    <div class="s3-viewer" id="s3Viewer">
+      <span class="empty-state" id="s3Empty">Generate views in Step 2<br>then reconstruct here</span>
+      <canvas id="s3Canvas" style="display:none"></canvas>
+    </div>
+    <div class="s3-panel">
+      <div class="s3-panel-section">
+        <div class="s3-panel-label">Input Views</div>
+        <div class="s3-views-preview" id="s3ViewsPreview">
+          <div class="thumb"></div>
+          <div class="thumb"></div>
+          <div class="thumb"></div>
+          <div class="thumb"></div>
+        </div>
+      </div>
+      <div class="s3-panel-section">
+        <div class="s3-panel-label">Parameters</div>
+        <div class="s3-info-row">
+          <span class="s3-info-key">Steps</span>
+          <input type="number" class="param-input" id="s3Steps" value="75" style="width:60px">
+        </div>
+        <div class="s3-info-row">
+          <span class="s3-info-key">Guidance</span>
+          <input type="number" class="param-input" id="s3Guidance" value="7.5" step="0.5" style="width:60px">
+        </div>
+        <div class="s3-info-row">
+          <span class="s3-info-key">Octree Res</span>
+          <input type="number" class="param-input" id="s3Octree" value="384" style="width:60px">
+        </div>
+      </div>
+      <div class="s3-panel-section" id="s3ModelInfo" style="display:none">
+        <div class="s3-panel-label">Model Info</div>
+        <div class="s3-info-row">
+          <span class="s3-info-key">File Size</span>
+          <span class="s3-info-val" id="s3FileSize">—</span>
+        </div>
+        <div class="s3-info-row">
+          <span class="s3-info-key">Format</span>
+          <span class="s3-info-val">GLB</span>
+        </div>
+      </div>
+    </div>
+    <div class="s3-controls">
+      <button class="btn-action" id="s3GenerateBtn" onclick="generateStep3()">Reconstruct 3D</button>
+      <div class="progress-bar" id="s3Progress" style="display:none">
+        <div class="progress-fill" id="s3ProgressFill"></div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-outline" id="s3DownloadBtn" onclick="downloadGLB()" style="display:none">Download GLB</button>
+        <button class="btn-outline" id="s3DownloadUSDZ" onclick="downloadUSDZ()" style="display:none">Download USDZ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Three.js for 3D viewer -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
+
+<script>
+// ═══════════════════════════════════════════════════
+// CONFIG — Update these with deployed Modal endpoints
+// ═══════════════════════════════════════════════════
+const API = {
+  flux: {
+    generate: 'https://heyitskim-ai--flux2-klein-shoe-fluxkleinservice-generate.modal.run',
+    edit: 'https://heyitskim-ai--flux2-klein-shoe-fluxkleinservice-edit.modal.run',
+    multiview: 'https://heyitskim-ai--flux2-klein-shoe-fluxkleinservice-multiview.modal.run',
+  },
+  hunyuan: {
+    generate: 'https://heyitskim-ai--hunyuan3d-shoe-web-hunyuan3dservice-generate.modal.run',
+  }
+};
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+const state = {
+  step: 1,
+  s1: { images: [], selectedIndex: -1, generating: false },
+  s2: { refImage: null, views: {}, generating: false },
+  s3: { glbBlob: null, generating: false, scene: null },
+};
+
+// ═══════════════════════════════════════════════════
+// STEP SWITCHING
+// ═══════════════════════════════════════════════════
+function switchStep(n) {
+  state.step = n;
+  document.querySelectorAll('.step-tab').forEach(t => t.classList.toggle('active', parseInt(t.dataset.step) === n));
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.toggle('active', p.id === `panel-${n}`));
+
+  if (n === 2 && state.s1.selectedIndex >= 0) {
+    const img = state.s1.images[state.s1.selectedIndex];
+    state.s2.refImage = img;
+    const el = document.getElementById('s2RefImg');
+    el.src = img;
+    el.style.display = 'block';
+    document.getElementById('s2RefEmpty').style.display = 'none';
+  }
+
+  if (n === 3) {
+    updateStep3Views();
+    initThreeViewer();
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// STEP 1 — GENERATE
+// ═══════════════════════════════════════════════════
+async function generateStep1() {
+  if (state.s1.generating) return;
+  const prompt = document.getElementById('s1Prompt').value.trim();
+  if (!prompt) { toast('Enter a prompt'); return; }
+
+  state.s1.generating = true;
+  setStatus('generating', 'GENERATING');
+  document.getElementById('s1GenerateBtn').disabled = true;
+  document.getElementById('s1GenerateBtn').textContent = 'GENERATING...';
+
+  try {
+    const res = await fetch(API.flux.generate, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt,
+        width: 1024,
+        height: 1024,
+        seed: parseInt(document.getElementById('s1Seed').value) || 42,
+        steps: parseInt(document.getElementById('s1Steps').value) || 4,
+        guidance_scale: 1.0,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) { toast(data.error || 'Generation failed'); return; }
+
+    // Add to history
+    state.s1.images.push(data.image);
+    state.s1.selectedIndex = state.s1.images.length - 1;
+
+    // Show output
+    const img = document.getElementById('s1OutputImg');
+    img.src = data.image;
+    img.style.display = 'block';
+    document.getElementById('s1Empty').style.display = 'none';
+
+    // Add to history grid
+    const thumb = document.createElement('div');
+    thumb.className = 's1-history-item selected';
+    thumb.innerHTML = `<img src="${data.image}" alt="Generation ${state.s1.images.length}">`;
+    const idx = state.s1.images.length - 1;
+    thumb.onclick = () => selectHistoryItem(idx);
+    document.getElementById('s1HistoryGrid').appendChild(thumb);
+
+    // Deselect others
+    document.querySelectorAll('.s1-history-item').forEach((el, i) => {
+      el.classList.toggle('selected', i === idx);
+    });
+
+    // Randomize seed
+    document.getElementById('s1Seed').value = Math.floor(Math.random() * 999999);
+
+    // Mark step 1 as completed
+    document.querySelector('.step-tab[data-step="1"]').classList.add('completed');
+
+    setStatus('ready', 'COMPLETE');
+  } catch (err) {
+    toast('Error: ' + err.message);
+    setStatus('error', 'ERROR');
+  } finally {
+    state.s1.generating = false;
+    document.getElementById('s1GenerateBtn').disabled = false;
+    document.getElementById('s1GenerateBtn').textContent = 'GENERATE';
+  }
+}
+
+function selectHistoryItem(idx) {
+  state.s1.selectedIndex = idx;
+  const img = document.getElementById('s1OutputImg');
+  img.src = state.s1.images[idx];
+  img.style.display = 'block';
+  document.getElementById('s1Empty').style.display = 'none';
+  document.querySelectorAll('.s1-history-item').forEach((el, i) => {
+    el.classList.toggle('selected', i === idx);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// STEP 2 — MULTI-VIEW
+// ═══════════════════════════════════════════════════
+async function generateStep2() {
+  if (state.s2.generating) return;
+  if (!state.s2.refImage) {
+    toast('Select a reference image from Step 1 first');
+    return;
+  }
+
+  state.s2.generating = true;
+  setStatus('generating', 'GENERATING VIEWS');
+  document.getElementById('s2GenerateBtn').disabled = true;
+  document.getElementById('s2GenerateBtn').textContent = 'GENERATING...';
+
+  // Show spinners
+  ['viewFront', 'viewRight', 'viewBack', 'viewLeft'].forEach(id => {
+    document.getElementById(id).innerHTML = '<div class="spinner"></div>';
+  });
+
+  try {
+    const res = await fetch(API.flux.multiview, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        image: state.s2.refImage,
+        prompt_prefix: document.getElementById('s2Prompt').value.trim(),
+        seed: parseInt(document.getElementById('s2Seed').value) || 42,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) { toast(data.error || 'View generation failed'); return; }
+
+    state.s2.views = data.views;
+    document.getElementById('viewFront').innerHTML = `<img src="${data.views.front}" alt="Front">`;
+    document.getElementById('viewRight').innerHTML = `<img src="${data.views.right}" alt="Right">`;
+    document.getElementById('viewBack').innerHTML = `<img src="${data.views.back}" alt="Back">`;
+    document.getElementById('viewLeft').innerHTML = `<img src="${data.views.left}" alt="Left">`;
+
+    document.querySelector('.step-tab[data-step="2"]').classList.add('completed');
+    setStatus('ready', 'VIEWS COMPLETE');
+  } catch (err) {
+    toast('Error: ' + err.message);
+    ['viewFront', 'viewRight', 'viewBack', 'viewLeft'].forEach(id => {
+      document.getElementById(id).innerHTML = '';
+    });
+    setStatus('error', 'ERROR');
+  } finally {
+    state.s2.generating = false;
+    document.getElementById('s2GenerateBtn').disabled = false;
+    document.getElementById('s2GenerateBtn').textContent = 'GENERATE VIEWS';
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// STEP 3 — 3D MODEL
+// ═══════════════════════════════════════════════════
+let threeRenderer, threeCamera, threeScene, threeControls;
+
+function initThreeViewer() {
+  if (threeRenderer) return;
+  const canvas = document.getElementById('s3Canvas');
+  const container = document.getElementById('s3Viewer');
+
+  threeScene = new THREE.Scene();
+  threeScene.background = new THREE.Color(0xF8F8F8);
+
+  threeCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+  threeCamera.position.set(0, 0.3, 1.5);
+
+  threeRenderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  threeRenderer.setSize(container.clientWidth, container.clientHeight);
+  threeRenderer.setPixelRatio(window.devicePixelRatio);
+  threeRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+  threeControls = new THREE.OrbitControls(threeCamera, threeRenderer.domElement);
+  threeControls.enableDamping = true;
+  threeControls.dampingFactor = 0.1;
+
+  // Lighting
+  const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+  threeScene.add(ambient);
+  const directional = new THREE.DirectionalLight(0xffffff, 0.8);
+  directional.position.set(2, 3, 1);
+  threeScene.add(directional);
+  const fill = new THREE.DirectionalLight(0xffffff, 0.3);
+  fill.position.set(-1, 1, -1);
+  threeScene.add(fill);
+
+  // Grid
+  const grid = new THREE.GridHelper(2, 20, 0xE0E0E0, 0xE0E0E0);
+  threeScene.add(grid);
+
+  function animate() {
+    requestAnimationFrame(animate);
+    threeControls.update();
+    threeRenderer.render(threeScene, threeCamera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    const w = container.clientWidth, h = container.clientHeight;
+    threeCamera.aspect = w / h;
+    threeCamera.updateProjectionMatrix();
+    threeRenderer.setSize(w, h);
+  });
+}
+
+function updateStep3Views() {
+  const container = document.getElementById('s3ViewsPreview');
+  const views = state.s2.views;
+  const keys = ['front', 'right', 'back', 'left'];
+  container.innerHTML = '';
+  keys.forEach(k => {
+    const thumb = document.createElement('div');
+    thumb.className = 'thumb';
+    if (views[k]) {
+      thumb.innerHTML = `<img src="${views[k]}" alt="${k}">`;
+    }
+    container.appendChild(thumb);
+  });
+}
+
+async function generateStep3() {
+  if (state.s3.generating) return;
+
+  // Use reference image from step 2 (or front view)
+  const inputImage = state.s2.refImage || (state.s2.views.front);
+  if (!inputImage) {
+    toast('No input image. Complete Step 1 & 2 first.');
+    return;
+  }
+
+  state.s3.generating = true;
+  setStatus('generating', 'RECONSTRUCTING 3D');
+  document.getElementById('s3GenerateBtn').disabled = true;
+  document.getElementById('s3GenerateBtn').textContent = 'RECONSTRUCTING...';
+  document.getElementById('s3Progress').style.display = 'block';
+
+  // Fake progress
+  let progress = 0;
+  const progressInterval = setInterval(() => {
+    progress = Math.min(progress + 2, 90);
+    document.getElementById('s3ProgressFill').style.width = progress + '%';
+  }, 2000);
+
+  try {
+    const res = await fetch(API.hunyuan.generate, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        image: inputImage,
+        steps: parseInt(document.getElementById('s3Steps').value) || 75,
+        guidance: parseFloat(document.getElementById('s3Guidance').value) || 7.5,
+        octree_resolution: parseInt(document.getElementById('s3Octree').value) || 384,
+      }),
+    });
+
+    clearInterval(progressInterval);
+
+    const data = await res.json();
+    if (!res.ok || data.status !== 'success') {
+      toast(data.error || '3D reconstruction failed');
+      return;
+    }
+
+    document.getElementById('s3ProgressFill').style.width = '100%';
+
+    // Convert base64 GLB to blob
+    const glbBytes = atob(data.glb);
+    const arr = new Uint8Array(glbBytes.length);
+    for (let i = 0; i < glbBytes.length; i++) arr[i] = glbBytes.charCodeAt(i);
+    state.s3.glbBlob = new Blob([arr], { type: 'model/gltf-binary' });
+
+    // Load into Three.js
+    const url = URL.createObjectURL(state.s3.glbBlob);
+    const loader = new THREE.GLTFLoader();
+
+    // Clear old model
+    if (state.s3.scene) {
+      threeScene.remove(state.s3.scene);
+    }
+
+    loader.load(url, (gltf) => {
+      state.s3.scene = gltf.scene;
+      
+      // Center and scale
+      const box = new THREE.Box3().setFromObject(gltf.scene);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const scale = 1 / maxDim;
+      gltf.scene.scale.multiplyScalar(scale);
+      gltf.scene.position.sub(center.multiplyScalar(scale));
+      gltf.scene.position.y += size.y * scale / 2;
+
+      threeScene.add(gltf.scene);
+
+      // Show canvas, hide empty
+      document.getElementById('s3Canvas').style.display = 'block';
+      document.getElementById('s3Empty').style.display = 'none';
+
+      URL.revokeObjectURL(url);
+    });
+
+    // Update info
+    document.getElementById('s3FileSize').textContent = `${(data.size_bytes / 1024 / 1024).toFixed(1)} MB`;
+    document.getElementById('s3ModelInfo').style.display = 'block';
+    document.getElementById('s3DownloadBtn').style.display = 'inline-block';
+
+    document.querySelector('.step-tab[data-step="3"]').classList.add('completed');
+    setStatus('ready', '3D COMPLETE');
+  } catch (err) {
+    clearInterval(progressInterval);
+    toast('Error: ' + err.message);
+    setStatus('error', 'ERROR');
+  } finally {
+    state.s3.generating = false;
+    document.getElementById('s3GenerateBtn').disabled = false;
+    document.getElementById('s3GenerateBtn').textContent = 'RECONSTRUCT 3D';
+    setTimeout(() => {
+      document.getElementById('s3Progress').style.display = 'none';
+      document.getElementById('s3ProgressFill').style.width = '0%';
+    }, 2000);
+  }
+}
+
+function downloadGLB() {
+  if (!state.s3.glbBlob) return;
+  const url = URL.createObjectURL(state.s3.glbBlob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'shoe-model.glb';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ═══════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════
+function setStatus(type, text) {
+  const dot = document.getElementById('statusDot');
+  dot.className = 'status-dot ' + type;
+  document.getElementById('statusText').textContent = text;
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    e.preventDefault();
+    if (state.step === 1) generateStep1();
+    else if (state.step === 2) generateStep2();
+    else if (state.step === 3) generateStep3();
+  }
+  if (e.key === '1' && !e.target.matches('input, textarea')) switchStep(1);
+  if (e.key === '2' && !e.target.matches('input, textarea')) switchStep(2);
+  if (e.key === '3' && !e.target.matches('input, textarea')) switchStep(3);
+});
+</script>
+
+</body>
+</html>
