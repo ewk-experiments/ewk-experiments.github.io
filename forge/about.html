@@ -85,7 +85,7 @@ html, body {
 
 .pipeline-step {
   flex: 1;
-  padding: 24px 16px;
+  padding: 24px 12px;
   border-right: 1px solid var(--border);
   text-align: center;
 }
@@ -110,6 +110,7 @@ html, body {
   font-family: var(--font-mono);
   font-size: 10px;
   color: var(--text-dim);
+  line-height: 1.5;
 }
 
 .pipeline-step-model {
@@ -218,7 +219,6 @@ html, body {
 
 <div class="topbar">
   <span class="topbar-brand">ewk labs / forge</span>
-  <a href="/forge/showcase.html" class="topbar-link" style="margin-right:8px">Showcase</a>
   <a href="/forge/" class="topbar-link">Back to Forge</a>
 </div>
 
@@ -229,26 +229,32 @@ html, body {
     <div class="pipeline-step">
       <div class="pipeline-step-num">STEP 00</div>
       <div class="pipeline-step-name">Train</div>
-      <div class="pipeline-step-desc">LoRA fine-tuning from dataset</div>
+      <div class="pipeline-step-desc">LoRA fine-tuning from reference dataset</div>
       <div class="pipeline-step-model">FLUX.2 Klein 4B</div>
     </div>
     <div class="pipeline-step">
       <div class="pipeline-step-num">STEP 01</div>
       <div class="pipeline-step-name">Generate</div>
-      <div class="pipeline-step-desc">Text-to-image generation</div>
+      <div class="pipeline-step-desc">Text-to-image with optional trained style</div>
       <div class="pipeline-step-model">FLUX.2 Klein 4B</div>
     </div>
     <div class="pipeline-step">
       <div class="pipeline-step-num">STEP 02</div>
       <div class="pipeline-step-name">Multi-View</div>
       <div class="pipeline-step-desc">Front, back, top, bottom synthesis</div>
-      <div class="pipeline-step-model">FLUX.2 Klein 4B</div>
+      <div class="pipeline-step-model">FLUX.2 Klein / Zero123++</div>
     </div>
     <div class="pipeline-step">
       <div class="pipeline-step-num">STEP 03</div>
       <div class="pipeline-step-name">3D Model</div>
-      <div class="pipeline-step-desc">Mesh reconstruction</div>
+      <div class="pipeline-step-desc">Multi-view mesh reconstruction</div>
       <div class="pipeline-step-model">Hunyuan3D 2.1</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="pipeline-step-num">STEP 04</div>
+      <div class="pipeline-step-name">Print</div>
+      <div class="pipeline-step-desc">Scale, repair, flatten, export STL</div>
+      <div class="pipeline-step-model">Trimesh + NumPy</div>
     </div>
   </div>
 
@@ -257,23 +263,47 @@ html, body {
   <div class="model-card">
     <div class="model-card-header">
       <span class="model-name">FLUX.2 Klein 4B</span>
-      <span class="model-role">Steps 01 + 02 / Image Generation</span>
+      <span class="model-role">Steps 00, 01, 02 / Training + Generation</span>
     </div>
     <div class="model-body">
       <p class="model-desc">
-        Black Forest Labs' fastest model combining text-to-image generation with multi-reference editing in a single 4B parameter architecture. Sub-second inference with quality that rivals models 10x its size. Used for both initial shoe generation and multi-view synthesis from reference images.
+        Black Forest Labs' fastest model combining text-to-image generation with multi-reference editing in a single 4B parameter architecture. Sub-second inference with quality that rivals models 10x its size. Powers LoRA training (Step 0), initial image generation (Step 1), and text-guided multi-view synthesis (Step 2).
       </p>
       <div class="model-meta">
         <span class="model-meta-key">Parameters</span>
         <span class="model-meta-val">4B (rectified flow transformer)</span>
         <span class="model-meta-key">Inference</span>
         <span class="model-meta-val">4 steps (step-distilled)</span>
+        <span class="model-meta-key">Training</span>
+        <span class="model-meta-val">DreamBooth LoRA, 500-1000 steps on A100</span>
         <span class="model-meta-key">VRAM</span>
-        <span class="model-meta-val">~13GB</span>
+        <span class="model-meta-val">~13GB (inference) / ~40GB (training)</span>
         <span class="model-meta-key">License</span>
         <span class="model-meta-val">Apache 2.0</span>
         <span class="model-meta-key">By</span>
         <span class="model-meta-val"><a href="https://bfl.ai" target="_blank">Black Forest Labs</a></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="model-card">
+    <div class="model-card-header">
+      <span class="model-name">Zero123++</span>
+      <span class="model-role">Step 02 (alt) / Geometric Multi-View</span>
+    </div>
+    <div class="model-body">
+      <p class="model-desc">
+        Generates 6 geometrically consistent views from a single reference image using learned 3D priors. Unlike FLUX's text-guided approach, Zero123++ produces views with strict camera angle consistency, making it better suited for 3D reconstruction. Includes automatic background removal via rembg.
+      </p>
+      <div class="model-meta">
+        <span class="model-meta-key">Output</span>
+        <span class="model-meta-val">6 views (front, back, left, right, top, bottom)</span>
+        <span class="model-meta-key">Method</span>
+        <span class="model-meta-val">Diffusion with 3D-aware conditioning</span>
+        <span class="model-meta-key">Post-process</span>
+        <span class="model-meta-val">rembg background removal + ONNX Runtime</span>
+        <span class="model-meta-key">By</span>
+        <span class="model-meta-val"><a href="https://github.com/SUDO-AI-3D/zero123plus" target="_blank">SUDO AI</a></span>
       </div>
     </div>
   </div>
@@ -285,7 +315,7 @@ html, body {
     </div>
     <div class="model-body">
       <p class="model-desc">
-        Tencent's large-scale 3D generation system. Converts product images into detailed 3D meshes using a flow-based diffusion transformer for shape generation. Outputs GLB format for browser-based viewing and 3D printing workflows.
+        Tencent's large-scale 3D generation system. Converts multi-view images into detailed 3D meshes using a flow-based diffusion transformer for shape generation. Configurable octree resolution and guidance scale for balancing quality vs. speed. Outputs GLB format with PBR-ready geometry.
       </p>
       <div class="model-meta">
         <span class="model-meta-key">Shape Model</span>
@@ -293,9 +323,35 @@ html, body {
         <span class="model-meta-key">Output</span>
         <span class="model-meta-val">GLB mesh (downloadable)</span>
         <span class="model-meta-key">Resolution</span>
-        <span class="model-meta-val">Configurable octree (up to 512)</span>
+        <span class="model-meta-val">Configurable octree (256-768)</span>
+        <span class="model-meta-key">Best Settings</span>
+        <span class="model-meta-val">Steps 75-100, Guidance 10-12, Octree 512</span>
         <span class="model-meta-key">By</span>
         <span class="model-meta-val"><a href="https://github.com/Tencent-Hunyuan/Hunyuan3D-2" target="_blank">Tencent Hunyuan</a></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Post-Processing</div>
+
+  <div class="model-card">
+    <div class="model-card-header">
+      <span class="model-name">Print-Ready Pipeline</span>
+      <span class="model-role">Step 04 / Scale + Repair + Export</span>
+    </div>
+    <div class="model-body">
+      <p class="model-desc">
+        Prepares 3D models for physical fabrication. Scales mesh to target shoe size (US 8-13), flattens the sole for proper contact surface, fills holes, repairs normals, and exports watertight STL for 3D printing. Runs on CPU-only infrastructure.
+      </p>
+      <div class="model-meta">
+        <span class="model-meta-key">Stack</span>
+        <span class="model-meta-val">Trimesh + NumPy + fast_simplification</span>
+        <span class="model-meta-key">Input</span>
+        <span class="model-meta-val">GLB from Step 03</span>
+        <span class="model-meta-key">Output</span>
+        <span class="model-meta-val">STL (print-ready, watertight)</span>
+        <span class="model-meta-key">Sizing</span>
+        <span class="model-meta-val">US 8-13 (25.7-31.8 cm)</span>
       </div>
     </div>
   </div>
@@ -309,11 +365,13 @@ html, body {
     </div>
     <div class="model-body">
       <p class="model-desc">
-        All models run on-demand on NVIDIA A10G GPUs with automatic scaling. Pre-baked container images with cached weights for fast cold starts. Per-second billing with no idle charges.
+        All models run on-demand on NVIDIA GPUs with automatic scaling. Pre-baked container images with cached weights for fast cold starts. Per-second billing with no idle charges. 6 active endpoints across the pipeline.
       </p>
       <div class="model-meta">
-        <span class="model-meta-key">GPU</span>
-        <span class="model-meta-val">NVIDIA A10G (24GB VRAM)</span>
+        <span class="model-meta-key">GPUs</span>
+        <span class="model-meta-val">NVIDIA A10G (24GB) for inference, A100 (40GB) for training</span>
+        <span class="model-meta-key">Endpoints</span>
+        <span class="model-meta-val">6 (FLUX, Hunyuan3D, Zero123++, Training, PostProcess, Vision)</span>
         <span class="model-meta-key">URL</span>
         <span class="model-meta-val"><a href="https://modal.com" target="_blank">modal.com</a></span>
       </div>
@@ -327,13 +385,31 @@ html, body {
     </div>
     <div class="model-body">
       <p class="model-desc">
-        Browser-based 3D rendering with orbit controls, studio lighting (key + fill + rim), and PBR material support. Loads GLB models directly for interactive inspection.
+        Browser-based 3D rendering with orbit controls, studio lighting (key + fill + rim), and PBR material support. Loads GLB models directly for interactive inspection. Used in both Step 3 (reconstruction preview) and Step 4 (print-ready preview).
       </p>
       <div class="model-meta">
         <span class="model-meta-key">Version</span>
         <span class="model-meta-val">r160 (ES Modules)</span>
         <span class="model-meta-key">Features</span>
-        <span class="model-meta-val">OrbitControls, GLTFLoader, ACES tonemapping</span>
+        <span class="model-meta-val">OrbitControls, GLTFLoader, ACES tonemapping, auto-rotate</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="model-card">
+    <div class="model-card-header">
+      <span class="model-name">GitHub Pages</span>
+      <span class="model-role">Frontend Hosting</span>
+    </div>
+    <div class="model-body">
+      <p class="model-desc">
+        Static frontend served from GitHub Pages. Zero-config deployment via git push. All compute happens server-side on Modal; the frontend is pure HTML/CSS/JS with no build step.
+      </p>
+      <div class="model-meta">
+        <span class="model-meta-key">Domain</span>
+        <span class="model-meta-val"><a href="https://ewklabs.xyz/forge/" target="_blank">ewklabs.xyz/forge</a></span>
+        <span class="model-meta-key">Stack</span>
+        <span class="model-meta-val">Vanilla HTML/CSS/JS, no framework</span>
       </div>
     </div>
   </div>
