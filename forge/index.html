@@ -375,6 +375,8 @@ html, body {
   background: var(--surface);
   position: relative;
   overflow: hidden;
+  cursor: pointer;
+  transition: background 0.15s;
 }
 
 .s2-ref img {
@@ -702,7 +704,7 @@ html, body {
     <div class="s2-ref" id="s2Ref">
       <span class="cell-label-abs">REFERENCE</span>
       <img id="s2RefImg" src="" alt="" style="display:none">
-      <span class="empty-state" id="s2RefEmpty">Select image from Step 1</span>
+      <span class="empty-state" id="s2RefEmpty">Drop reference image<br>or select from Step 1</span>
     </div>
     <div class="view-cell" data-view="front">
       <span class="cell-label">FRONT</span>
@@ -907,6 +909,8 @@ async function generateStep1() {
     // Mark step 1 as completed
     document.querySelector('.step-tab[data-step="1"]').classList.add('completed');
 
+    // Auto-advance prompt
+    toast('Image generated. Press 2 or click Step 02 to generate views.');
     setStatus('ready', 'COMPLETE');
   } catch (err) {
     toast('Error: ' + err.message);
@@ -1194,6 +1198,49 @@ document.addEventListener('keydown', (e) => {
   if (e.key === '1' && !e.target.matches('input, textarea')) switchStep(1);
   if (e.key === '2' && !e.target.matches('input, textarea')) switchStep(2);
   if (e.key === '3' && !e.target.matches('input, textarea')) switchStep(3);
+});
+
+// Drag & drop on Step 2 reference area
+const s2Ref = document.getElementById('s2Ref');
+s2Ref.addEventListener('dragover', (e) => { e.preventDefault(); s2Ref.style.background = '#F0F0F0'; });
+s2Ref.addEventListener('dragleave', () => { s2Ref.style.background = ''; });
+s2Ref.addEventListener('drop', (e) => {
+  e.preventDefault();
+  s2Ref.style.background = '';
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      state.s2.refImage = ev.target.result;
+      document.getElementById('s2RefImg').src = ev.target.result;
+      document.getElementById('s2RefImg').style.display = 'block';
+      document.getElementById('s2RefEmpty').style.display = 'none';
+      toast('Reference image loaded');
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// Click Step 2 ref area to upload
+s2Ref.addEventListener('click', () => {
+  if (state.s2.refImage) return;
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = () => {
+    const file = input.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        state.s2.refImage = ev.target.result;
+        document.getElementById('s2RefImg').src = ev.target.result;
+        document.getElementById('s2RefImg').style.display = 'block';
+        document.getElementById('s2RefEmpty').style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  input.click();
 });
 </script>
 
