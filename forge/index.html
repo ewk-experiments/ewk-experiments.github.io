@@ -994,7 +994,6 @@ html, body {
   <div class="s3-layout">
     <div class="s3-viewer" id="s3Viewer">
       <span class="empty-state" id="s3Empty">Generate views in Step 2<br>then reconstruct here</span>
-      <canvas id="s3LoadingCanvas" style="display:none"></canvas>
       <canvas id="s3Canvas" style="display:none"></canvas>
     </div>
     <div class="s3-panel">
@@ -1655,11 +1654,11 @@ async function generateStep3() {
   document.getElementById('s3ProgressFill').style.width = '0%';
   document.getElementById('s3Empty').style.display = 'none';
   
-  // Init Three.js viewer
+  // Init viewer
   initThreeViewer();
   document.getElementById('s3Canvas').style.display = 'block';
   document.getElementById('s3Empty').style.display = 'none';
-  
+
   // Disable user interaction during generation
   if (threeControls) {
     threeControls.autoRotate = true;
