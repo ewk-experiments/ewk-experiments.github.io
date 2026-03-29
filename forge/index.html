@@ -979,12 +979,11 @@ html, body {
       <div class="s3-panel-section">
         <div class="s3-panel-label">Input Views</div>
         <div class="s3-views-preview" id="s3ViewsPreview">
-          <div class="thumb" data-view="front" onclick="uploadS3View('front')"><span style="font-family:var(--font-mono);font-size:8px;color:var(--text-label);letter-spacing:0.1em">FRONT</span></div>
-          <div class="thumb" data-view="right" onclick="uploadS3View('right')"><span style="font-family:var(--font-mono);font-size:8px;color:var(--text-label);letter-spacing:0.1em">RIGHT</span></div>
-          <div class="thumb" data-view="back" onclick="uploadS3View('back')"><span style="font-family:var(--font-mono);font-size:8px;color:var(--text-label);letter-spacing:0.1em">BACK</span></div>
-          <div class="thumb" data-view="left" onclick="uploadS3View('left')"><span style="font-family:var(--font-mono);font-size:8px;color:var(--text-label);letter-spacing:0.1em">LEFT</span></div>
+          <div class="thumb" onclick="uploadS3View(this)"></div>
+          <div class="thumb" onclick="uploadS3View(this)"></div>
+          <div class="thumb" onclick="uploadS3View(this)"></div>
+          <div class="thumb" onclick="uploadS3View(this)"></div>
         </div>
-        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-label);margin-top:8px;letter-spacing:0.05em">Click to upload views directly (1-4)</div>
       </div>
       <div class="s3-panel-section">
         <div class="s3-panel-label">Parameters</div>
@@ -1570,23 +1569,59 @@ function downloadGLB() {
 // Direct view upload for Step 3
 const s3DirectViews = {};
 
-function uploadS3View(viewName) {
+function uploadS3View(thumbEl) {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
-  input.onchange = () => {
+  input.onchange = async () => {
     const file = input.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => {
-      s3DirectViews[viewName] = ev.target.result;
-      // Update thumb
-      const thumbs = document.querySelectorAll('#s3ViewsPreview .thumb');
-      const idx = ['front', 'right', 'back', 'left'].indexOf(viewName);
-      if (idx >= 0 && thumbs[idx]) {
-        thumbs[idx].innerHTML = `<img src="${ev.target.result}" alt="${viewName}">`;
+    reader.onload = async (ev) => {
+      const imageData = ev.target.result;
+      
+      // Show image immediately
+      thumbEl.innerHTML = `<img src="${imageData}" alt="view">`;
+      
+      // Analyze with vision LLM to detect angle
+      try {
+        const res = await fetch(API.vision.analyze, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: imageData }),
+        });
+        const data = await res.json();
+        if (res.ok && data.current_angle) {
+          // Map detected angle to view key
+          let viewKey = 'front';
+          const angle = data.current_angle.toLowerCase();
+          if (angle.includes('right')) viewKey = 'right';
+          else if (angle.includes('left')) viewKey = 'left';
+          else if (angle.includes('back') || angle.includes('rear')) viewKey = 'back';
+          else if (angle.includes('front')) viewKey = 'front';
+          else if (angle.includes('side')) viewKey = 'right';
+          
+          s3DirectViews[viewKey] = imageData;
+          thumbEl.dataset.view = viewKey;
+          // Add small label
+          thumbEl.insertAdjacentHTML('afterbegin', `<span style="position:absolute;top:4px;left:4px;font-family:var(--font-mono);font-size:7px;letter-spacing:0.1em;color:var(--text-label);z-index:2;text-transform:uppercase">${viewKey}</span>`);
+          thumbEl.style.position = 'relative';
+          toast(`Detected: ${angle} → ${viewKey} (${Object.keys(s3DirectViews).length}/4)`);
+        } else {
+          // Fallback: assign to next empty slot
+          const slots = ['front', 'right', 'back', 'left'];
+          const nextSlot = slots.find(s => !s3DirectViews[s]) || 'front';
+          s3DirectViews[nextSlot] = imageData;
+          thumbEl.dataset.view = nextSlot;
+          toast(`View uploaded as ${nextSlot} (${Object.keys(s3DirectViews).length}/4)`);
+        }
+      } catch (err) {
+        // Fallback without LLM
+        const slots = ['front', 'right', 'back', 'left'];
+        const nextSlot = slots.find(s => !s3DirectViews[s]) || 'front';
+        s3DirectViews[nextSlot] = imageData;
+        toast(`View uploaded (${Object.keys(s3DirectViews).length}/4)`);
       }
-      toast(`${viewName} view uploaded (${Object.keys(s3DirectViews).length}/4)`);
     };
     reader.readAsDataURL(file);
   };
