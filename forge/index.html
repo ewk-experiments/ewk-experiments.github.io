@@ -618,7 +618,14 @@ html, body {
   background: var(--surface);
   border: 1px solid var(--border);
   overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s;
 }
+
+.s3-views-preview .thumb:hover { border-color: var(--text); }
 
 .s3-views-preview .thumb img {
   width: 100%;
@@ -972,11 +979,12 @@ html, body {
       <div class="s3-panel-section">
         <div class="s3-panel-label">Input Views</div>
         <div class="s3-views-preview" id="s3ViewsPreview">
-          <div class="thumb"></div>
-          <div class="thumb"></div>
-          <div class="thumb"></div>
-          <div class="thumb"></div>
+          <div class="thumb" data-view="front" onclick="uploadS3View('front')"><span style="font-family:var(--font-mono);font-size:8px;color:var(--text-label);letter-spacing:0.1em">FRONT</span></div>
+          <div class="thumb" data-view="right" onclick="uploadS3View('right')"><span style="font-family:var(--font-mono);font-size:8px;color:var(--text-label);letter-spacing:0.1em">RIGHT</span></div>
+          <div class="thumb" data-view="back" onclick="uploadS3View('back')"><span style="font-family:var(--font-mono);font-size:8px;color:var(--text-label);letter-spacing:0.1em">BACK</span></div>
+          <div class="thumb" data-view="left" onclick="uploadS3View('left')"><span style="font-family:var(--font-mono);font-size:8px;color:var(--text-label);letter-spacing:0.1em">LEFT</span></div>
         </div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-label);margin-top:8px;letter-spacing:0.05em">Click to upload views directly (1-4)</div>
       </div>
       <div class="s3-panel-section">
         <div class="s3-panel-label">Parameters</div>
@@ -1418,14 +1426,13 @@ function updateStep3Views() {
   const container = document.getElementById('s3ViewsPreview');
   const views = state.s2.views;
   const keys = ['front', 'right', 'back', 'left'];
-  container.innerHTML = '';
-  keys.forEach(k => {
-    const thumb = document.createElement('div');
-    thumb.className = 'thumb';
-    if (views[k]) {
-      thumb.innerHTML = `<img src="${views[k]}" alt="${k}">`;
+  const thumbs = container.querySelectorAll('.thumb');
+  keys.forEach((k, i) => {
+    if (views[k] && thumbs[i]) {
+      thumbs[i].innerHTML = `<img src="${views[k]}" alt="${k}">`;
+      // Also store in direct views so Step 3 can use them
+      if (!s3DirectViews[k]) s3DirectViews[k] = views[k];
     }
-    container.appendChild(thumb);
   });
 }
 
@@ -1433,10 +1440,14 @@ async function generateStep3() {
   if (state.s3.generating) return;
 
   // Use reference image from step 2 (or front view)
-  const inputImage = state.s2.refImage || (state.s2.views.front);
-  const hasViews = state.s2.views.front && state.s2.views.right && state.s2.views.back && state.s2.views.left;
-  if (!inputImage && !hasViews) {
-    toast('No input image. Complete Step 1 & 2 first.');
+  const inputImage = state.s2.refImage || state.s2.views.front || s3DirectViews.front || Object.values(s3DirectViews)[0];
+  const s2Views = state.s2.views;
+  const hasS2Views = s2Views.front && s2Views.right && s2Views.back && s2Views.left;
+  const hasDirectViews = Object.keys(s3DirectViews).length > 0;
+  const viewsToSend = hasS2Views ? s2Views : (hasDirectViews ? s3DirectViews : undefined);
+  
+  if (!inputImage && !hasDirectViews) {
+    toast('Upload at least one view image or complete Steps 1 & 2');
     return;
   }
 
@@ -1462,7 +1473,7 @@ async function generateStep3() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         image: inputImage,
-        views: hasViews ? state.s2.views : undefined,
+        views: viewsToSend,
         steps: parseInt(document.getElementById('s3Steps').value) || 75,
         guidance: parseFloat(document.getElementById('s3Guidance').value) || 7.5,
         octree_resolution: parseInt(document.getElementById('s3Octree').value) || 384,
@@ -1554,6 +1565,32 @@ function downloadGLB() {
   a.download = 'shoe-model.glb';
   a.click();
   URL.revokeObjectURL(url);
+}
+
+// Direct view upload for Step 3
+const s3DirectViews = {};
+
+function uploadS3View(viewName) {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = () => {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      s3DirectViews[viewName] = ev.target.result;
+      // Update thumb
+      const thumbs = document.querySelectorAll('#s3ViewsPreview .thumb');
+      const idx = ['front', 'right', 'back', 'left'].indexOf(viewName);
+      if (idx >= 0 && thumbs[idx]) {
+        thumbs[idx].innerHTML = `<img src="${ev.target.result}" alt="${viewName}">`;
+      }
+      toast(`${viewName} view uploaded (${Object.keys(s3DirectViews).length}/4)`);
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
 }
 
 // ═══════════════════════════════════════════════════
