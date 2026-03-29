@@ -1239,7 +1239,8 @@ async function generateStep3() {
 
   // Use reference image from step 2 (or front view)
   const inputImage = state.s2.refImage || (state.s2.views.front);
-  if (!inputImage) {
+  const hasViews = state.s2.views.front && state.s2.views.right && state.s2.views.back && state.s2.views.left;
+  if (!inputImage && !hasViews) {
     toast('No input image. Complete Step 1 & 2 first.');
     return;
   }
@@ -1266,6 +1267,7 @@ async function generateStep3() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         image: inputImage,
+        views: hasViews ? state.s2.views : undefined,
         steps: parseInt(document.getElementById('s3Steps').value) || 75,
         guidance: parseFloat(document.getElementById('s3Guidance').value) || 7.5,
         octree_resolution: parseInt(document.getElementById('s3Octree').value) || 384,
