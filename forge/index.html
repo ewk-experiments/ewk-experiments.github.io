@@ -964,14 +964,14 @@ html, body {
     <div class="view-cell" data-view="front">
       <div class="view-content" id="viewFront"></div>
     </div>
-    <div class="view-cell" data-view="right">
-      <div class="view-content" id="viewRight"></div>
-    </div>
     <div class="view-cell" data-view="back">
       <div class="view-content" id="viewBack"></div>
     </div>
-    <div class="view-cell" data-view="left">
-      <div class="view-content" id="viewLeft"></div>
+    <div class="view-cell" data-view="top">
+      <div class="view-content" id="viewTop"></div>
+    </div>
+    <div class="view-cell" data-view="bottom">
+      <div class="view-content" id="viewBottom"></div>
     </div>
     <div class="s2-controls">
       <div class="s1-prompt-area">
@@ -1356,7 +1356,7 @@ async function generateStep2() {
   document.getElementById('s2GenerateBtn').textContent = 'GENERATING...';
 
   // Show dot matrix loaders in view cells
-  ['viewFront', 'viewRight', 'viewBack', 'viewLeft'].forEach((id, i) => {
+  ['viewFront', 'viewBack', 'viewTop', 'viewBottom'].forEach((id, i) => {
     const el = document.getElementById(id);
     el.innerHTML = dotMatrixHTML(1);
     // Slight offset so they're not perfectly synced
@@ -1385,15 +1385,15 @@ async function generateStep2() {
 
     state.s2.views = data.views;
     document.getElementById('viewFront').innerHTML = `<img src="${data.views.front}" alt="Front">`;
-    document.getElementById('viewRight').innerHTML = `<img src="${data.views.right}" alt="Right">`;
     document.getElementById('viewBack').innerHTML = `<img src="${data.views.back}" alt="Back">`;
-    document.getElementById('viewLeft').innerHTML = `<img src="${data.views.left}" alt="Left">`;
+    document.getElementById('viewTop').innerHTML = `<img src="${data.views.top}" alt="Top">`;
+    document.getElementById('viewBottom').innerHTML = `<img src="${data.views.bottom}" alt="Bottom">`;
 
     document.querySelector('.step-tab[data-step="2"]').classList.add('completed');
     setStatus('ready', 'VIEWS COMPLETE');
   } catch (err) {
     toast('Error: ' + err.message);
-    ['viewFront', 'viewRight', 'viewBack', 'viewLeft'].forEach(id => {
+    ['viewFront', 'viewBack', 'viewTop', 'viewBottom'].forEach(id => {
       document.getElementById(id).innerHTML = '';
     });
     setStatus('error', 'ERROR');
@@ -1427,7 +1427,7 @@ function startLoadingAnimation() {
   
   // Sample pixels from the input view images to create particles
   const particles = [];
-  const viewKeys = ['front', 'right', 'back', 'left'];
+  const viewKeys = ['front', 'back', 'top', 'bottom'];
   const images = viewKeys.map(k => state.s2.views[k] || Object.values(s3DirectViews)[0]).filter(Boolean);
   
   let imagesLoaded = 0;
@@ -1629,7 +1629,7 @@ function initThreeViewer() {
 function updateStep3Views() {
   const container = document.getElementById('s3ViewsPreview');
   const views = state.s2.views;
-  const keys = ['front', 'right', 'back', 'left'];
+  const keys = ['front', 'back', 'top', 'bottom'];
   const thumbs = container.querySelectorAll('.thumb');
   keys.forEach((k, i) => {
     if (views[k] && thumbs[i]) {
@@ -1862,7 +1862,7 @@ function uploadS3View(thumbEl) {
       const imageData = ev.target.result;
       
       // Store immediately
-      const slots = ['front', 'right', 'back', 'left'];
+      const slots = ['front', 'back', 'top', 'bottom'];
       const nextSlot = slots.find(s => !s3DirectViews[s]) || 'front';
       s3DirectViews[nextSlot] = imageData;
       
@@ -1945,7 +1945,7 @@ function clearS2Ref() {
   document.getElementById('s2ProductBadge').classList.remove('visible');
   document.getElementById('s2AngleBadge').classList.remove('visible');
   // Clear view cells
-  ['viewFront', 'viewRight', 'viewBack', 'viewLeft'].forEach(id => {
+  ['viewFront', 'viewBack', 'viewTop', 'viewBottom'].forEach(id => {
     document.getElementById(id).innerHTML = '';
   });
 }
