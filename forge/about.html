@@ -234,13 +234,13 @@ html, body {
     <div class="pipeline-step">
       <div class="pipeline-step-num">STEP 02</div>
       <div class="pipeline-step-name">Multi-View</div>
-      <div class="pipeline-step-desc">Reference-guided view synthesis</div>
-      <div class="pipeline-step-model">FLUX.2 Klein 4B</div>
+      <div class="pipeline-step-desc">Front, back, top, bottom synthesis</div>
+      <div class="pipeline-step-model">FLUX.2 Klein 4B + Qwen2-VL</div>
     </div>
     <div class="pipeline-step">
       <div class="pipeline-step-num">STEP 03</div>
       <div class="pipeline-step-name">3D Model</div>
-      <div class="pipeline-step-desc">Mesh + PBR reconstruction</div>
+      <div class="pipeline-step-desc">Mesh reconstruction</div>
       <div class="pipeline-step-model">Hunyuan3D 2.1</div>
     </div>
   </div>
@@ -250,25 +250,43 @@ html, body {
   <div class="model-card">
     <div class="model-card-header">
       <span class="model-name">FLUX.2 Klein 4B</span>
-      <span class="model-role">Steps 01 + 02</span>
+      <span class="model-role">Steps 01 + 02 / Image Generation</span>
     </div>
     <div class="model-body">
       <p class="model-desc">
-        Black Forest Labs' fastest model combining text-to-image generation with multi-reference editing in a single 4B parameter architecture. Sub-second inference with quality that rivals models 10x its size. Apache 2.0 license.
+        Black Forest Labs' fastest model combining text-to-image generation with multi-reference editing in a single 4B parameter architecture. Sub-second inference with quality that rivals models 10x its size. Used for both initial shoe generation and multi-view synthesis from reference images.
       </p>
       <div class="model-meta">
         <span class="model-meta-key">Parameters</span>
         <span class="model-meta-val">4B (rectified flow transformer)</span>
-        <span class="model-meta-key">Steps</span>
-        <span class="model-meta-val">4 (step-distilled)</span>
+        <span class="model-meta-key">Inference</span>
+        <span class="model-meta-val">4 steps (step-distilled)</span>
         <span class="model-meta-key">VRAM</span>
         <span class="model-meta-val">~13GB</span>
         <span class="model-meta-key">License</span>
         <span class="model-meta-val">Apache 2.0</span>
         <span class="model-meta-key">By</span>
         <span class="model-meta-val"><a href="https://bfl.ai" target="_blank">Black Forest Labs</a></span>
-        <span class="model-meta-key">Weights</span>
-        <span class="model-meta-val"><a href="https://huggingface.co/black-forest-labs/FLUX.2-klein-4B" target="_blank">HuggingFace</a></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="model-card">
+    <div class="model-card-header">
+      <span class="model-name">Qwen2-VL-7B</span>
+      <span class="model-role">Step 02 / Vision Analysis</span>
+    </div>
+    <div class="model-body">
+      <p class="model-desc">
+        Vision-language model that analyzes uploaded product images to detect product type, viewing angle, materials, and construction details. Generates intelligent view-specific prompts for multi-view synthesis. Knows the difference between a platform mule and a wedge boot.
+      </p>
+      <div class="model-meta">
+        <span class="model-meta-key">Parameters</span>
+        <span class="model-meta-val">7B (vision-language)</span>
+        <span class="model-meta-key">Capabilities</span>
+        <span class="model-meta-val">Product detection, angle identification, feature description</span>
+        <span class="model-meta-key">By</span>
+        <span class="model-meta-val"><a href="https://huggingface.co/Qwen/Qwen2-VL-7B-Instruct" target="_blank">Alibaba Qwen</a></span>
       </div>
     </div>
   </div>
@@ -276,19 +294,19 @@ html, body {
   <div class="model-card">
     <div class="model-card-header">
       <span class="model-name">Hunyuan3D 2.1</span>
-      <span class="model-role">Step 03</span>
+      <span class="model-role">Step 03 / 3D Reconstruction</span>
     </div>
     <div class="model-body">
       <p class="model-desc">
-        Tencent's large-scale 3D generation system. Converts images into textured 3D meshes with PBR materials using a flow-based diffusion transformer for shape generation and a dedicated paint model for texture synthesis.
+        Tencent's large-scale 3D generation system. Converts product images into detailed 3D meshes using a flow-based diffusion transformer for shape generation. Outputs GLB format for browser-based viewing and 3D printing workflows.
       </p>
       <div class="model-meta">
         <span class="model-meta-key">Shape Model</span>
         <span class="model-meta-val">3.0B parameters</span>
-        <span class="model-meta-key">Texture Model</span>
-        <span class="model-meta-val">1.3B parameters</span>
         <span class="model-meta-key">Output</span>
-        <span class="model-meta-val">GLB with PBR materials</span>
+        <span class="model-meta-val">GLB mesh (downloadable)</span>
+        <span class="model-meta-key">Resolution</span>
+        <span class="model-meta-val">Configurable octree (up to 512)</span>
         <span class="model-meta-key">By</span>
         <span class="model-meta-val"><a href="https://github.com/Tencent-Hunyuan/Hunyuan3D-2" target="_blank">Tencent Hunyuan</a></span>
       </div>
@@ -300,17 +318,35 @@ html, body {
   <div class="model-card">
     <div class="model-card-header">
       <span class="model-name">Modal</span>
-      <span class="model-role">GPU Compute</span>
+      <span class="model-role">Serverless GPU Compute</span>
     </div>
     <div class="model-body">
       <p class="model-desc">
-        Serverless GPU platform. Models run on-demand with automatic scaling. Cold starts use pre-baked container images with cached weights. Billing per-second of GPU time.
+        All models run on-demand on NVIDIA A10G GPUs with automatic scaling. Pre-baked container images with cached weights for fast cold starts. Per-second billing with no idle charges.
       </p>
       <div class="model-meta">
         <span class="model-meta-key">GPU</span>
         <span class="model-meta-val">NVIDIA A10G (24GB VRAM)</span>
         <span class="model-meta-key">URL</span>
         <span class="model-meta-val"><a href="https://modal.com" target="_blank">modal.com</a></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="model-card">
+    <div class="model-card-header">
+      <span class="model-name">Three.js</span>
+      <span class="model-role">3D Viewer</span>
+    </div>
+    <div class="model-body">
+      <p class="model-desc">
+        Browser-based 3D rendering with orbit controls, studio lighting (key + fill + rim), and PBR material support. Loads GLB models directly for interactive inspection.
+      </p>
+      <div class="model-meta">
+        <span class="model-meta-key">Version</span>
+        <span class="model-meta-val">r160 (ES Modules)</span>
+        <span class="model-meta-key">Features</span>
+        <span class="model-meta-val">OrbitControls, GLTFLoader, ACES tonemapping</span>
       </div>
     </div>
   </div>
