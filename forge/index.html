@@ -638,6 +638,67 @@ html, body {
 }
 
 .toast.show { opacity: 1; }
+
+/* ─── Product Badge ─── */
+.product-badge {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 1px solid var(--accent-active);
+  color: var(--accent-active);
+  z-index: 3;
+  display: none;
+}
+
+.product-badge.visible { display: block; }
+
+.analyzing-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  z-index: 5;
+}
+
+.analyzing-overlay .spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--text);
+  animation: spin 0.8s linear infinite;
+}
+
+.analyzing-text {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.angle-badge {
+  position: absolute;
+  bottom: 14px;
+  left: 16px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--text-label);
+  z-index: 3;
+  display: none;
+}
+
+.angle-badge.visible { display: block; }
 </style>
 </head>
 <body>
@@ -704,8 +765,14 @@ html, body {
   <div class="s2-layout">
     <div class="s2-ref" id="s2Ref">
       <span class="cell-label-abs">REFERENCE</span>
+      <div class="product-badge" id="s2ProductBadge"></div>
+      <span class="angle-badge" id="s2AngleBadge"></span>
       <img id="s2RefImg" src="" alt="" style="display:none">
       <span class="empty-state" id="s2RefEmpty">Drop reference image<br>or select from Step 1</span>
+      <div class="analyzing-overlay" id="s2Analyzing" style="display:none">
+        <div class="spinner"></div>
+        <span class="analyzing-text">Analyzing product...</span>
+      </div>
     </div>
     <div class="view-cell" data-view="front">
       <span class="cell-label">FRONT</span>
@@ -815,6 +882,9 @@ const API = {
   },
   hunyuan: {
     generate: 'https://heyitskim-ai--hunyuan3d-shoe-web-hunyuan3dservice-generate.modal.run',
+  },
+  vision: {
+    analyze: 'https://heyitskim-ai--forge-vision-visionservice-analyze.modal.run',
   }
 };
 
@@ -824,7 +894,7 @@ const API = {
 const state = {
   step: 1,
   s1: { images: [], selectedIndex: -1, generating: false },
-  s2: { refImage: null, views: {}, generating: false, selectedView: null },
+  s2: { refImage: null, views: {}, generating: false, selectedView: null, analysis: null, analyzing: false },
   s3: { glbBlob: null, generating: false, scene: null },
 };
 
@@ -838,11 +908,16 @@ function switchStep(n) {
 
   if (n === 2 && state.s1.selectedIndex >= 0) {
     const img = state.s1.images[state.s1.selectedIndex];
-    state.s2.refImage = img;
-    const el = document.getElementById('s2RefImg');
-    el.src = img;
-    el.style.display = 'block';
-    document.getElementById('s2RefEmpty').style.display = 'none';
+    if (state.s2.refImage !== img) {
+      state.s2.refImage = img;
+      state.s2.analysis = null; // Reset analysis for new image
+      const el = document.getElementById('s2RefImg');
+      el.src = img;
+      el.style.display = 'block';
+      document.getElementById('s2RefEmpty').style.display = 'none';
+      // Auto-analyze
+      analyzeImage(img);
+    }
   }
 
   if (n === 3) {
@@ -935,6 +1010,60 @@ function selectHistoryItem(idx) {
 }
 
 // ═══════════════════════════════════════════════════
+// VISION ANALYSIS
+// ═══════════════════════════════════════════════════
+async function analyzeImage(imageData) {
+  if (state.s2.analyzing) return;
+  state.s2.analyzing = true;
+
+  // Show analyzing overlay
+  document.getElementById('s2Analyzing').style.display = 'flex';
+  setStatus('generating', 'ANALYZING');
+
+  try {
+    const res = await fetch(API.vision.analyze, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: imageData }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) { console.error('Analysis failed:', data); return; }
+
+    state.s2.analysis = data;
+
+    // Show product badge
+    const badge = document.getElementById('s2ProductBadge');
+    badge.textContent = data.product_type.toUpperCase() + ' DETECTED';
+    badge.classList.add('visible');
+
+    // Show detected angle
+    const angleBadge = document.getElementById('s2AngleBadge');
+    angleBadge.textContent = 'DETECTED: ' + data.current_angle.toUpperCase();
+    angleBadge.classList.add('visible');
+
+    // Update view labels dynamically
+    if (data.view_config && data.view_config.labels) {
+      const labels = data.view_config.labels;
+      const viewCells = document.querySelectorAll('.view-cell .cell-label');
+      viewCells.forEach((label, i) => {
+        if (labels[i]) label.textContent = labels[i];
+      });
+    }
+
+    toast(`${data.raw_product_type} detected — ${data.current_angle} view`);
+    setStatus('ready', 'ANALYZED');
+  } catch (err) {
+    console.error('Analysis error:', err);
+    // Non-blocking — continue without analysis
+    setStatus('ready', 'READY');
+  } finally {
+    state.s2.analyzing = false;
+    document.getElementById('s2Analyzing').style.display = 'none';
+  }
+}
+
+// ═══════════════════════════════════════════════════
 // STEP 2 — MULTI-VIEW
 // ═══════════════════════════════════════════════════
 async function generateStep2() {
@@ -997,13 +1126,17 @@ async function generateStep2() {
     document.getElementById(id).innerHTML = '<div class="spinner"></div>';
   });
 
+  // Use LLM-generated prompts if available
+  const promptPrefix = document.getElementById('s2Prompt').value.trim() ||
+    (state.s2.analysis ? state.s2.analysis.description : '');
+
   try {
     const res = await fetch(API.flux.multiview, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         image: state.s2.refImage,
-        prompt_prefix: document.getElementById('s2Prompt').value.trim(),
+        prompt_prefix: promptPrefix,
         seed: parseInt(document.getElementById('s2Seed').value) || 42,
       }),
     });
@@ -1256,10 +1389,12 @@ s2Ref.addEventListener('drop', (e) => {
     const reader = new FileReader();
     reader.onload = (ev) => {
       state.s2.refImage = ev.target.result;
+      state.s2.analysis = null;
       document.getElementById('s2RefImg').src = ev.target.result;
       document.getElementById('s2RefImg').style.display = 'block';
       document.getElementById('s2RefEmpty').style.display = 'none';
       toast('Reference image loaded');
+      analyzeImage(ev.target.result);
     };
     reader.readAsDataURL(file);
   }
@@ -1277,9 +1412,11 @@ s2Ref.addEventListener('click', () => {
       const reader = new FileReader();
       reader.onload = (ev) => {
         state.s2.refImage = ev.target.result;
+        state.s2.analysis = null;
         document.getElementById('s2RefImg').src = ev.target.result;
         document.getElementById('s2RefImg').style.display = 'block';
         document.getElementById('s2RefEmpty').style.display = 'none';
+        analyzeImage(ev.target.result);
       };
       reader.readAsDataURL(file);
     }
