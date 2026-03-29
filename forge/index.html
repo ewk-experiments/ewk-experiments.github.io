@@ -1741,9 +1741,8 @@ async function generateStep3() {
 
   // Helper to load GLB into viewer
   let currentPassNum = 0;
-  function loadGLBIntoViewer(glbB64, label) {
+  function loadGLBIntoViewer(glbB64, label, isFinalPass) {
     currentPassNum++;
-    const passNum = currentPassNum;
     const glbBytes = atob(glbB64);
     const arr = new Uint8Array(glbBytes.length);
     for (let i = 0; i < glbBytes.length; i++) arr[i] = glbBytes.charCodeAt(i);
@@ -1757,16 +1756,6 @@ async function generateStep3() {
     loader.load(url, (gltf) => {
       state.s3.scene = gltf.scene;
       
-      // For early passes, render as black silhouette
-      const isFinal = (passNum >= 4);
-      if (!isFinal) {
-        gltf.scene.traverse((child) => {
-          if (child.isMesh) {
-            child.material = new THREE.MeshBasicMaterial({ color: 0x0A0A0A });
-          }
-        });
-      }
-      
       const box = new THREE.Box3().setFromObject(gltf.scene);
       const center = box.getCenter(new THREE.Vector3());
       const size = box.getSize(new THREE.Vector3());
@@ -1777,7 +1766,7 @@ async function generateStep3() {
       gltf.scene.position.y += size.y * sc / 2;
       threeScene.add(gltf.scene);
       URL.revokeObjectURL(url);
-      console.log(`Loaded: ${label} (${isFinal ? 'final' : 'silhouette'})`);
+      console.log(`Loaded: ${label}`);
     }, undefined, (err) => {
       console.error('GLB load error:', err);
       URL.revokeObjectURL(url);
