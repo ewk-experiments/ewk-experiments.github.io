@@ -894,6 +894,10 @@ html, body {
   <span class="topbar-brand">ewk labs / forge</span>
   <div class="topbar-sep"></div>
   <div class="topbar-steps">
+    <div class="step-tab" data-step="0" onclick="switchStep(0)">
+      <span class="step-num">00</span>
+      <span class="step-name">Train</span>
+    </div>
     <div class="step-tab active" data-step="1" onclick="switchStep(1)">
       <span class="step-num">01</span>
       <span class="step-name">Generate</span>
@@ -911,6 +915,49 @@ html, body {
     <a href="/forge/about.html" style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;color:var(--text-label);text-decoration:none;margin-right:16px">ABOUT</a>
     <span class="status-dot ready" id="statusDot"></span>
     <span id="statusText">IDLE</span>
+  </div>
+</div>
+
+<!-- Step 0: Train -->
+<div class="step-panel" id="panel-0">
+  <div class="s1-layout">
+    <div class="s1-output" id="s0DropZone" style="cursor:pointer">
+      <span class="cell-label-abs">TRAINING DATASET</span>
+      <div id="s0Grid" style="display:none;width:100%;height:100%;overflow-y:auto;padding:40px 16px 16px;display:none">
+        <div id="s0ImageGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;align-content:start"></div>
+      </div>
+      <span class="empty-state" id="s0Empty">Drop 20-50 reference images<br>to train your style</span>
+    </div>
+    <div class="s1-history" style="display:flex;flex-direction:column">
+      <div class="s1-history-label">TRAINING CONFIG</div>
+      <div style="padding:16px;display:flex;flex-direction:column;gap:16px;flex:1">
+        <div class="param-group">
+          <span class="param-label">Style Name<span class="tip-text">A short name for your trained style. Used in prompts.</span></span>
+          <input type="text" class="param-input" id="s0StyleName" value="mystyle" style="width:100%;font-family:var(--font-mono);font-size:12px">
+        </div>
+        <div class="param-group">
+          <span class="param-label">Training Steps<span class="tip-text">More steps = better quality but longer training. 500-1000 is usually good for 20-50 images.</span></span>
+          <input type="number" class="param-input" id="s0Steps" value="800" style="width:100%">
+        </div>
+        <div class="param-group">
+          <span class="param-label">Images<span class="tip-text">Number of reference images uploaded.</span></span>
+          <span id="s0ImageCount" style="font-family:var(--font-mono);font-size:12px;color:var(--text-dim)">0 images</span>
+        </div>
+        <div style="flex:1"></div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-label);line-height:1.6">
+          Training teaches the model your design language. After training, Step 1 will generate shoes in your style.
+          <br><br>
+          Estimated time: ~15 min
+        </div>
+      </div>
+    </div>
+    <div class="s1-controls">
+      <div class="s1-prompt-area">
+        <span class="s1-prompt-label">Trigger Word</span>
+        <input type="text" id="s0Trigger" value="in the style of [mystyle]" style="width:100%;padding:28px 16px 12px;background:none;border:none;color:var(--text);font-family:var(--font-ui);font-size:13px;font-weight:300;outline:none" readonly>
+      </div>
+      <button class="btn-generate" id="s0TrainBtn" onclick="startTraining()" disabled>TRAIN</button>
+    </div>
   </div>
 </div>
 
@@ -1922,6 +1969,92 @@ function toast(msg) {
   setTimeout(() => el.classList.remove('show'), 3000);
 }
 
+// ═══════════════════════════════════════════════════
+// STEP 0 — TRAIN
+// ═══════════════════════════════════════════════════
+const s0Images = [];
+
+// Drag & drop on Step 0
+const s0Drop = document.getElementById('s0DropZone');
+s0Drop.addEventListener('dragover', (e) => { e.preventDefault(); s0Drop.style.background = '#F0F0F0'; });
+s0Drop.addEventListener('dragleave', () => { s0Drop.style.background = ''; });
+s0Drop.addEventListener('drop', (e) => {
+  e.preventDefault();
+  s0Drop.style.background = '';
+  const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+  if (files.length) addS0Images(files);
+});
+
+s0Drop.addEventListener('click', () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.multiple = true;
+  input.onchange = () => {
+    const files = Array.from(input.files).filter(f => f.type.startsWith('image/'));
+    if (files.length) addS0Images(files);
+  };
+  input.click();
+});
+
+function addS0Images(files) {
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      s0Images.push({ name: file.name, data: ev.target.result });
+      renderS0Grid();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderS0Grid() {
+  const grid = document.getElementById('s0ImageGrid');
+  const container = document.getElementById('s0Grid');
+  container.style.display = 'block';
+  document.getElementById('s0Empty').style.display = 'none';
+  
+  grid.innerHTML = s0Images.map((img, i) => `
+    <div style="aspect-ratio:1;background:var(--surface);border:1px solid var(--border);overflow:hidden;position:relative">
+      <img src="${img.data}" style="width:100%;height:100%;object-fit:cover">
+      <span class="thumb-remove" onclick="event.stopPropagation(); s0Images.splice(${i},1); renderS0Grid();">&times;</span>
+    </div>
+  `).join('');
+  
+  document.getElementById('s0ImageCount').textContent = `${s0Images.length} images`;
+  document.getElementById('s0TrainBtn').disabled = s0Images.length < 5;
+  
+  if (s0Images.length === 0) {
+    container.style.display = 'none';
+    document.getElementById('s0Empty').style.display = '';
+  }
+}
+
+async function startTraining() {
+  if (s0Images.length < 5) { toast('Need at least 5 images'); return; }
+  
+  const styleName = document.getElementById('s0StyleName').value.trim() || 'mystyle';
+  const steps = parseInt(document.getElementById('s0Steps').value) || 800;
+  
+  setStatus('generating', 'RUNNING');
+  document.getElementById('s0TrainBtn').textContent = 'STOP';
+  document.getElementById('s0TrainBtn').onclick = () => { toast('Training stopped'); };
+  
+  toast('Training not yet connected — coming soon');
+  
+  // TODO: Send images + config to Modal training endpoint
+  // const payload = {
+  //   images: s0Images.map(img => img.data),
+  //   style_name: styleName,
+  //   steps: steps,
+  // };
+}
+
+// Update trigger word when style name changes
+document.getElementById('s0StyleName').addEventListener('input', (e) => {
+  document.getElementById('s0Trigger').value = `in the style of [${e.target.value || 'mystyle'}]`;
+});
+
 // Keyboard shortcuts
 document.addEventListener('keydown', (e) => {
   if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
@@ -1930,6 +2063,7 @@ document.addEventListener('keydown', (e) => {
     else if (state.step === 2) generateStep2();
     else if (state.step === 3) generateStep3();
   }
+  if (e.key === '0' && !e.target.matches('input, textarea')) switchStep(0);
   if (e.key === '1' && !e.target.matches('input, textarea')) switchStep(1);
   if (e.key === '2' && !e.target.matches('input, textarea')) switchStep(2);
   if (e.key === '3' && !e.target.matches('input, textarea')) switchStep(3);
