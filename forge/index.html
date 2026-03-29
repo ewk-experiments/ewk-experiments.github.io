@@ -1140,9 +1140,10 @@ async function generateStep1() {
   if (!prompt) { toast('Enter a prompt'); return; }
 
   state.s1.generating = true;
-  setStatus('generating', 'GENERATING');
-  document.getElementById('s1GenerateBtn').disabled = true;
-  document.getElementById('s1GenerateBtn').textContent = 'GENERATING...';
+  state.s1.abortController = new AbortController();
+  setStatus('generating', 'RUNNING');
+  document.getElementById('s1GenerateBtn').textContent = 'STOP';
+  document.getElementById('s1GenerateBtn').onclick = () => { if (state.s1.abortController) state.s1.abortController.abort(); };
   document.getElementById('s1OutputImg').style.display = 'none';
   document.getElementById('s1Empty').style.display = 'none';
   document.getElementById('s1Output').insertAdjacentHTML('beforeend', `<div id="s1Loader" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">${dotMatrixHTML(1)}</div>`);
@@ -1151,6 +1152,7 @@ async function generateStep1() {
     const res = await fetch(API.flux.generate, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      signal: state.s1.abortController.signal,
       body: JSON.stringify({
         prompt,
         width: 1024,
@@ -1208,8 +1210,10 @@ async function generateStep1() {
     setStatus('error', 'ERROR');
   } finally {
     state.s1.generating = false;
+    state.s1.abortController = null;
     document.getElementById('s1GenerateBtn').disabled = false;
     document.getElementById('s1GenerateBtn').textContent = 'GENERATE';
+    document.getElementById('s1GenerateBtn').onclick = generateStep1;
   }
 }
 
@@ -1337,9 +1341,10 @@ async function generateStep2() {
 
   // Full multi-view generation
   state.s2.generating = true;
+  state.s2.abortController = new AbortController();
   setStatus('generating', 'RUNNING');
-  document.getElementById('s2GenerateBtn').disabled = true;
-  document.getElementById('s2GenerateBtn').textContent = 'ANALYZING...';
+  document.getElementById('s2GenerateBtn').textContent = 'STOP';
+  document.getElementById('s2GenerateBtn').onclick = () => { if (state.s2.abortController) state.s2.abortController.abort(); };
 
   // Analyze first if not already done
   if (!state.s2.analysis) {
@@ -1367,6 +1372,7 @@ async function generateStep2() {
     const res = await fetch(API.flux.multiview, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      signal: state.s2.abortController.signal,
       body: JSON.stringify({
         image: state.s2.refImage,
         prompt_prefix: promptPrefix,
@@ -1393,8 +1399,10 @@ async function generateStep2() {
     setStatus('error', 'ERROR');
   } finally {
     state.s2.generating = false;
+    state.s2.abortController = null;
     document.getElementById('s2GenerateBtn').disabled = false;
     document.getElementById('s2GenerateBtn').textContent = 'GENERATE VIEWS';
+    document.getElementById('s2GenerateBtn').onclick = generateStep2;
   }
 }
 
