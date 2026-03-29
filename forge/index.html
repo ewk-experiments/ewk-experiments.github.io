@@ -360,13 +360,14 @@ html, body {
   background: var(--text);
   color: var(--bg);
   border: none;
+  border-left: 1px solid var(--border);
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: background 0.1s;
+  transition: background 0.15s ease;
   white-space: nowrap;
 }
 
@@ -754,17 +755,19 @@ html, body {
   padding: 8px 24px;
   background: none;
   color: var(--text);
-  border: 1px solid var(--border);
+  border: none;
+  border-left: 1px solid var(--border);
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 400;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.1s;
+  transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
-.btn-outline:hover { border-color: var(--text); }
+.btn-outline:hover { background: var(--surface); color: var(--accent-active); }
 
 /* ─── Progress bar ─── */
 .progress-bar {
@@ -1257,15 +1260,15 @@ html, body {
       </div>
     </div>
     <div class="s3-controls">
-      <div style="display:flex;align-items:center;gap:12px;flex:1;padding:0 16px">
+      <div style="display:flex;align-items:center;gap:12px;flex:1;padding:0 16px;min-width:0;overflow:hidden">
         <div class="progress-bar" id="s3Progress" style="display:none;flex:1;max-width:300px">
           <div class="progress-fill" id="s3ProgressFill"></div>
         </div>
         <span id="s3PhaseText" style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.08em;color:var(--text-label);white-space:nowrap;display:none"></span>
       </div>
-      <div style="display:flex;gap:0;height:100%">
-        <button class="btn-outline" id="s3DownloadBtn" onclick="downloadGLB()" style="display:none;height:100%">Download GLB</button>
-        <button class="btn-outline" id="s3DownloadUSDZ" onclick="downloadUSDZ()" style="display:none;height:100%">Download USDZ</button>
+      <div style="display:flex;gap:0;height:100%;flex-shrink:0">
+        <button class="btn-outline" id="s3DownloadBtn" onclick="downloadGLB()" style="display:none;height:100%;white-space:nowrap">Download GLB</button>
+        <button class="btn-outline" id="s3DownloadUSDZ" onclick="downloadUSDZ()" style="display:none;height:100%;white-space:nowrap">Download USDZ</button>
         <button class="btn-generate" id="s3GenerateBtn" onclick="generateStep3()" style="height:100%">RECONSTRUCT</button>
       </div>
     </div>
@@ -1331,14 +1334,14 @@ html, body {
       </div>
     </div>
     <div class="s3-controls">
-      <div style="display:flex;align-items:center;gap:12px;flex:1;padding:0 16px">
+      <div style="display:flex;align-items:center;gap:12px;flex:1;padding:0 16px;min-width:0;overflow:hidden">
         <div class="progress-bar" id="s4Progress" style="display:none;flex:1;max-width:300px">
           <div class="progress-fill" id="s4ProgressFill"></div>
         </div>
         <span id="s4PhaseText" style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.08em;color:var(--text-label);display:none"></span>
       </div>
-      <div style="display:flex;gap:0;height:100%">
-        <button class="btn-outline" id="s4DownloadSTL" onclick="downloadSTL()" style="display:none;height:100%">Download STL</button>
+      <div style="display:flex;gap:0;height:100%;flex-shrink:0">
+        <button class="btn-outline" id="s4DownloadSTL" onclick="downloadSTL()" style="display:none;height:100%;white-space:nowrap">Download STL</button>
         <button class="btn-generate" id="s4ProcessBtn" onclick="processForPrint()" style="height:100%">MAKE PRINT-READY</button>
       </div>
     </div>
