@@ -74,36 +74,45 @@ html, body {
 .step-tab {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 16px;
+  gap: 10px;
+  padding: 0 20px;
   height: 44px;
   border-right: 1px solid var(--border);
   cursor: pointer;
-  transition: background 0.1s;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   background: var(--bg);
   position: relative;
   user-select: none;
 }
 
+.step-tab::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  right: 50%;
+  height: 2px;
+  background: var(--accent);
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .step-tab:hover { background: var(--surface); }
+.step-tab:hover .step-num { border-color: var(--text-dim); }
 
 .step-tab.active {
   background: var(--surface);
 }
 
 .step-tab.active::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
   left: 0;
   right: 0;
-  height: 2px;
-  background: var(--accent);
 }
 
 .step-tab.completed .step-num {
   background: var(--text);
   color: var(--bg);
+  border-color: var(--text);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .step-num {
@@ -117,6 +126,7 @@ html, body {
   justify-content: center;
   border: 1px solid var(--border-strong);
   flex-shrink: 0;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .step-name {
@@ -126,8 +136,10 @@ html, body {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-dim);
+  transition: color 0.25s ease, font-weight 0.15s ease;
 }
 
+.step-tab:hover .step-name { color: var(--text-dim); }
 .step-tab.active .step-name { color: var(--text); font-weight: 500; }
 
 .topbar-status {
@@ -414,7 +426,10 @@ html, body {
   position: relative;
   overflow: hidden;
   cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
 }
+
+.view-cell:hover { background: var(--surface); }
 
 .view-cell[data-view="front"] { border-right: none; }
 .view-cell[data-view="top"]   { border-bottom: none; }
@@ -431,7 +446,10 @@ html, body {
   z-index: 2;
   text-transform: uppercase;
   pointer-events: none;
+  transition: color 0.2s ease;
 }
+
+.view-cell.selected .cell-label { color: var(--accent-active); }
 
 .view-cell img {
   max-width: 90%;
@@ -455,7 +473,11 @@ html, body {
   pointer-events: none;
 }
 
-.view-cell.selected { outline: 2px solid var(--accent-active); outline-offset: -2px; }
+.view-cell.selected {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--accent-active);
+  background: rgba(232, 56, 13, 0.03);
+}
 
 .view-cell .spinner {
   width: 20px;
@@ -912,14 +934,21 @@ html, body {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.85);
+  background: rgba(0,0,0,0);
   z-index: 9999;
   cursor: zoom-out;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  transition: background 0.4s cubic-bezier(0.4, 0, 0.2, 1), backdrop-filter 0.4s ease, -webkit-backdrop-filter 0.4s ease;
 }
 
-.lightbox.open { display: flex; }
+.lightbox.open {
+  background: rgba(0,0,0,0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
 
 .lightbox-inner {
   position: relative;
@@ -927,6 +956,14 @@ html, body {
   max-height: 90vh;
   overflow: hidden;
   cursor: grab;
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lightbox.open .lightbox-inner {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .lightbox-inner:active { cursor: grabbing; }
@@ -943,40 +980,61 @@ html, body {
 
 .lightbox-toolbar {
   position: fixed;
-  top: 16px;
-  right: 16px;
+  top: 20px;
+  right: 20px;
   display: flex;
-  gap: 8px;
+  gap: 4px;
   z-index: 10000;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.3s ease 0.15s, transform 0.3s ease 0.15s;
+}
+
+.lightbox.open .lightbox-toolbar {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .lightbox-btn {
-  width: 36px;
-  height: 36px;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #fff;
+  width: 32px;
+  height: 32px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.7);
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.2s ease;
 }
 
-.lightbox-btn:hover { background: rgba(255,255,255,0.2); }
+.lightbox-btn:hover {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border-color: rgba(255,255,255,0.25);
+}
 
 .lightbox-label {
   position: fixed;
-  bottom: 16px;
-  left: 16px;
+  bottom: 20px;
+  left: 20px;
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  color: rgba(255,255,255,0.5);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.35);
   z-index: 10000;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s ease 0.2s, transform 0.3s ease 0.2s;
+}
+
+.lightbox.open .lightbox-label {
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>
 </head>
@@ -2763,18 +2821,24 @@ let lbScale = 1, lbX = 0, lbY = 0, lbDragging = false, lbStartX, lbStartY, lbSrc
 function openLightbox(src, label) {
   lbSrc = src;
   lbScale = 1; lbX = 0; lbY = 0;
+  const lb = document.getElementById('lightbox');
   const img = document.getElementById('lightboxImg');
   img.src = src;
   img.style.transform = 'scale(1) translate(0px, 0px)';
   document.getElementById('lightboxLabel').textContent = label || '';
-  document.getElementById('lightbox').classList.add('open');
+  lb.style.display = 'flex';
+  // Force reflow so the transition from transparent actually plays
+  lb.offsetHeight;
+  lb.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
 function closeLightbox(e) {
   if (e && e.target && e.target.closest('.lightbox-inner')) return;
-  document.getElementById('lightbox').classList.remove('open');
+  const lb = document.getElementById('lightbox');
+  lb.classList.remove('open');
   document.body.style.overflow = '';
+  setTimeout(() => { if (!lb.classList.contains('open')) lb.style.display = 'none'; }, 400);
 }
 
 function zoomLightbox(factor) {
