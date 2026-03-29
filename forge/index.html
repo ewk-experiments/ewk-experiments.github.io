@@ -1127,6 +1127,8 @@ function switchStep(n) {
   if (n === 3) {
     updateStep3Views();
     initThreeViewer();
+    // Warm up the Hunyuan container
+    fetch(API.hunyuan.generate + '/health').catch(() => {});
   }
 }
 
@@ -1781,17 +1783,31 @@ async function generateStep3() {
   }
 
   try {
-    // Use single-shot endpoint (streaming has CORS issues with Modal)
-    const res = await fetch(API.hunyuan.generate, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        image: inputImage,
-        views: viewsToSend,
-        steps: 100,
-        octree_resolution: 512,
-      }),
+    // Use single-shot endpoint with retry for CORS cold-start issues
+    let res;
+    let retries = 0;
+    const payload = JSON.stringify({
+      image: inputImage,
+      views: viewsToSend,
+      steps: 100,
+      octree_resolution: 512,
     });
+    
+    while (retries < 3) {
+      try {
+        res = await fetch(API.hunyuan.generate, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: payload,
+        });
+        break;
+      } catch (e) {
+        retries++;
+        if (retries >= 3) throw e;
+        console.log(`Retry ${retries}/3 — CORS/cold-start issue, waiting...`);
+        await new Promise(r => setTimeout(r, 5000));
+      }
+    }
 
     if (!res.ok) {
       const errText = await res.text();
