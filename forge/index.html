@@ -1034,9 +1034,8 @@ html, body {
       </div>
     </div>
     <div class="s3-controls">
-      <button class="btn-action" id="s3GenerateBtn" onclick="generateStep3()">Reconstruct 3D</button>
-      <div style="display:flex;align-items:center;gap:12px;flex:1;max-width:400px">
-        <div class="progress-bar" id="s3Progress" style="display:none">
+      <div style="display:flex;align-items:center;gap:12px;flex:1">
+        <div class="progress-bar" id="s3Progress" style="display:none;flex:1;max-width:300px">
           <div class="progress-fill" id="s3ProgressFill"></div>
         </div>
         <span id="s3PhaseText" style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.08em;color:var(--text-label);white-space:nowrap;display:none"></span>
@@ -1044,6 +1043,7 @@ html, body {
       <div style="display:flex;gap:8px">
         <button class="btn-outline" id="s3DownloadBtn" onclick="downloadGLB()" style="display:none">Download GLB</button>
         <button class="btn-outline" id="s3DownloadUSDZ" onclick="downloadUSDZ()" style="display:none">Download USDZ</button>
+        <button class="btn-generate" id="s3GenerateBtn" onclick="generateStep3()" style="padding:0 24px">Reconstruct</button>
       </div>
     </div>
   </div>
