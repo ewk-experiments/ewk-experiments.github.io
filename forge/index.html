@@ -431,11 +431,112 @@ html, body {
 .view-cell.selected { outline: 2px solid var(--accent-active); outline-offset: -2px; }
 
 .view-cell .spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--border);
-  border-top-color: var(--text);
-  animation: spin 0.8s linear infinite;
+  width: 20px;
+  height: 20px;
+}
+
+/* ─── Dot Matrix Loaders ─── */
+.dot-matrix {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 3px;
+  width: 28px;
+  height: 28px;
+}
+
+.dot-matrix .dot {
+  width: 4px;
+  height: 4px;
+  background: var(--border-strong);
+  opacity: 0.2;
+}
+
+/* Pattern 1: Spiral outward */
+.dot-matrix.pattern-1 .dot { animation: dotPulse 2s ease-in-out infinite; }
+.dot-matrix.pattern-1 .dot:nth-child(13) { animation-delay: 0s; }
+.dot-matrix.pattern-1 .dot:nth-child(8) { animation-delay: 0.08s; }
+.dot-matrix.pattern-1 .dot:nth-child(12) { animation-delay: 0.08s; }
+.dot-matrix.pattern-1 .dot:nth-child(14) { animation-delay: 0.08s; }
+.dot-matrix.pattern-1 .dot:nth-child(18) { animation-delay: 0.08s; }
+.dot-matrix.pattern-1 .dot:nth-child(7) { animation-delay: 0.16s; }
+.dot-matrix.pattern-1 .dot:nth-child(9) { animation-delay: 0.16s; }
+.dot-matrix.pattern-1 .dot:nth-child(17) { animation-delay: 0.16s; }
+.dot-matrix.pattern-1 .dot:nth-child(19) { animation-delay: 0.16s; }
+.dot-matrix.pattern-1 .dot:nth-child(3) { animation-delay: 0.24s; }
+.dot-matrix.pattern-1 .dot:nth-child(11) { animation-delay: 0.24s; }
+.dot-matrix.pattern-1 .dot:nth-child(15) { animation-delay: 0.24s; }
+.dot-matrix.pattern-1 .dot:nth-child(23) { animation-delay: 0.24s; }
+.dot-matrix.pattern-1 .dot:nth-child(2) { animation-delay: 0.32s; }
+.dot-matrix.pattern-1 .dot:nth-child(4) { animation-delay: 0.32s; }
+.dot-matrix.pattern-1 .dot:nth-child(6) { animation-delay: 0.32s; }
+.dot-matrix.pattern-1 .dot:nth-child(10) { animation-delay: 0.32s; }
+.dot-matrix.pattern-1 .dot:nth-child(16) { animation-delay: 0.32s; }
+.dot-matrix.pattern-1 .dot:nth-child(20) { animation-delay: 0.32s; }
+.dot-matrix.pattern-1 .dot:nth-child(22) { animation-delay: 0.32s; }
+.dot-matrix.pattern-1 .dot:nth-child(24) { animation-delay: 0.32s; }
+.dot-matrix.pattern-1 .dot:nth-child(1) { animation-delay: 0.4s; }
+.dot-matrix.pattern-1 .dot:nth-child(5) { animation-delay: 0.4s; }
+.dot-matrix.pattern-1 .dot:nth-child(21) { animation-delay: 0.4s; }
+.dot-matrix.pattern-1 .dot:nth-child(25) { animation-delay: 0.4s; }
+
+/* Pattern 2: Wave left to right */
+.dot-matrix.pattern-2 .dot { animation: dotPulse 1.5s ease-in-out infinite; }
+.dot-matrix.pattern-2 .dot:nth-child(5n+1) { animation-delay: 0s; }
+.dot-matrix.pattern-2 .dot:nth-child(5n+2) { animation-delay: 0.15s; }
+.dot-matrix.pattern-2 .dot:nth-child(5n+3) { animation-delay: 0.3s; }
+.dot-matrix.pattern-2 .dot:nth-child(5n+4) { animation-delay: 0.45s; }
+.dot-matrix.pattern-2 .dot:nth-child(5n+5) { animation-delay: 0.6s; }
+
+/* Pattern 3: Diagonal sweep */
+.dot-matrix.pattern-3 .dot { animation: dotPulse 2s ease-in-out infinite; }
+.dot-matrix.pattern-3 .dot:nth-child(1) { animation-delay: 0s; }
+.dot-matrix.pattern-3 .dot:nth-child(2),
+.dot-matrix.pattern-3 .dot:nth-child(6) { animation-delay: 0.1s; }
+.dot-matrix.pattern-3 .dot:nth-child(3),
+.dot-matrix.pattern-3 .dot:nth-child(7),
+.dot-matrix.pattern-3 .dot:nth-child(11) { animation-delay: 0.2s; }
+.dot-matrix.pattern-3 .dot:nth-child(4),
+.dot-matrix.pattern-3 .dot:nth-child(8),
+.dot-matrix.pattern-3 .dot:nth-child(12),
+.dot-matrix.pattern-3 .dot:nth-child(16) { animation-delay: 0.3s; }
+.dot-matrix.pattern-3 .dot:nth-child(5),
+.dot-matrix.pattern-3 .dot:nth-child(9),
+.dot-matrix.pattern-3 .dot:nth-child(13),
+.dot-matrix.pattern-3 .dot:nth-child(17),
+.dot-matrix.pattern-3 .dot:nth-child(21) { animation-delay: 0.4s; }
+.dot-matrix.pattern-3 .dot:nth-child(10),
+.dot-matrix.pattern-3 .dot:nth-child(14),
+.dot-matrix.pattern-3 .dot:nth-child(18),
+.dot-matrix.pattern-3 .dot:nth-child(22) { animation-delay: 0.5s; }
+.dot-matrix.pattern-3 .dot:nth-child(15),
+.dot-matrix.pattern-3 .dot:nth-child(19),
+.dot-matrix.pattern-3 .dot:nth-child(23) { animation-delay: 0.6s; }
+.dot-matrix.pattern-3 .dot:nth-child(20),
+.dot-matrix.pattern-3 .dot:nth-child(24) { animation-delay: 0.7s; }
+.dot-matrix.pattern-3 .dot:nth-child(25) { animation-delay: 0.8s; }
+
+/* Pattern 4: Random twinkle */
+.dot-matrix.pattern-4 .dot { animation: dotPulse 1.8s ease-in-out infinite; }
+.dot-matrix.pattern-4 .dot:nth-child(3) { animation-delay: 0s; }
+.dot-matrix.pattern-4 .dot:nth-child(17) { animation-delay: 0.12s; }
+.dot-matrix.pattern-4 .dot:nth-child(8) { animation-delay: 0.24s; }
+.dot-matrix.pattern-4 .dot:nth-child(22) { animation-delay: 0.36s; }
+.dot-matrix.pattern-4 .dot:nth-child(11) { animation-delay: 0.48s; }
+.dot-matrix.pattern-4 .dot:nth-child(25) { animation-delay: 0.6s; }
+.dot-matrix.pattern-4 .dot:nth-child(1) { animation-delay: 0.72s; }
+.dot-matrix.pattern-4 .dot:nth-child(14) { animation-delay: 0.84s; }
+.dot-matrix.pattern-4 .dot:nth-child(6) { animation-delay: 0.96s; }
+.dot-matrix.pattern-4 .dot:nth-child(19) { animation-delay: 1.08s; }
+.dot-matrix.pattern-4 .dot:nth-child(13) { animation-delay: 0.15s; }
+.dot-matrix.pattern-4 .dot:nth-child(5) { animation-delay: 0.45s; }
+.dot-matrix.pattern-4 .dot:nth-child(21) { animation-delay: 0.75s; }
+.dot-matrix.pattern-4 .dot:nth-child(9) { animation-delay: 0.3s; }
+.dot-matrix.pattern-4 .dot:nth-child(16) { animation-delay: 0.55s; }
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 1; }
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -770,7 +871,7 @@ html, body {
       <img id="s2RefImg" src="" alt="" style="display:none">
       <span class="empty-state" id="s2RefEmpty">Drop reference image<br>or select from Step 1</span>
       <div class="analyzing-overlay" id="s2Analyzing" style="display:none">
-        <div class="spinner"></div>
+        <div class="dot-matrix pattern-1"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
         <span class="analyzing-text">Analyzing product...</span>
       </div>
     </div>
@@ -938,6 +1039,9 @@ async function generateStep1() {
   setStatus('generating', 'GENERATING');
   document.getElementById('s1GenerateBtn').disabled = true;
   document.getElementById('s1GenerateBtn').textContent = 'GENERATING...';
+  document.getElementById('s1OutputImg').style.display = 'none';
+  document.getElementById('s1Empty').style.display = 'none';
+  document.getElementById('s1Output').insertAdjacentHTML('beforeend', `<div id="s1Loader" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">${dotMatrixHTML(1)}</div>`);
 
   try {
     const res = await fetch(API.flux.generate, {
@@ -955,6 +1059,10 @@ async function generateStep1() {
 
     const data = await res.json();
     if (!res.ok) { toast(data.error || 'Generation failed'); return; }
+
+    // Remove loader
+    const loader = document.getElementById('s1Loader');
+    if (loader) loader.remove();
 
     // Add to history
     state.s1.images.push(data.image);
@@ -990,6 +1098,9 @@ async function generateStep1() {
     setStatus('ready', 'COMPLETE');
   } catch (err) {
     toast('Error: ' + err.message);
+    const loader = document.getElementById('s1Loader');
+    if (loader) loader.remove();
+    document.getElementById('s1Empty').style.display = '';
     setStatus('error', 'ERROR');
   } finally {
     state.s1.generating = false;
@@ -1007,6 +1118,11 @@ function selectHistoryItem(idx) {
   document.querySelectorAll('.s1-history-item').forEach((el, i) => {
     el.classList.toggle('selected', i === idx);
   });
+}
+
+function dotMatrixHTML(pattern) {
+  const dots = Array(25).fill('<div class="dot"></div>').join('');
+  return `<div class="dot-matrix pattern-${pattern}">${dots}</div>`;
 }
 
 // ═══════════════════════════════════════════════════
@@ -1121,9 +1237,10 @@ async function generateStep2() {
   document.getElementById('s2GenerateBtn').disabled = true;
   document.getElementById('s2GenerateBtn').textContent = 'GENERATING...';
 
-  // Show spinners
-  ['viewFront', 'viewRight', 'viewBack', 'viewLeft'].forEach(id => {
-    document.getElementById(id).innerHTML = '<div class="spinner"></div>';
+  // Show dot matrix loaders in view cells
+  const patterns = [1, 2, 3, 4];
+  ['viewFront', 'viewRight', 'viewBack', 'viewLeft'].forEach((id, i) => {
+    document.getElementById(id).innerHTML = dotMatrixHTML(patterns[i]);
   });
 
   // Use LLM-generated prompts if available
