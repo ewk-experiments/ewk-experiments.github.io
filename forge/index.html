@@ -1198,7 +1198,7 @@ async function generateStep1() {
     document.querySelector('.step-tab[data-step="1"]').classList.add('completed');
 
     // Auto-advance prompt
-    toast('Image generated. Press 2 or click Step 02 to generate views.');
+    
     setStatus('ready', 'COMPLETE');
   } catch (err) {
     toast('Error: ' + err.message);
@@ -1271,7 +1271,7 @@ async function analyzeImage(imageData) {
       });
     }
 
-    toast(`${data.raw_product_type} detected — ${data.current_angle} view`);
+    
     setStatus('ready', 'ANALYZED');
   } catch (err) {
     console.error('Analysis error:', err);
@@ -1843,7 +1843,7 @@ function uploadS3View(thumbEl) {
       thumbEl.insertAdjacentHTML('beforeend', `<span class="thumb-remove" onclick="event.stopPropagation(); removeS3View(this.parentElement, '${nextSlot}')">&times;</span>`);
       
       updateS3GenerateBtn();
-      toast(`View uploaded (${Object.keys(s3DirectViews).length}/4)`);
+      
     };
     reader.readAsDataURL(file);
   };
@@ -1857,7 +1857,7 @@ function removeS3View(thumbEl, key) {
   delete thumbEl.dataset.viewKey;
   delete thumbEl.dataset.tempKey;
   updateS3GenerateBtn();
-  toast(`View removed (${Object.keys(s3DirectViews).length} views)`);
+  
 }
 
 function updateS3GenerateBtn() {
@@ -1934,7 +1934,7 @@ s2Ref.addEventListener('drop', (e) => {
       document.getElementById('s2RefImg').src = ev.target.result;
       document.getElementById('s2RefImg').style.display = 'block';
       document.getElementById('s2RefEmpty').style.display = 'none'; document.getElementById('s2RefRemove').style.display = 'block';
-      toast('Reference image loaded');
+      
     };
     reader.readAsDataURL(file);
   }
