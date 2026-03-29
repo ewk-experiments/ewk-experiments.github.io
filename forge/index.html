@@ -148,7 +148,7 @@ html, body {
 }
 
 .status-dot.ready { background: var(--success); border-color: var(--success); }
-.status-dot.generating { background: var(--accent-active); border-color: var(--accent-active); animation: pulse 1s infinite; }
+.status-dot.generating { background: #3B82F6; border-color: #3B82F6; animation: pulse 1s infinite; }
 .status-dot.error { background: var(--danger); border-color: var(--danger); }
 
 @keyframes pulse {
@@ -1032,8 +1032,11 @@ html, body {
     </div>
     <div class="s3-controls">
       <button class="btn-action" id="s3GenerateBtn" onclick="generateStep3()">Reconstruct 3D</button>
-      <div class="progress-bar" id="s3Progress" style="display:none">
-        <div class="progress-fill" id="s3ProgressFill"></div>
+      <div style="display:flex;align-items:center;gap:12px;flex:1;max-width:400px">
+        <div class="progress-bar" id="s3Progress" style="display:none">
+          <div class="progress-fill" id="s3ProgressFill"></div>
+        </div>
+        <span id="s3PhaseText" style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.08em;color:var(--text-label);white-space:nowrap;display:none"></span>
       </div>
       <div style="display:flex;gap:8px">
         <button class="btn-outline" id="s3DownloadBtn" onclick="downloadGLB()" style="display:none">Download GLB</button>
@@ -1588,23 +1591,42 @@ function initThreeViewer() {
   threeRenderer.setSize(container.clientWidth, container.clientHeight);
   threeRenderer.setPixelRatio(window.devicePixelRatio);
   threeRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+  threeRenderer.toneMappingExposure = 1.2;
+  threeRenderer.outputColorSpace = THREE.SRGBColorSpace;
 
   threeControls = new window.OrbitControls(threeCamera, threeRenderer.domElement);
   threeControls.enableDamping = true;
   threeControls.dampingFactor = 0.1;
 
-  // Lighting
-  const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+  // Studio lighting for PBR materials
+  const ambient = new THREE.AmbientLight(0xffffff, 0.5);
   threeScene.add(ambient);
-  const directional = new THREE.DirectionalLight(0xffffff, 0.8);
-  directional.position.set(2, 3, 1);
-  threeScene.add(directional);
-  const fill = new THREE.DirectionalLight(0xffffff, 0.3);
-  fill.position.set(-1, 1, -1);
+  
+  // Key light
+  const key = new THREE.DirectionalLight(0xffffff, 1.0);
+  key.position.set(3, 4, 2);
+  threeScene.add(key);
+  
+  // Fill light
+  const fill = new THREE.DirectionalLight(0xffffff, 0.4);
+  fill.position.set(-2, 2, -1);
   threeScene.add(fill);
+  
+  // Rim light
+  const rim = new THREE.DirectionalLight(0xffffff, 0.3);
+  rim.position.set(0, -1, -3);
+  threeScene.add(rim);
+  
+  // Environment for reflections
+  const pmremGenerator = new THREE.PMREMGenerator(threeRenderer);
+  const envScene = new THREE.Scene();
+  envScene.background = new THREE.Color(0xF8F8F8);
+  const envMap = pmremGenerator.fromScene(envScene).texture;
+  threeScene.environment = envMap;
 
-  // Grid
+  // Grid — hidden by default, shown after generation complete
   const grid = new THREE.GridHelper(2, 20, 0xE0E0E0, 0xE0E0E0);
+  grid.visible = false;
   threeScene.add(grid);
 
   function animate() {
@@ -1684,7 +1706,7 @@ async function generateStep3() {
     document.getElementById('s3ProgressFill').style.width = progress + '%';
   }, 1000);
   
-  // Contextual status messages
+  // Contextual status messages — shown next to progress bar
   const statusMessages = [
     'ANALYZING GEOMETRY',
     'FORMING BASE SHAPE',
@@ -1696,9 +1718,12 @@ async function generateStep3() {
     'FINALIZING MODEL',
   ];
   let statusIdx = 0;
+  const phaseEl = document.getElementById('s3PhaseText');
+  phaseEl.style.display = 'block';
+  phaseEl.textContent = statusMessages[0];
   const statusInterval = setInterval(() => {
     statusIdx = Math.min(statusIdx + 1, statusMessages.length - 1);
-    setStatus('generating', statusMessages[statusIdx]);
+    phaseEl.textContent = statusMessages[statusIdx];
   }, 15000);
 
   // Helper to load GLB into viewer
@@ -1798,9 +1823,10 @@ async function generateStep3() {
             clearInterval(progressInterval);
             clearInterval(statusInterval);
             document.getElementById('s3ProgressFill').style.width = '100%';
+            document.getElementById('s3PhaseText').style.display = 'none';
             document.getElementById('s3DownloadBtn').style.display = 'inline-block';
             document.querySelector('.step-tab[data-step="3"]').classList.add('completed');
-            setStatus('ready', '3D COMPLETE');
+            setStatus('ready', 'IDLE');
             // Re-enable user interaction, show grid
             if (threeControls) {
               threeControls.autoRotate = false;
@@ -1826,6 +1852,7 @@ async function generateStep3() {
   } catch (err) {
     clearInterval(progressInterval);
     clearInterval(statusInterval);
+    document.getElementById('s3PhaseText').style.display = 'none';
     toast('Error: ' + err.message);
     setStatus('error', 'ERROR');
     if (threeControls) { threeControls.autoRotate = false; threeControls.enabled = true; }
@@ -1912,7 +1939,9 @@ function updateS3GenerateBtn() {
 function setStatus(type, text) {
   const dot = document.getElementById('statusDot');
   dot.className = 'status-dot ' + type;
-  document.getElementById('statusText').textContent = text;
+  // Top right only shows IDLE / RUNNING / ERROR
+  const statusMap = { ready: 'IDLE', generating: 'RUNNING', error: 'ERROR' };
+  document.getElementById('statusText').textContent = statusMap[type] || text;
 }
 
 function toast(msg) {
