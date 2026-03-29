@@ -1043,7 +1043,7 @@ html, body {
       <div style="display:flex;gap:8px">
         <button class="btn-outline" id="s3DownloadBtn" onclick="downloadGLB()" style="display:none">Download GLB</button>
         <button class="btn-outline" id="s3DownloadUSDZ" onclick="downloadUSDZ()" style="display:none">Download USDZ</button>
-        <button class="btn-generate" id="s3GenerateBtn" onclick="generateStep3()" style="padding:0 24px">Reconstruct</button>
+        <button class="btn-generate" id="s3GenerateBtn" onclick="generateStep3()" style="padding:0 24px">RECONSTRUCT</button>
       </div>
     </div>
   </div>
@@ -1648,8 +1648,9 @@ async function generateStep3() {
 
   state.s3.generating = true;
   setStatus('generating', 'RECONSTRUCTING 3D');
-  document.getElementById('s3GenerateBtn').disabled = true;
-  document.getElementById('s3GenerateBtn').textContent = 'RECONSTRUCTING...';
+  document.getElementById('s3GenerateBtn').disabled = false;
+  document.getElementById('s3GenerateBtn').textContent = 'STOP';
+  document.getElementById('s3GenerateBtn').onclick = stopStep3;
   document.getElementById('s3Progress').style.display = 'block';
   document.getElementById('s3ProgressFill').style.width = '0%';
   document.getElementById('s3Empty').style.display = 'none';
@@ -1743,6 +1744,8 @@ async function generateStep3() {
     // Use single-shot endpoint with retry for CORS cold-start issues
     let res;
     let retries = 0;
+    const abortController = new AbortController();
+    state.s3.abortController = abortController;
     const payload = JSON.stringify({
       image: inputImage,
       views: viewsToSend,
@@ -1756,6 +1759,7 @@ async function generateStep3() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: payload,
+          signal: abortController.signal,
         });
         break;
       } catch (e) {
@@ -1809,12 +1813,20 @@ async function generateStep3() {
     if (threeControls) { threeControls.autoRotate = false; threeControls.enabled = true; }
   } finally {
     state.s3.generating = false;
+    state.s3.abortController = null;
     document.getElementById('s3GenerateBtn').disabled = false;
-    document.getElementById('s3GenerateBtn').textContent = 'RECONSTRUCT 3D';
+    document.getElementById('s3GenerateBtn').textContent = 'RECONSTRUCT';
+    document.getElementById('s3GenerateBtn').onclick = generateStep3;
     setTimeout(() => {
       document.getElementById('s3Progress').style.display = 'none';
       document.getElementById('s3ProgressFill').style.width = '0%';
     }, 3000);
+  }
+}
+
+function stopStep3() {
+  if (state.s3.abortController) {
+    state.s3.abortController.abort();
   }
 }
 
