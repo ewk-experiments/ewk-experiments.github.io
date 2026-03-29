@@ -1238,9 +1238,12 @@ async function generateStep2() {
   document.getElementById('s2GenerateBtn').textContent = 'GENERATING...';
 
   // Show dot matrix loaders in view cells
-  const patterns = [1, 2, 3, 4];
   ['viewFront', 'viewRight', 'viewBack', 'viewLeft'].forEach((id, i) => {
-    document.getElementById(id).innerHTML = dotMatrixHTML(patterns[i]);
+    const el = document.getElementById(id);
+    el.innerHTML = dotMatrixHTML(1);
+    // Slight offset so they're not perfectly synced
+    const matrix = el.querySelector('.dot-matrix');
+    if (matrix) matrix.style.animationDelay = (i * 0.2) + 's';
   });
 
   // Use LLM-generated prompts if available
