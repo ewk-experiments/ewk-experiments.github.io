@@ -1094,6 +1094,12 @@ html, body {
       <canvas id="s3LoadingCanvas" style="display:none;position:absolute;inset:0;z-index:1"></canvas>
     </div>
     <div class="s3-panel">
+      <div class="s3-panel-section" id="s3RefSection" style="display:none">
+        <div class="s3-panel-label">Reference</div>
+        <div style="padding:0 4px">
+          <img id="s3RefImg" src="" alt="" style="width:100%;border:1px solid var(--border);display:block">
+        </div>
+      </div>
       <div class="s3-panel-section">
         <div class="s3-panel-label">Input Views</div>
         <div class="s3-views-preview" id="s3ViewsPreview">
@@ -1306,6 +1312,12 @@ function switchStep(n) {
   if (n === 3) {
     updateStep3Views();
     initThreeViewer();
+    // Show reference image from Step 1
+    const refImg = state.s1.selectedIndex >= 0 ? state.s1.images[state.s1.selectedIndex] : (state.s2.refImage || null);
+    if (refImg) {
+      document.getElementById('s3RefImg').src = refImg;
+      document.getElementById('s3RefSection').style.display = 'block';
+    }
     // Warm up the Hunyuan container
     fetch(API.hunyuan.generate + '/health').catch(() => {});
   }
