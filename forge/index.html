@@ -998,8 +998,6 @@ html, body {
   <div class="s2-layout">
     <div class="s2-ref" id="s2Ref">
       <span class="cell-label-abs">REFERENCE</span>
-      <div class="product-badge" id="s2ProductBadge"></div>
-      <span class="angle-badge" id="s2AngleBadge"></span>
       <img id="s2RefImg" src="" alt="" style="display:none">
       <span class="thumb-remove" id="s2RefRemove" style="display:none" onclick="event.stopPropagation(); clearS2Ref()">&times;</span>
       <span class="empty-state" id="s2RefEmpty">Drop reference image<br>or select from Step 1</span>
@@ -1304,12 +1302,10 @@ async function analyzeImage(imageData) {
     state.s2.analysis = data;
 
     // Show product badge
-    const badge = document.getElementById('s2ProductBadge');
     badge.textContent = data.product_type.toUpperCase() + ' DETECTED';
     badge.classList.add('visible');
 
     // Show detected angle
-    const angleBadge = document.getElementById('s2AngleBadge');
     angleBadge.textContent = 'DETECTED: ' + data.current_angle.toUpperCase();
     angleBadge.classList.add('visible');
 
@@ -2076,8 +2072,6 @@ function clearS2Ref() {
   document.getElementById('s2RefImg').style.display = 'none';
   document.getElementById('s2RefRemove').style.display = 'none';
   document.getElementById('s2RefEmpty').style.display = '';
-  document.getElementById('s2ProductBadge').classList.remove('visible');
-  document.getElementById('s2AngleBadge').classList.remove('visible');
   // Clear view cells
   ['viewFront', 'viewBack', 'viewTop', 'viewBottom'].forEach(id => {
     document.getElementById(id).innerHTML = '';
