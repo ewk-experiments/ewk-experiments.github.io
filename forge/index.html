@@ -1656,12 +1656,19 @@ async function generateStep3() {
   document.getElementById('s3GenerateBtn').textContent = 'RECONSTRUCTING...';
   document.getElementById('s3Progress').style.display = 'block';
   document.getElementById('s3ProgressFill').style.width = '0%';
-  document.getElementById('s3ProgressFill').style.transition = 'width 30s linear';
   document.getElementById('s3Empty').style.display = 'none';
   
   // Init Three.js viewer
   initThreeViewer();
   document.getElementById('s3Canvas').style.display = 'block';
+  
+  // Hide grid during loading
+  if (threeScene) {
+    threeScene.traverse((child) => {
+      if (child.isGridHelper) child.visible = false;
+    });
+    threeScene.background = new THREE.Color(0xFFFFFF);
+  }
   
   // Auto-rotate during generation, disable user interaction
   if (threeControls) {
@@ -1670,11 +1677,35 @@ async function generateStep3() {
     threeControls.enabled = false;
   }
 
-  // Start smooth progress — will reach ~90% over ~2 min
-  document.getElementById('s3ProgressFill').style.width = '90%';
+  // Smooth progress bar — ticks up gradually over ~2.5 min
+  let progress = 0;
+  const progressInterval = setInterval(() => {
+    progress = Math.min(progress + 0.6, 92);
+    document.getElementById('s3ProgressFill').style.width = progress + '%';
+  }, 1000);
+  
+  // Contextual status messages
+  const statusMessages = [
+    'ANALYZING GEOMETRY',
+    'FORMING BASE SHAPE',
+    'BUILDING STRUCTURE', 
+    'SHAPING CONTOURS',
+    'REFINING SURFACES',
+    'ADDING DETAIL',
+    'OPTIMIZING MESH',
+    'FINALIZING MODEL',
+  ];
+  let statusIdx = 0;
+  const statusInterval = setInterval(() => {
+    statusIdx = Math.min(statusIdx + 1, statusMessages.length - 1);
+    setStatus('generating', statusMessages[statusIdx]);
+  }, 15000);
 
   // Helper to load GLB into viewer
+  let currentPassNum = 0;
   function loadGLBIntoViewer(glbB64, label) {
+    currentPassNum++;
+    const passNum = currentPassNum;
     const glbBytes = atob(glbB64);
     const arr = new Uint8Array(glbBytes.length);
     for (let i = 0; i < glbBytes.length; i++) arr[i] = glbBytes.charCodeAt(i);
@@ -1687,6 +1718,17 @@ async function generateStep3() {
 
     loader.load(url, (gltf) => {
       state.s3.scene = gltf.scene;
+      
+      // For early passes, render as black silhouette
+      const isFinal = (passNum >= 4);
+      if (!isFinal) {
+        gltf.scene.traverse((child) => {
+          if (child.isMesh) {
+            child.material = new THREE.MeshBasicMaterial({ color: 0x0A0A0A });
+          }
+        });
+      }
+      
       const box = new THREE.Box3().setFromObject(gltf.scene);
       const center = box.getCenter(new THREE.Vector3());
       const size = box.getSize(new THREE.Vector3());
@@ -1697,7 +1739,7 @@ async function generateStep3() {
       gltf.scene.position.y += size.y * sc / 2;
       threeScene.add(gltf.scene);
       URL.revokeObjectURL(url);
-      console.log(`Loaded: ${label}`);
+      console.log(`Loaded: ${label} (${isFinal ? 'final' : 'silhouette'})`);
     }, undefined, (err) => {
       console.error('GLB load error:', err);
       URL.revokeObjectURL(url);
@@ -1753,15 +1795,22 @@ async function generateStep3() {
           }
 
           if (data.type === 'done') {
-            document.getElementById('s3ProgressFill').style.transition = 'width 0.5s';
+            clearInterval(progressInterval);
+            clearInterval(statusInterval);
             document.getElementById('s3ProgressFill').style.width = '100%';
             document.getElementById('s3DownloadBtn').style.display = 'inline-block';
             document.querySelector('.step-tab[data-step="3"]').classList.add('completed');
             setStatus('ready', '3D COMPLETE');
-            // Re-enable user interaction
+            // Re-enable user interaction, show grid
             if (threeControls) {
               threeControls.autoRotate = false;
               threeControls.enabled = true;
+            }
+            if (threeScene) {
+              threeScene.traverse((child) => {
+                if (child.isGridHelper) child.visible = true;
+              });
+              threeScene.background = new THREE.Color(0xF8F8F8);
             }
           }
 
@@ -1775,6 +1824,8 @@ async function generateStep3() {
       }
     }
   } catch (err) {
+    clearInterval(progressInterval);
+    clearInterval(statusInterval);
     toast('Error: ' + err.message);
     setStatus('error', 'ERROR');
     if (threeControls) { threeControls.autoRotate = false; threeControls.enabled = true; }
