@@ -430,6 +430,7 @@ html, body {
   color: var(--text-label);
   z-index: 2;
   text-transform: uppercase;
+  pointer-events: none;
 }
 
 .view-cell img {
@@ -444,12 +445,14 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 }
 
 .view-content img {
   max-width: 90%;
   max-height: 90%;
   object-fit: contain;
+  pointer-events: none;
 }
 
 .view-cell.selected { outline: 2px solid var(--accent-active); outline-offset: -2px; }
