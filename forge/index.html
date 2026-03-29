@@ -1030,15 +1030,18 @@ html, body {
 }
 </script>
 <script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-
-// Expose to global scope for inline scripts
-window.THREE = THREE;
-window.OrbitControls = OrbitControls;
-window.GLTFLoader = GLTFLoader;
-window.__threeReady = true;
+try {
+  const THREE = await import('three');
+  const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
+  const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
+  window.THREE = THREE;
+  window.OrbitControls = OrbitControls;
+  window.GLTFLoader = GLTFLoader;
+  window.__threeReady = true;
+} catch(e) {
+  console.error('Three.js load failed:', e);
+  window.__threeReady = false;
+}
 </script>
 
 <script>
