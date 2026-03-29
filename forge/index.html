@@ -1772,82 +1772,53 @@ async function generateStep3() {
   }
 
   try {
-    // Use SSE streaming endpoint
-    const streamUrl = API.hunyuan.generate.replace(/\/$/, '') + '/stream';
-    
-    const res = await fetch(streamUrl, {
+    // Use single-shot endpoint (streaming has CORS issues with Modal)
+    const res = await fetch(API.hunyuan.generate, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         image: inputImage,
         views: viewsToSend,
+        steps: 100,
+        octree_resolution: 512,
       }),
     });
 
     if (!res.ok) {
-      const err = await res.text();
-      toast(`3D reconstruction failed: ${err}`);
+      const errText = await res.text();
+      toast(`3D reconstruction failed: ${errText}`);
       return;
     }
 
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';
+    const data = await res.json();
+    if (data.status !== 'success') {
+      toast(data.error || '3D reconstruction failed');
+      return;
+    }
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop();
-
-      for (const line of lines) {
-        if (!line.startsWith('data: ')) continue;
-        try {
-          const data = JSON.parse(line.slice(6));
-
-          if (data.type === 'phase') {
-            // Keep status as RECONSTRUCTING, don't show pass details
-            console.log(`Pass ${data.pass}/${data.total}: ${data.label}`);
-          }
-
-          if (data.type === 'model') {
-            loadGLBIntoViewer(data.glb, data.label);
-            document.getElementById('s3FileSize').textContent = `${(data.size_bytes / 1024 / 1024).toFixed(1)} MB`;
-            document.getElementById('s3ModelInfo').style.display = 'block';
-            console.log(`Model swapped: ${data.label} (${(data.size_bytes / 1024 / 1024).toFixed(1)} MB)`);
-          }
-
-          if (data.type === 'done') {
-            clearInterval(progressInterval);
-            clearInterval(statusInterval);
-            document.getElementById('s3ProgressFill').style.width = '100%';
-            document.getElementById('s3PhaseText').style.display = 'none';
-            document.getElementById('s3DownloadBtn').style.display = 'inline-block';
-            document.querySelector('.step-tab[data-step="3"]').classList.add('completed');
-            setStatus('ready', 'IDLE');
-            // Re-enable user interaction, show grid
-            if (threeControls) {
-              threeControls.autoRotate = false;
-              threeControls.enabled = true;
-            }
-            if (threeScene) {
-              threeScene.traverse((child) => {
-                if (child.isGridHelper) child.visible = true;
-              });
-              threeScene.background = new THREE.Color(0xF8F8F8);
-            }
-          }
-
-          if (data.type === 'error') {
-            toast(`Pass ${data.pass} error: ${data.error}`);
-            setStatus('error', 'ERROR');
-          }
-        } catch (e) {
-          console.error('SSE parse error:', e, line);
-        }
-      }
+    clearInterval(progressInterval);
+    clearInterval(statusInterval);
+    document.getElementById('s3ProgressFill').style.width = '100%';
+    
+    // Load the model
+    loadGLBIntoViewer(data.glb, 'FINAL');
+    document.getElementById('s3FileSize').textContent = `${(data.size_bytes / 1024 / 1024).toFixed(1)} MB`;
+    document.getElementById('s3ModelInfo').style.display = 'block';
+    document.getElementById('s3DownloadBtn').style.display = 'inline-block';
+    document.querySelector('.step-tab[data-step="3"]').classList.add('completed');
+    document.getElementById('s3PhaseText').style.display = 'none';
+    setStatus('ready', 'IDLE');
+    
+    // Re-enable user interaction, show grid
+    if (threeControls) {
+      threeControls.autoRotate = false;
+      threeControls.enabled = true;
+    }
+    if (threeScene) {
+      threeScene.traverse((child) => {
+        if (child.isGridHelper) child.visible = true;
+      });
+      threeScene.background = new THREE.Color(0xF8F8F8);
     }
   } catch (err) {
     clearInterval(progressInterval);
