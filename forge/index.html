@@ -1007,10 +1007,26 @@ html, body {
 
 <div class="toast" id="toast"></div>
 
-<!-- Three.js for 3D viewer -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
+<!-- Three.js for 3D viewer (ES module imports) -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+// Expose to global scope for inline scripts
+window.THREE = THREE;
+window.OrbitControls = OrbitControls;
+window.GLTFLoader = GLTFLoader;
+window.__threeReady = true;
+</script>
 
 <script>
 // ═══════════════════════════════════════════════════
@@ -1333,6 +1349,8 @@ let threeRenderer, threeCamera, threeScene, threeControls;
 
 function initThreeViewer() {
   if (threeRenderer) return;
+  if (!window.__threeReady) { setTimeout(initThreeViewer, 100); return; }
+  
   const canvas = document.getElementById('s3Canvas');
   const container = document.getElementById('s3Viewer');
 
@@ -1347,7 +1365,7 @@ function initThreeViewer() {
   threeRenderer.setPixelRatio(window.devicePixelRatio);
   threeRenderer.toneMapping = THREE.ACESFilmicToneMapping;
 
-  threeControls = new THREE.OrbitControls(threeCamera, threeRenderer.domElement);
+  threeControls = new window.OrbitControls(threeCamera, threeRenderer.domElement);
   threeControls.enableDamping = true;
   threeControls.dampingFactor = 0.1;
 
@@ -1457,7 +1475,7 @@ async function generateStep3() {
 
     // Load into Three.js
     const url = URL.createObjectURL(state.s3.glbBlob);
-    const loader = new THREE.GLTFLoader();
+    const loader = new window.GLTFLoader();
 
     // Clear old model
     if (state.s3.scene) {
