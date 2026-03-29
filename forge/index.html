@@ -925,6 +925,10 @@ html, body {
       <span class="step-num">03</span>
       <span class="step-name">3D Model</span>
     </div>
+    <div class="step-tab" data-step="4" onclick="switchStep(4)">
+      <span class="step-num">04</span>
+      <span class="step-name">Print</span>
+    </div>
   </div>
   <div class="topbar-status">
     <a href="/forge/about.html" style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;color:var(--text-label);text-decoration:none;margin-right:16px">ABOUT</a>
@@ -1132,6 +1136,79 @@ html, body {
   </div>
 </div>
 
+<!-- Step 4: Print-Ready -->
+<div class="step-panel" id="panel-4">
+  <div class="s3-layout">
+    <div class="s3-viewer" id="s4Viewer">
+      <span class="empty-state" id="s4Empty">Complete Step 3 first,<br>then make print-ready</span>
+      <canvas id="s4Canvas" style="display:none"></canvas>
+    </div>
+    <div class="s3-panel">
+      <div class="s3-panel-section">
+        <div class="s3-panel-label">Print Settings</div>
+        <div class="s3-info-row">
+          <span class="s3-info-key">Size (US)<span class="tip-text">Target shoe size. Length will be scaled to match standard sizing charts.</span></span>
+          <select class="param-input" id="s4Size" style="width:70px;font-family:var(--font-mono);font-size:10px;cursor:pointer">
+            <option value="25.7">8</option>
+            <option value="26.7">9</option>
+            <option value="27.3">10</option>
+            <option value="28.0">10.5</option>
+            <option value="28.6">11</option>
+            <option value="29.2">11.5</option>
+            <option value="30.5" selected>12</option>
+            <option value="31.0">12.5</option>
+            <option value="31.8">13</option>
+          </select>
+        </div>
+        <div class="s3-info-row">
+          <span class="s3-info-key">Wall Thickness<span class="tip-text">Minimum wall thickness in mm. 3mm works for FDM/resin. Thicker = stronger.</span></span>
+          <input type="number" class="param-input" id="s4Wall" value="3" step="0.5" style="width:60px">
+          <span style="font-family:var(--font-mono);font-size:9px;color:var(--text-label)">mm</span>
+        </div>
+        <div class="s3-info-row">
+          <span class="s3-info-key">Flatten Sole</span>
+          <input type="checkbox" id="s4Flatten" checked style="cursor:pointer">
+        </div>
+      </div>
+      <div class="s3-panel-section" id="s4Stats" style="display:none">
+        <div class="s3-panel-label">Print Stats</div>
+        <div class="s3-info-row">
+          <span class="s3-info-key">Dimensions</span>
+          <span class="s3-info-val" id="s4Dims">—</span>
+        </div>
+        <div class="s3-info-row">
+          <span class="s3-info-key">Vertices</span>
+          <span class="s3-info-val" id="s4Verts">—</span>
+        </div>
+        <div class="s3-info-row">
+          <span class="s3-info-key">Faces</span>
+          <span class="s3-info-val" id="s4Faces">—</span>
+        </div>
+        <div class="s3-info-row">
+          <span class="s3-info-key">Watertight</span>
+          <span class="s3-info-val" id="s4Watertight">—</span>
+        </div>
+        <div class="s3-info-row">
+          <span class="s3-info-key">STL Size</span>
+          <span class="s3-info-val" id="s4StlSize">—</span>
+        </div>
+      </div>
+    </div>
+    <div class="s3-controls">
+      <div style="display:flex;align-items:center;gap:12px;flex:1">
+        <div class="progress-bar" id="s4Progress" style="display:none;flex:1;max-width:300px">
+          <div class="progress-fill" id="s4ProgressFill"></div>
+        </div>
+        <span id="s4PhaseText" style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.08em;color:var(--text-label);display:none"></span>
+      </div>
+      <div style="display:flex;gap:0;height:100%">
+        <button class="btn-outline" id="s4DownloadSTL" onclick="downloadSTL()" style="display:none;height:100%">Download STL</button>
+        <button class="btn-generate" id="s4ProcessBtn" onclick="processForPrint()" style="height:100%">MAKE PRINT-READY</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <!-- Three.js for 3D viewer (ES module imports) -->
@@ -1176,6 +1253,9 @@ const API = {
   },
   zero123: {
     generate: 'https://heyitskim-ai--zero123pp-multiview-zero123plus-serve.modal.run',
+  },
+  postprocess: {
+    process: 'https://heyitskim-ai--forge-postprocess-postprocessservice-serve.modal.run',
   },
   train: {
     start: 'https://heyitskim-ai--forge-train-trainservice-serve.modal.run',
@@ -2250,12 +2330,168 @@ document.addEventListener('keydown', (e) => {
     if (state.step === 1) generateStep1();
     else if (state.step === 2) generateStep2();
     else if (state.step === 3) generateStep3();
+    else if (state.step === 4) processForPrint();
   }
   if (e.key === '0' && !e.target.matches('input, textarea')) switchStep(0);
   if (e.key === '1' && !e.target.matches('input, textarea')) switchStep(1);
   if (e.key === '2' && !e.target.matches('input, textarea')) switchStep(2);
   if (e.key === '3' && !e.target.matches('input, textarea')) switchStep(3);
+  if (e.key === '4' && !e.target.matches('input, textarea')) switchStep(4);
 });
+
+// ═══════════════════════════════════════════════════
+// STEP 4 — PRINT-READY
+// ═══════════════════════════════════════════════════
+let s4StlBlob = null;
+
+async function processForPrint() {
+  if (!state.s3.glbBlob) {
+    toast('Complete Step 3 first — need a 3D model to process');
+    return;
+  }
+
+  setStatus('generating', 'RUNNING');
+  document.getElementById('s4ProcessBtn').textContent = 'PROCESSING...';
+  document.getElementById('s4ProcessBtn').disabled = true;
+  document.getElementById('s4Progress').style.display = 'block';
+  document.getElementById('s4ProgressFill').style.width = '20%';
+  document.getElementById('s4PhaseText').style.display = 'block';
+  document.getElementById('s4PhaseText').textContent = 'SCALING + REPAIRING MESH';
+  document.getElementById('s4Empty').style.display = 'none';
+
+  try {
+    // Convert blob to base64
+    const arrayBuf = await state.s3.glbBlob.arrayBuffer();
+    const glbB64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuf)));
+
+    document.getElementById('s4ProgressFill').style.width = '40%';
+
+    const sizeSelect = document.getElementById('s4Size');
+    const targetLength = parseFloat(sizeSelect.value) || 30.5;
+
+    const res = await fetch(API.postprocess.process, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        glb: glbB64,
+        target_length_cm: targetLength,
+        wall_thickness_mm: parseFloat(document.getElementById('s4Wall').value) || 3,
+        flatten_sole: document.getElementById('s4Flatten').checked,
+      }),
+    });
+
+    document.getElementById('s4ProgressFill').style.width = '80%';
+    const data = await res.json();
+
+    if (data.status === 'success') {
+      document.getElementById('s4ProgressFill').style.width = '100%';
+      document.getElementById('s4PhaseText').textContent = 'COMPLETE';
+
+      // Show stats
+      const stats = data.stats.processed;
+      document.getElementById('s4Dims').textContent =
+        `${stats.dimensions_cm.length} × ${stats.dimensions_cm.width} × ${stats.dimensions_cm.height} cm`;
+      document.getElementById('s4Verts').textContent = stats.vertices.toLocaleString();
+      document.getElementById('s4Faces').textContent = stats.faces.toLocaleString();
+      document.getElementById('s4Watertight').textContent = stats.watertight ? 'Yes' : 'No';
+      document.getElementById('s4StlSize').textContent = `${(data.stl_size / 1024 / 1024).toFixed(1)} MB`;
+      document.getElementById('s4Stats').style.display = 'block';
+
+      // Store STL blob
+      const stlBytes = atob(data.stl);
+      const stlArr = new Uint8Array(stlBytes.length);
+      for (let i = 0; i < stlBytes.length; i++) stlArr[i] = stlBytes.charCodeAt(i);
+      s4StlBlob = new Blob([stlArr], { type: 'application/sla' });
+
+      // Show download button
+      document.getElementById('s4DownloadSTL').style.display = 'inline-block';
+
+      // Load processed GLB into viewer
+      if (data.glb) {
+        initS4Viewer();
+        const glbBytes = atob(data.glb);
+        const arr = new Uint8Array(glbBytes.length);
+        for (let i = 0; i < glbBytes.length; i++) arr[i] = glbBytes.charCodeAt(i);
+        const blob = new Blob([arr], { type: 'model/gltf-binary' });
+        const url = URL.createObjectURL(blob);
+        const loader = new window.GLTFLoader();
+        loader.load(url, (gltf) => {
+          if (s4Scene) s4ThreeScene.remove(s4Scene);
+          s4Scene = gltf.scene;
+          const material = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.85, metalness: 0.0 });
+          gltf.scene.traverse((c) => { if (c.isMesh) c.material = material; });
+          const box = new THREE.Box3().setFromObject(gltf.scene);
+          const center = box.getCenter(new THREE.Vector3());
+          const size = box.getSize(new THREE.Vector3());
+          const maxDim = Math.max(size.x, size.y, size.z);
+          const sc = 1 / maxDim;
+          gltf.scene.scale.multiplyScalar(sc);
+          gltf.scene.position.sub(center.multiplyScalar(sc));
+          gltf.scene.position.y += size.y * sc / 2;
+          s4ThreeScene.add(gltf.scene);
+          URL.revokeObjectURL(url);
+        });
+      }
+
+      document.querySelector('.step-tab[data-step="4"]').classList.add('completed');
+      setStatus('ready', 'IDLE');
+    } else {
+      toast(data.error || 'Processing failed');
+      setStatus('error', 'ERROR');
+    }
+  } catch (err) {
+    toast('Error: ' + err.message);
+    setStatus('error', 'ERROR');
+  } finally {
+    document.getElementById('s4ProcessBtn').textContent = 'MAKE PRINT-READY';
+    document.getElementById('s4ProcessBtn').disabled = false;
+    setTimeout(() => {
+      document.getElementById('s4Progress').style.display = 'none';
+      document.getElementById('s4ProgressFill').style.width = '0%';
+    }, 2000);
+  }
+}
+
+function downloadSTL() {
+  if (!s4StlBlob) return;
+  const url = URL.createObjectURL(s4StlBlob);
+  const a = document.createElement('a');
+  a.href = url;
+  const size = document.getElementById('s4Size');
+  const sizeName = size.options[size.selectedIndex].text;
+  a.download = `shoe-size${sizeName}-print.stl`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Step 4 Three.js viewer
+let s4Renderer, s4Camera, s4ThreeScene, s4Controls, s4Scene;
+function initS4Viewer() {
+  if (s4Renderer) return;
+  if (!window.__threeReady) { setTimeout(initS4Viewer, 100); return; }
+  const canvas = document.getElementById('s4Canvas');
+  const container = document.getElementById('s4Viewer');
+  canvas.style.display = 'block';
+
+  s4ThreeScene = new THREE.Scene();
+  s4ThreeScene.background = new THREE.Color(0xF8F8F8);
+  s4Camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+  s4Camera.position.set(0, 0.3, 1.5);
+  s4Renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  s4Renderer.setSize(container.clientWidth, container.clientHeight);
+  s4Renderer.setPixelRatio(window.devicePixelRatio);
+  s4Controls = new window.OrbitControls(s4Camera, s4Renderer.domElement);
+  s4Controls.enableDamping = true;
+  const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+  s4ThreeScene.add(ambient);
+  const key = new THREE.DirectionalLight(0xffffff, 1.0);
+  key.position.set(3, 4, 2);
+  s4ThreeScene.add(key);
+  const grid = new THREE.GridHelper(2, 20, 0xE0E0E0, 0xE0E0E0);
+  s4ThreeScene.add(grid);
+  function animate() { requestAnimationFrame(animate); s4Controls.update(); s4Renderer.render(s4ThreeScene, s4Camera); }
+  animate();
+}
 
 function clearS2Ref() {
   state.s2.refImage = null;
