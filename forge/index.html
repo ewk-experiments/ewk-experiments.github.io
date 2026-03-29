@@ -1320,7 +1320,7 @@ async function generateStep1() {
   document.getElementById('s1Output').insertAdjacentHTML('beforeend', `<div id="s1Loader" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">${dotMatrixHTML(1)}</div>`);
 
   try {
-    const res = await fetch(API.flux.generate, {
+    const res = await fetchWithRetry(API.flux.generate, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       signal: state.s1.abortController.signal,
@@ -2133,6 +2133,29 @@ function toast(msg) {
   el.textContent = msg;
   el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// Retry wrapper for API calls (handles cold-start timeouts)
+async function fetchWithRetry(url, options, retries = 2, delayMs = 5000) {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const res = await fetch(url, options);
+      if (res.ok) return res;
+      if (i < retries && res.status >= 500) {
+        toast(`Server warming up... retry ${i + 1}/${retries}`);
+        await new Promise(r => setTimeout(r, delayMs));
+        continue;
+      }
+      return res;
+    } catch (e) {
+      if (i < retries && !options?.signal?.aborted) {
+        toast(`Connection issue... retry ${i + 1}/${retries}`);
+        await new Promise(r => setTimeout(r, delayMs));
+        continue;
+      }
+      throw e;
+    }
+  }
 }
 
 // ═══════════════════════════════════════════════════
