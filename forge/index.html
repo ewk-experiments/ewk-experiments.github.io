@@ -1018,21 +1018,25 @@ html, body {
       </div>
     </div>
     <div class="view-cell" data-view="front">
+      <span class="cell-label">FRONT</span>
       <div class="view-content" id="viewFront"></div>
     </div>
     <div class="view-cell" data-view="back">
+      <span class="cell-label">BACK</span>
       <div class="view-content" id="viewBack"></div>
     </div>
     <div class="view-cell" data-view="top">
+      <span class="cell-label">TOP</span>
       <div class="view-content" id="viewTop"></div>
     </div>
     <div class="view-cell" data-view="bottom">
+      <span class="cell-label">BOTTOM</span>
       <div class="view-content" id="viewBottom"></div>
     </div>
     <div class="s2-controls">
-      <div class="s1-prompt-area">
-        <span class="s1-prompt-label">Edit Prompt (optional)</span>
-        <textarea id="s2Prompt" placeholder="Describe modifications to the views..." rows="2"></textarea>
+      <div class="s1-prompt-area" style="flex:2">
+        <span class="s1-prompt-label">Product Description</span>
+        <textarea id="s2Prompt" placeholder="Describe the product for better views (e.g., 'matte black rubber wedge boot with geometric sole, open toe, architectural heel column, minimalist Balenciaga aesthetic')..." rows="2"></textarea>
       </div>
       <div class="s1-params">
         <div class="param-group">
@@ -1260,6 +1264,12 @@ async function generateStep1() {
     // Mark step 1 as completed
     document.querySelector('.step-tab[data-step="1"]').classList.add('completed');
 
+    // Carry prompt to Step 2 description for better views
+    const s2Prompt = document.getElementById('s2Prompt');
+    if (!s2Prompt.value.trim()) {
+      s2Prompt.value = prompt.replace(/,?\s*product photography.*$/i, '').replace(/,?\s*e-commerce.*$/i, '').replace(/,?\s*studio lighting.*$/i, '').replace(/,?\s*clean white background.*$/i, '').trim();
+    }
+
     // Auto-advance prompt
     
     setStatus('ready', 'COMPLETE');
@@ -1405,12 +1415,7 @@ async function generateStep2() {
   document.getElementById('s2GenerateBtn').textContent = 'STOP';
   document.getElementById('s2GenerateBtn').onclick = () => { if (state.s2.abortController) state.s2.abortController.abort(); };
 
-  // Analyze first if not already done
-  if (!state.s2.analysis) {
-    await analyzeImage(state.s2.refImage);
-  }
-
-  // Set status to generating AFTER analysis completes
+  // Set status to generating
   setStatus('generating', 'RUNNING');
   document.getElementById('s2GenerateBtn').textContent = 'GENERATING...';
 
@@ -1424,8 +1429,7 @@ async function generateStep2() {
   });
 
   // Use LLM-generated prompts if available
-  const promptPrefix = document.getElementById('s2Prompt').value.trim() ||
-    (state.s2.analysis ? state.s2.analysis.description : '');
+  const description = document.getElementById('s2Prompt').value.trim();
 
   try {
     const res = await fetch(API.flux.multiview, {
@@ -1434,7 +1438,8 @@ async function generateStep2() {
       signal: state.s2.abortController.signal,
       body: JSON.stringify({
         image: state.s2.refImage,
-        prompt_prefix: promptPrefix,
+        description: description,
+        prompt_prefix: description,
         seed: parseInt(document.getElementById('s2Seed').value) || 42,
       }),
     });
