@@ -945,10 +945,14 @@ html, body {
           <span id="s0ImageCount" style="font-family:var(--font-mono);font-size:12px;color:var(--text-dim)">0 images</span>
         </div>
         <div style="flex:1"></div>
-        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-label);line-height:1.6">
+        <div class="progress-bar" id="s0Progress" style="display:none;width:100%">
+          <div class="progress-fill" id="s0ProgressFill" style="width:0%"></div>
+        </div>
+        <div id="s0PhaseText" style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.08em;color:var(--text-label);margin-top:4px;display:none"></div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-label);line-height:1.6;margin-top:8px" id="s0Info">
           Training teaches the model your design language. After training, Step 1 will generate shoes in your style.
           <br><br>
-          Estimated time: ~15 min
+          Estimated time: ~15 min on A100
         </div>
       </div>
     </div>
@@ -980,6 +984,12 @@ html, body {
         <textarea id="s1Prompt" placeholder="Describe the shoe you want to create..." rows="2">A futuristic matte black rubber wedge sandal boot with architectural lines and bold geometric sole, product photography, centered on clean white background, subtle contact shadow, studio lighting</textarea>
       </div>
       <div class="s1-params">
+        <div class="param-group">
+          <span class="param-label">Style<span class="tip-text">Trained LoRA style. Train one in Step 0, or select a previously trained style.</span></span>
+          <select class="param-input" id="s1LoraSelect" style="width:110px;font-family:var(--font-mono);font-size:10px;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:4px 6px;cursor:pointer">
+            <option value="">None</option>
+          </select>
+        </div>
         <div class="param-group">
           <span class="param-label">Seed<span class="tip-text">Controls randomness. Same seed + same prompt = same image. Change it to get variations.</span></span>
           <input type="number" class="param-input" id="s1Seed" value="42">
@@ -1210,7 +1220,7 @@ async function generateStep1() {
         seed: parseInt(document.getElementById('s1Seed').value) || 42,
         steps: parseInt(document.getElementById('s1Steps').value) || 4,
         guidance_scale: 1.0,
-        lora_name: state.trainedLora || undefined,
+        lora_name: document.getElementById('s1LoraSelect').value || state.trainedLora || undefined,
       }),
     });
 
@@ -1897,6 +1907,11 @@ function downloadGLB() {
   URL.revokeObjectURL(url);
 }
 
+function downloadUSDZ() {
+  // USDZ requires server-side conversion — for now download GLB
+  downloadGLB();
+}
+
 // Direct view upload for Step 3
 const s3DirectViews = {};
 function uploadS3View(thumbEl) {
@@ -2042,6 +2057,38 @@ async function startTraining() {
   document.getElementById('s0TrainBtn').textContent = 'TRAINING...';
   document.getElementById('s0TrainBtn').disabled = true;
   
+  // Show progress bar with simulated progress
+  const progressBar = document.getElementById('s0Progress');
+  const progressFill = document.getElementById('s0ProgressFill');
+  const phaseText = document.getElementById('s0PhaseText');
+  progressBar.style.display = 'block';
+  phaseText.style.display = 'block';
+  progressFill.style.width = '0%';
+  
+  const phases = [
+    'UPLOADING IMAGES',
+    'PREPARING DATASET',
+    'LOADING BASE MODEL',
+    'TRAINING — EPOCH 1',
+    'TRAINING — EPOCH 2',
+    'TRAINING — LEARNING STYLE',
+    'TRAINING — REFINING WEIGHTS',
+    'SAVING LORA WEIGHTS',
+  ];
+  let progress = 0;
+  let phaseIdx = 0;
+  phaseText.textContent = phases[0];
+  
+  const progressInterval = setInterval(() => {
+    progress = Math.min(progress + 0.8, 92);
+    progressFill.style.width = progress + '%';
+    const newPhaseIdx = Math.min(Math.floor(progress / 12), phases.length - 1);
+    if (newPhaseIdx !== phaseIdx) {
+      phaseIdx = newPhaseIdx;
+      phaseText.textContent = phases[phaseIdx];
+    }
+  }, 1000);
+  
   try {
     const res = await fetch(API.train.start, {
       method: 'POST',
@@ -2054,23 +2101,39 @@ async function startTraining() {
       }),
     });
     
+    clearInterval(progressInterval);
     const data = await res.json();
+    
     if (data.status === 'success') {
+      progressFill.style.width = '100%';
+      phaseText.textContent = `COMPLETE — ${data.lora_size ? (data.lora_size / 1024 / 1024).toFixed(1) + ' MB' : 'LoRA saved'}`;
       state.trainedLora = styleName;
       document.querySelector('.step-tab[data-step="0"]').classList.add('completed');
       document.getElementById('s1Prompt').value = `A futuristic shoe in the style of ${styleName}, product photography, white background`;
+      document.getElementById('s0Info').innerHTML = `<span style="color:var(--success)">Style "${styleName}" trained successfully.</span><br>Switch to Step 1 to generate with your style.`;
       setStatus('ready', 'IDLE');
-      switchStep(1);
+      
+      // Refresh LoRA list and auto-select the new one
+      await fetchAvailableLoras();
+      document.getElementById('s1LoraSelect').value = styleName;
+      
+      // Auto-switch to Step 1 after a brief moment
+      setTimeout(() => switchStep(1), 1500);
     } else {
+      progressFill.style.width = '0%';
+      phaseText.textContent = 'FAILED';
       toast(data.error || 'Training failed');
       setStatus('error', 'ERROR');
     }
   } catch (err) {
+    clearInterval(progressInterval);
+    progressFill.style.width = '0%';
+    phaseText.textContent = 'ERROR';
     toast('Error: ' + err.message);
     setStatus('error', 'ERROR');
   } finally {
     document.getElementById('s0TrainBtn').textContent = 'TRAIN';
-    document.getElementById('s0TrainBtn').disabled = false;
+    document.getElementById('s0TrainBtn').disabled = s0Images.length < 5;
   }
 }
 
@@ -2078,6 +2141,42 @@ async function startTraining() {
 document.getElementById('s0StyleName').addEventListener('input', (e) => {
   document.getElementById('s0Trigger').value = `in the style of [${e.target.value || 'mystyle'}]`;
 });
+
+// Fetch available trained LoRAs
+async function fetchAvailableLoras() {
+  try {
+    const res = await fetch(API.train.start + '/loras');
+    const data = await res.json();
+    const select = document.getElementById('s1LoraSelect');
+    const currentVal = select.value;
+    
+    // Keep "None" option, clear the rest
+    select.innerHTML = '<option value="">None</option>';
+    
+    if (data.loras && data.loras.length > 0) {
+      data.loras.forEach(lora => {
+        const opt = document.createElement('option');
+        opt.value = lora.name;
+        opt.textContent = `${lora.name} (${lora.size_mb}MB)`;
+        select.appendChild(opt);
+      });
+      
+      // Restore previous selection or auto-select trained one
+      if (currentVal) select.value = currentVal;
+      else if (state.trainedLora) select.value = state.trainedLora;
+    }
+  } catch (err) {
+    console.log('Could not fetch LoRAs:', err.message);
+  }
+}
+
+// Auto-select LoRA when dropdown changes
+document.getElementById('s1LoraSelect').addEventListener('change', (e) => {
+  state.trainedLora = e.target.value || null;
+});
+
+// Load available LoRAs on page load
+fetchAvailableLoras();
 
 // Keyboard shortcuts
 document.addEventListener('keydown', (e) => {
