@@ -431,6 +431,20 @@ html, body {
   object-fit: contain;
 }
 
+.view-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.view-content img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
 .view-cell.selected { outline: 2px solid var(--accent-active); outline-offset: -2px; }
 
 .view-cell .spinner {
@@ -1062,6 +1076,7 @@ html, body {
     <div class="s3-viewer" id="s3Viewer">
       <span class="empty-state" id="s3Empty">Generate views in Step 2<br>then reconstruct here</span>
       <canvas id="s3Canvas" style="display:none"></canvas>
+      <canvas id="s3LoadingCanvas" style="display:none;position:absolute;inset:0;z-index:1"></canvas>
     </div>
     <div class="s3-panel">
       <div class="s3-panel-section">
