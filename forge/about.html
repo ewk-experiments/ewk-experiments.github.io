@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ewk labs / forge / about</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #FFFFFF;
+  --surface: #F8F8F8;
+  --border: #E0E0E0;
+  --text: #0A0A0A;
+  --text-dim: #666666;
+  --text-label: #999999;
+  --accent: #E8380D;
+  --font-ui: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+  gap: 16px;
+}
+
+.topbar-brand {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.topbar-link {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 6px 16px;
+  border: 1px solid var(--border);
+  text-transform: uppercase;
+  transition: all 0.15s;
+}
+
+.topbar-link:hover { border-color: var(--text); color: var(--text); }
+
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 24px 120px;
+}
+
+.page-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--text-label);
+  text-transform: uppercase;
+  margin-bottom: 48px;
+}
+
+.pipeline {
+  display: flex;
+  border: 1px solid var(--border);
+  margin-bottom: 64px;
+}
+
+.pipeline-step {
+  flex: 1;
+  padding: 24px 16px;
+  border-right: 1px solid var(--border);
+  text-align: center;
+}
+
+.pipeline-step:last-child { border-right: none; }
+
+.pipeline-step-num {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--text-label);
+  margin-bottom: 10px;
+}
+
+.pipeline-step-name {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.pipeline-step-desc {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+.pipeline-step-model {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent);
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--text-label);
+  text-transform: uppercase;
+  margin: 48px 0 24px;
+}
+
+.model-card {
+  border: 1px solid var(--border);
+  margin-bottom: -1px;
+}
+
+.model-card-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 20px 20px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.model-name {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.model-role {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.model-body {
+  padding: 20px;
+}
+
+.model-desc {
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.model-meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 16px;
+}
+
+.model-meta-key {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  padding-top: 2px;
+}
+
+.model-meta-val {
+  font-size: 13px;
+  font-weight: 300;
+}
+
+.model-meta-val a {
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  transition: border-color 0.2s;
+}
+
+.model-meta-val a:hover { border-color: var(--accent); color: var(--accent); }
+
+.footer {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-label);
+  margin-top: 64px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.footer a {
+  color: var(--text-label);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+}
+
+.footer a:hover { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="topbar-brand">ewk labs / forge</span>
+  <a href="/forge/" class="topbar-link">Back to Forge</a>
+</div>
+
+<div class="content">
+  <div class="page-title">Technical Architecture</div>
+
+  <div class="pipeline">
+    <div class="pipeline-step">
+      <div class="pipeline-step-num">STEP 01</div>
+      <div class="pipeline-step-name">Generate</div>
+      <div class="pipeline-step-desc">Text-to-image generation</div>
+      <div class="pipeline-step-model">FLUX.2 Klein 4B</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="pipeline-step-num">STEP 02</div>
+      <div class="pipeline-step-name">Multi-View</div>
+      <div class="pipeline-step-desc">Reference-guided view synthesis</div>
+      <div class="pipeline-step-model">FLUX.2 Klein 4B</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="pipeline-step-num">STEP 03</div>
+      <div class="pipeline-step-name">3D Model</div>
+      <div class="pipeline-step-desc">Mesh + PBR reconstruction</div>
+      <div class="pipeline-step-model">Hunyuan3D 2.1</div>
+    </div>
+  </div>
+
+  <div class="section-label">Models</div>
+
+  <div class="model-card">
+    <div class="model-card-header">
+      <span class="model-name">FLUX.2 Klein 4B</span>
+      <span class="model-role">Steps 01 + 02</span>
+    </div>
+    <div class="model-body">
+      <p class="model-desc">
+        Black Forest Labs' fastest model combining text-to-image generation with multi-reference editing in a single 4B parameter architecture. Sub-second inference with quality that rivals models 10x its size. Apache 2.0 license.
+      </p>
+      <div class="model-meta">
+        <span class="model-meta-key">Parameters</span>
+        <span class="model-meta-val">4B (rectified flow transformer)</span>
+        <span class="model-meta-key">Steps</span>
+        <span class="model-meta-val">4 (step-distilled)</span>
+        <span class="model-meta-key">VRAM</span>
+        <span class="model-meta-val">~13GB</span>
+        <span class="model-meta-key">License</span>
+        <span class="model-meta-val">Apache 2.0</span>
+        <span class="model-meta-key">By</span>
+        <span class="model-meta-val"><a href="https://bfl.ai" target="_blank">Black Forest Labs</a></span>
+        <span class="model-meta-key">Weights</span>
+        <span class="model-meta-val"><a href="https://huggingface.co/black-forest-labs/FLUX.2-klein-4B" target="_blank">HuggingFace</a></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="model-card">
+    <div class="model-card-header">
+      <span class="model-name">Hunyuan3D 2.1</span>
+      <span class="model-role">Step 03</span>
+    </div>
+    <div class="model-body">
+      <p class="model-desc">
+        Tencent's large-scale 3D generation system. Converts images into textured 3D meshes with PBR materials using a flow-based diffusion transformer for shape generation and a dedicated paint model for texture synthesis.
+      </p>
+      <div class="model-meta">
+        <span class="model-meta-key">Shape Model</span>
+        <span class="model-meta-val">3.0B parameters</span>
+        <span class="model-meta-key">Texture Model</span>
+        <span class="model-meta-val">1.3B parameters</span>
+        <span class="model-meta-key">Output</span>
+        <span class="model-meta-val">GLB with PBR materials</span>
+        <span class="model-meta-key">By</span>
+        <span class="model-meta-val"><a href="https://github.com/Tencent-Hunyuan/Hunyuan3D-2" target="_blank">Tencent Hunyuan</a></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Infrastructure</div>
+
+  <div class="model-card">
+    <div class="model-card-header">
+      <span class="model-name">Modal</span>
+      <span class="model-role">GPU Compute</span>
+    </div>
+    <div class="model-body">
+      <p class="model-desc">
+        Serverless GPU platform. Models run on-demand with automatic scaling. Cold starts use pre-baked container images with cached weights. Billing per-second of GPU time.
+      </p>
+      <div class="model-meta">
+        <span class="model-meta-key">GPU</span>
+        <span class="model-meta-val">NVIDIA A10G (24GB VRAM)</span>
+        <span class="model-meta-key">URL</span>
+        <span class="model-meta-val"><a href="https://modal.com" target="_blank">modal.com</a></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Built by <a href="https://ewklabs.xyz" target="_blank">ewk labs</a> / 2026
+  </div>
+</div>
+
+</body>
+</html>
