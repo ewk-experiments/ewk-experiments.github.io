@@ -1821,8 +1821,9 @@ async function generateStep3() {
     const payload = JSON.stringify({
       image: inputImage,
       views: viewsToSend,
-      steps: 100,
-      octree_resolution: 384,
+      steps: parseInt(document.getElementById('s3Steps').value) || 100,
+      guidance_scale: parseFloat(document.getElementById('s3Guidance').value) || 10,
+      octree_resolution: parseInt(document.getElementById('s3Octree').value) || 384,
     });
     
     while (retries < 3) {
