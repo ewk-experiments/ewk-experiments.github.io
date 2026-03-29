@@ -986,6 +986,7 @@ html, body {
     <div class="s1-output" id="s1Output">
       <span class="cell-label-abs">OUTPUT</span>
       <img id="s1OutputImg" src="" alt="" style="display:none">
+      <button id="s1ToStep2" onclick="switchStep(2)" style="display:none;position:absolute;bottom:16px;right:16px;padding:6px 14px;background:var(--text);color:var(--bg);border:none;font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;cursor:pointer;z-index:2;text-transform:uppercase">→ Multi-View</button>
       <span class="empty-state" id="s1Empty">Generate an image</span>
     </div>
     <div class="s1-history">
@@ -1269,6 +1270,7 @@ async function generateStep1() {
     img.src = data.image;
     img.style.display = 'block';
     document.getElementById('s1Empty').style.display = 'none';
+    document.getElementById('s1ToStep2').style.display = 'block';
 
     // Add to history grid
     const thumb = document.createElement('div');
@@ -1319,6 +1321,7 @@ function selectHistoryItem(idx) {
   img.src = state.s1.images[idx];
   img.style.display = 'block';
   document.getElementById('s1Empty').style.display = 'none';
+  document.getElementById('s1ToStep2').style.display = 'block';
   document.querySelectorAll('.s1-history-item').forEach((el, i) => {
     el.classList.toggle('selected', i === idx);
   });
