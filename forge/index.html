@@ -1600,9 +1600,8 @@ function initThreeViewer() {
   const envMap = pmremGenerator.fromScene(envScene).texture;
   threeScene.environment = envMap;
 
-  // Grid — hidden by default, shown after generation complete
+  // Grid
   const grid = new THREE.GridHelper(2, 20, 0xE0E0E0, 0xE0E0E0);
-  grid.visible = false;
   threeScene.add(grid);
 
   function animate() {
@@ -1659,24 +1658,14 @@ async function generateStep3() {
   // Init Three.js viewer
   initThreeViewer();
   document.getElementById('s3Canvas').style.display = 'block';
+  document.getElementById('s3Empty').style.display = 'none';
   
-  // Hide grid during loading
-  if (threeScene) {
-    threeScene.traverse((child) => {
-      if (child.isGridHelper) child.visible = false;
-    });
-    threeScene.background = new THREE.Color(0xFFFFFF);
-  }
-  
-  // Auto-rotate during generation, disable user interaction
+  // Disable user interaction during generation
   if (threeControls) {
     threeControls.autoRotate = true;
     threeControls.autoRotateSpeed = 2;
     threeControls.enabled = false;
   }
-
-  // Start particle loading animation
-  startLoadingAnimation();
 
   // Smooth progress bar — ticks up gradually over ~2.5 min
   let progress = 0;
@@ -1785,7 +1774,6 @@ async function generateStep3() {
     document.getElementById('s3ProgressFill').style.width = '100%';
     
     // Load the model
-    stopLoadingAnimation();
     loadGLBIntoViewer(data.glb, 'FINAL');
     document.getElementById('s3FileSize').textContent = `${(data.size_bytes / 1024 / 1024).toFixed(1)} MB`;
     document.getElementById('s3ModelInfo').style.display = 'block';
@@ -1800,15 +1788,10 @@ async function generateStep3() {
       threeControls.enabled = true;
     }
     if (threeScene) {
-      threeScene.traverse((child) => {
-        if (child.isGridHelper) child.visible = true;
-      });
-      threeScene.background = new THREE.Color(0xF8F8F8);
     }
   } catch (err) {
     clearInterval(progressInterval);
     clearInterval(statusInterval);
-    stopLoadingAnimation();
     document.getElementById('s3PhaseText').style.display = 'none';
     toast('Error: ' + err.message);
     setStatus('error', 'ERROR');
