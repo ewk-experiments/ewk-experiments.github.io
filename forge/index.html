@@ -802,25 +802,12 @@ html, body {
 .angle-badge.visible { display: block; }
 
 /* ─── Tooltips ─── */
-.param-tip {
+.param-label {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 14px;
-  height: 14px;
-  border: 1px solid var(--border);
-  font-family: var(--font-mono);
-  font-size: 8px;
-  color: var(--text-label);
   cursor: help;
-  margin-left: 4px;
-  flex-shrink: 0;
 }
 
-.param-tip:hover { border-color: var(--text); color: var(--text); }
-
-.param-tip .tip-text {
+.param-label .tip-text {
   display: none;
   position: absolute;
   bottom: calc(100% + 8px);
@@ -840,7 +827,33 @@ html, body {
   text-transform: none;
 }
 
-.param-tip:hover .tip-text { display: block; }
+.param-label:hover .tip-text { display: block; }
+
+.s3-info-key {
+  position: relative;
+  cursor: help;
+}
+
+.s3-info-key .tip-text {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  background: var(--text);
+  color: var(--bg);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 300;
+  line-height: 1.5;
+  padding: 8px 12px;
+  width: 200px;
+  z-index: 100;
+  pointer-events: none;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.s3-info-key:hover .tip-text { display: block; }
 </style>
 </head>
 <body>
@@ -889,11 +902,11 @@ html, body {
       </div>
       <div class="s1-params">
         <div class="param-group">
-          <span class="param-label">Seed <span class="param-tip">?<span class="tip-text">Controls randomness. Same seed + same prompt = same image. Change it to get variations.</span></span></span>
+          <span class="param-label">Seed<span class="tip-text">Controls randomness. Same seed + same prompt = same image. Change it to get variations.</span></span>
           <input type="number" class="param-input" id="s1Seed" value="42">
         </div>
         <div class="param-group">
-          <span class="param-label">Steps <span class="param-tip">?<span class="tip-text">How many refinement passes. More steps = more detail but slower. 4 is optimized for this model.</span></span></span>
+          <span class="param-label">Steps<span class="tip-text">How many refinement passes. More steps = more detail but slower. 4 is optimized for this model.</span></span>
           <input type="number" class="param-input" id="s1Steps" value="4">
         </div>
       </div>
@@ -939,7 +952,7 @@ html, body {
       </div>
       <div class="s1-params">
         <div class="param-group">
-          <span class="param-label">Seed <span class="param-tip">?<span class="tip-text">Controls randomness for view generation. Lock it to keep consistent results across regenerations.</span></span></span>
+          <span class="param-label">Seed<span class="tip-text">Controls randomness for view generation. Lock it to keep consistent results across regenerations.</span></span>
           <input type="number" class="param-input" id="s2Seed" value="42">
         </div>
       </div>
@@ -968,15 +981,15 @@ html, body {
       <div class="s3-panel-section">
         <div class="s3-panel-label">Parameters</div>
         <div class="s3-info-row">
-          <span class="s3-info-key">Steps <span class="param-tip">?<span class="tip-text">Denoising iterations for 3D shape generation. More steps = cleaner geometry. 50-75 is a good range.</span></span></span>
+          <span class="s3-info-key">Steps<span class="tip-text">Denoising iterations for 3D shape generation. More steps = cleaner geometry. 50-75 is a good range.</span></span>
           <input type="number" class="param-input" id="s3Steps" value="75" style="width:60px">
         </div>
         <div class="s3-info-row">
-          <span class="s3-info-key">Guidance <span class="param-tip">?<span class="tip-text">How closely the 3D model follows the input image. Higher = more faithful but less creative. 5-10 is typical.</span></span></span>
+          <span class="s3-info-key">Guidance<span class="tip-text">How closely the 3D model follows the input image. Higher = more faithful but less creative. 5-10 is typical.</span></span>
           <input type="number" class="param-input" id="s3Guidance" value="7.5" step="0.5" style="width:60px">
         </div>
         <div class="s3-info-row">
-          <span class="s3-info-key">Octree Res <span class="param-tip">?<span class="tip-text">Resolution of the 3D mesh grid. Higher = more geometric detail but slower and more memory. 256-512 recommended.</span></span></span>
+          <span class="s3-info-key">Octree Res<span class="tip-text">Resolution of the 3D mesh grid. Higher = more geometric detail but slower and more memory. 256-512 recommended.</span></span>
           <input type="number" class="param-input" id="s3Octree" value="384" style="width:60px">
         </div>
       </div>
