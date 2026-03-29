@@ -1135,6 +1135,9 @@ const API = {
   },
   vision: {
     analyze: 'https://heyitskim-ai--forge-vision-visionservice-analyze.modal.run',
+  },
+  train: {
+    start: 'https://heyitskim-ai--forge-train-trainservice-serve.modal.run',
   }
 };
 
@@ -2033,17 +2036,39 @@ async function startTraining() {
   const steps = parseInt(document.getElementById('s0Steps').value) || 800;
   
   setStatus('generating', 'RUNNING');
-  document.getElementById('s0TrainBtn').textContent = 'STOP';
-  document.getElementById('s0TrainBtn').onclick = () => { toast('Training stopped'); };
+  document.getElementById('s0TrainBtn').textContent = 'TRAINING...';
+  document.getElementById('s0TrainBtn').disabled = true;
   
-  toast('Training not yet connected — coming soon');
-  
-  // TODO: Send images + config to Modal training endpoint
-  // const payload = {
-  //   images: s0Images.map(img => img.data),
-  //   style_name: styleName,
-  //   steps: steps,
-  // };
+  try {
+    const res = await fetch(API.train.start, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        images: s0Images.map(img => img.data),
+        style_name: styleName,
+        steps: steps,
+        trigger_word: styleName,
+      }),
+    });
+    
+    const data = await res.json();
+    if (data.status === 'success') {
+      toast('Training complete!');
+      document.querySelector('.step-tab[data-step="0"]').classList.add('completed');
+      // Pre-fill Step 1 prompt with trigger word
+      document.getElementById('s1Prompt').value = `A futuristic shoe in the style of ${styleName}, product photography, white background`;
+      setStatus('ready', 'IDLE');
+    } else {
+      toast(data.error || 'Training failed');
+      setStatus('error', 'ERROR');
+    }
+  } catch (err) {
+    toast('Error: ' + err.message);
+    setStatus('error', 'ERROR');
+  } finally {
+    document.getElementById('s0TrainBtn').textContent = 'TRAIN';
+    document.getElementById('s0TrainBtn').disabled = false;
+  }
 }
 
 // Update trigger word when style name changes
