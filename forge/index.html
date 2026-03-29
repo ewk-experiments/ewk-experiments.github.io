@@ -823,7 +823,7 @@ const API = {
 const state = {
   step: 1,
   s1: { images: [], selectedIndex: -1, generating: false },
-  s2: { refImage: null, views: {}, generating: false },
+  s2: { refImage: null, views: {}, generating: false, selectedView: null },
   s3: { glbBlob: null, generating: false, scene: null },
 };
 
@@ -943,6 +943,49 @@ async function generateStep2() {
     return;
   }
 
+  // Single view edit mode
+  if (state.s2.selectedView) {
+    const viewName = state.s2.selectedView;
+    const editPrompt = document.getElementById('s2Prompt').value.trim();
+    if (!editPrompt) { toast(`Enter an edit prompt for the ${viewName} view`); return; }
+
+    state.s2.generating = true;
+    setStatus('generating', `EDITING ${viewName.toUpperCase()}`);
+    document.getElementById('s2GenerateBtn').disabled = true;
+
+    const viewEl = document.getElementById('view' + viewName.charAt(0).toUpperCase() + viewName.slice(1));
+    viewEl.innerHTML = '<div class="spinner"></div>';
+
+    try {
+      const res = await fetch(API.flux.edit, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image: state.s2.views[viewName],
+          prompt: editPrompt,
+          seed: parseInt(document.getElementById('s2Seed').value) || 42,
+          steps: 4,
+          guidance_scale: 1.0,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) { toast(data.error || 'Edit failed'); return; }
+
+      state.s2.views[viewName] = data.image;
+      viewEl.innerHTML = `<img src="${data.image}" alt="${viewName}">`;
+      setStatus('ready', 'EDIT COMPLETE');
+    } catch (err) {
+      toast('Error: ' + err.message);
+      viewEl.innerHTML = state.s2.views[viewName] ? `<img src="${state.s2.views[viewName]}" alt="${viewName}">` : '';
+      setStatus('error', 'ERROR');
+    } finally {
+      state.s2.generating = false;
+      document.getElementById('s2GenerateBtn').disabled = false;
+    }
+    return;
+  }
+
+  // Full multi-view generation
   state.s2.generating = true;
   setStatus('generating', 'GENERATING VIEWS');
   document.getElementById('s2GenerateBtn').disabled = true;
@@ -1241,6 +1284,28 @@ s2Ref.addEventListener('click', () => {
     }
   };
   input.click();
+});
+
+// View cell click — select for spot editing
+document.querySelectorAll('.view-cell').forEach(cell => {
+  cell.addEventListener('click', () => {
+    const viewName = cell.dataset.view;
+    if (!state.s2.views[viewName]) return;
+    
+    // Toggle selection
+    if (state.s2.selectedView === viewName) {
+      state.s2.selectedView = null;
+      cell.classList.remove('selected');
+      document.getElementById('s2Prompt').placeholder = 'Describe modifications to all views...';
+      document.getElementById('s2GenerateBtn').textContent = 'GENERATE VIEWS';
+    } else {
+      state.s2.selectedView = viewName;
+      document.querySelectorAll('.view-cell').forEach(c => c.classList.remove('selected'));
+      cell.classList.add('selected');
+      document.getElementById('s2Prompt').placeholder = `Edit the ${viewName} view...`;
+      document.getElementById('s2GenerateBtn').textContent = `EDIT ${viewName.toUpperCase()}`;
+    }
+  });
 });
 </script>
 
