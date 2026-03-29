@@ -1523,7 +1523,6 @@ async function generateStep3() {
       toast('3D model failed to load in viewer');
       URL.revokeObjectURL(url);
     });
-    });
 
     // Update info
     document.getElementById('s3FileSize').textContent = `${(data.size_bytes / 1024 / 1024).toFixed(1)} MB`;
