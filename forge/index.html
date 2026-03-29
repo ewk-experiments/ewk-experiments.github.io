@@ -1804,8 +1804,10 @@ async function generateStep3() {
       } catch (e) {
         retries++;
         if (retries >= 3) throw e;
-        console.log(`Retry ${retries}/3 — CORS/cold-start issue, waiting...`);
-        await new Promise(r => setTimeout(r, 5000));
+        const phaseEl = document.getElementById('s3PhaseText');
+        if (phaseEl) phaseEl.textContent = 'WARMING UP GPU (RETRY ' + retries + '/3)';
+        console.log(`Retry ${retries}/3 — waiting 10s...`);
+        await new Promise(r => setTimeout(r, 10000));
       }
     }
 
