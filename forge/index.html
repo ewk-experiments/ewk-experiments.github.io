@@ -1150,6 +1150,7 @@ const state = {
   s1: { images: [], selectedIndex: -1, generating: false },
   s2: { refImage: null, views: {}, generating: false, selectedView: null, analysis: null, analyzing: false },
   s3: { glbBlob: null, generating: false, scene: null },
+  trainedLora: null,
 };
 
 // ═══════════════════════════════════════════════════
@@ -1209,6 +1210,7 @@ async function generateStep1() {
         seed: parseInt(document.getElementById('s1Seed').value) || 42,
         steps: parseInt(document.getElementById('s1Steps').value) || 4,
         guidance_scale: 1.0,
+        lora_name: state.trainedLora || undefined,
       }),
     });
 
@@ -2054,11 +2056,11 @@ async function startTraining() {
     
     const data = await res.json();
     if (data.status === 'success') {
-      toast('Training complete!');
+      state.trainedLora = styleName;
       document.querySelector('.step-tab[data-step="0"]').classList.add('completed');
-      // Pre-fill Step 1 prompt with trigger word
       document.getElementById('s1Prompt').value = `A futuristic shoe in the style of ${styleName}, product photography, white background`;
       setStatus('ready', 'IDLE');
+      switchStep(1);
     } else {
       toast(data.error || 'Training failed');
       setStatus('error', 'ERROR');
