@@ -1400,10 +1400,12 @@ async function generateStep3() {
 
     const data = await res.json();
     if (!res.ok || data.status !== 'success') {
-      toast(data.error || '3D reconstruction failed');
+      toast(data.error || `3D reconstruction failed (${res.status})`);
+      console.error('Step 3 error:', data);
       return;
     }
 
+    console.log(`3D model received: ${data.size_bytes} bytes, mode: ${data.mode}`);
     document.getElementById('s3ProgressFill').style.width = '100%';
 
     // Convert base64 GLB to blob
@@ -1441,6 +1443,11 @@ async function generateStep3() {
       document.getElementById('s3Empty').style.display = 'none';
 
       URL.revokeObjectURL(url);
+    }, undefined, (error) => {
+      console.error('GLB load error:', error);
+      toast('3D model failed to load in viewer');
+      URL.revokeObjectURL(url);
+    });
     });
 
     // Update info
