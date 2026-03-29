@@ -1651,13 +1651,27 @@ async function generateStep3() {
   }
 
   state.s3.generating = true;
+  setStatus('generating', 'RECONSTRUCTING 3D');
   document.getElementById('s3GenerateBtn').disabled = true;
+  document.getElementById('s3GenerateBtn').textContent = 'RECONSTRUCTING...';
   document.getElementById('s3Progress').style.display = 'block';
+  document.getElementById('s3ProgressFill').style.width = '0%';
+  document.getElementById('s3ProgressFill').style.transition = 'width 30s linear';
   document.getElementById('s3Empty').style.display = 'none';
   
   // Init Three.js viewer
   initThreeViewer();
   document.getElementById('s3Canvas').style.display = 'block';
+  
+  // Auto-rotate during generation, disable user interaction
+  if (threeControls) {
+    threeControls.autoRotate = true;
+    threeControls.autoRotateSpeed = 2;
+    threeControls.enabled = false;
+  }
+
+  // Start smooth progress — will reach ~90% over ~2 min
+  document.getElementById('s3ProgressFill').style.width = '90%';
 
   // Helper to load GLB into viewer
   function loadGLBIntoViewer(glbB64, label) {
@@ -1727,24 +1741,28 @@ async function generateStep3() {
           const data = JSON.parse(line.slice(6));
 
           if (data.type === 'phase') {
-            setStatus('generating', data.label);
-            document.getElementById('s3GenerateBtn').textContent = `PASS ${data.pass}/${data.total}: ${data.label}`;
-            document.getElementById('s3ProgressFill').style.width = ((data.pass - 1) / data.total * 100) + '%';
+            // Keep status as RECONSTRUCTING, don't show pass details
+            console.log(`Pass ${data.pass}/${data.total}: ${data.label}`);
           }
 
           if (data.type === 'model') {
             loadGLBIntoViewer(data.glb, data.label);
-            document.getElementById('s3ProgressFill').style.width = (data.pass / data.total * 100) + '%';
             document.getElementById('s3FileSize').textContent = `${(data.size_bytes / 1024 / 1024).toFixed(1)} MB`;
             document.getElementById('s3ModelInfo').style.display = 'block';
-            toast(`Pass ${data.pass}/${data.total}: ${data.label}`);
+            console.log(`Model swapped: ${data.label} (${(data.size_bytes / 1024 / 1024).toFixed(1)} MB)`);
           }
 
           if (data.type === 'done') {
+            document.getElementById('s3ProgressFill').style.transition = 'width 0.5s';
             document.getElementById('s3ProgressFill').style.width = '100%';
             document.getElementById('s3DownloadBtn').style.display = 'inline-block';
             document.querySelector('.step-tab[data-step="3"]').classList.add('completed');
             setStatus('ready', '3D COMPLETE');
+            // Re-enable user interaction
+            if (threeControls) {
+              threeControls.autoRotate = false;
+              threeControls.enabled = true;
+            }
           }
 
           if (data.type === 'error') {
@@ -1759,6 +1777,7 @@ async function generateStep3() {
   } catch (err) {
     toast('Error: ' + err.message);
     setStatus('error', 'ERROR');
+    if (threeControls) { threeControls.autoRotate = false; threeControls.enabled = true; }
   } finally {
     state.s3.generating = false;
     document.getElementById('s3GenerateBtn').disabled = false;
@@ -1782,8 +1801,6 @@ function downloadGLB() {
 
 // Direct view upload for Step 3
 const s3DirectViews = {};
-let s3AnalysisPending = 0;
-
 function uploadS3View(thumbEl) {
   const input = document.createElement('input');
   input.type = 'file';
@@ -1795,59 +1812,21 @@ function uploadS3View(thumbEl) {
     reader.onload = async (ev) => {
       const imageData = ev.target.result;
       
-      // Immediately store with a temp key so reconstruct can work
-      const tempKey = 'view_' + Date.now();
-      s3DirectViews[tempKey] = imageData;
+      // Store immediately
+      const slots = ['front', 'right', 'back', 'left'];
+      const nextSlot = slots.find(s => !s3DirectViews[s]) || 'front';
+      s3DirectViews[nextSlot] = imageData;
       
-      // Show image immediately with loading indicator
+      // Show image
       thumbEl.innerHTML = `<img src="${imageData}" alt="view" style="width:100%;height:100%;object-fit:cover">`;
       thumbEl.style.position = 'relative';
-      thumbEl.dataset.tempKey = tempKey;
+      thumbEl.dataset.viewKey = nextSlot;
       
-      // Add X button to remove
-      thumbEl.insertAdjacentHTML('beforeend', `<span class="thumb-remove" onclick="event.stopPropagation(); removeS3View(this.parentElement, '${tempKey}')">&times;</span>`);
+      // Add X button
+      thumbEl.insertAdjacentHTML('beforeend', `<span class="thumb-remove" onclick="event.stopPropagation(); removeS3View(this.parentElement, '${nextSlot}')">&times;</span>`);
       
-      // Update generate button state
       updateS3GenerateBtn();
-      
-      // Analyze with vision LLM to detect angle
-      s3AnalysisPending++;
-      updateS3GenerateBtn();
-      
-      try {
-        const res = await fetch(API.vision.analyze, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: imageData }),
-        });
-        const data = await res.json();
-        if (res.ok && data.current_angle) {
-          let viewKey = 'front';
-          const angle = data.current_angle.toLowerCase();
-          if (angle.includes('right')) viewKey = 'right';
-          else if (angle.includes('left')) viewKey = 'left';
-          else if (angle.includes('back') || angle.includes('rear')) viewKey = 'back';
-          else if (angle.includes('front')) viewKey = 'front';
-          else if (angle.includes('side')) viewKey = 'right';
-          
-          // Move from temp key to proper key
-          delete s3DirectViews[tempKey];
-          s3DirectViews[viewKey] = imageData;
-          thumbEl.dataset.viewKey = viewKey;
-          delete thumbEl.dataset.tempKey;
-          
-          // Update remove button with correct key
-          const removeBtn = thumbEl.querySelector('.thumb-remove');
-          if (removeBtn) removeBtn.setAttribute('onclick', `event.stopPropagation(); removeS3View(this.parentElement, '${viewKey}')`);
-          
-          toast(`Detected: ${viewKey} (${Object.keys(s3DirectViews).length} views)`);
-        }
-      } catch (err) {
-        console.error('Analysis failed, keeping temp key:', err);
-      } finally {
-        s3AnalysisPending--;
-        updateS3GenerateBtn();
-      }
+      toast(`View uploaded (${Object.keys(s3DirectViews).length}/4)`);
     };
     reader.readAsDataURL(file);
   };
@@ -1866,18 +1845,13 @@ function removeS3View(thumbEl, key) {
 
 function updateS3GenerateBtn() {
   const btn = document.getElementById('s3GenerateBtn');
-  const hasViews = Object.keys(s3DirectViews).length > 0 || (state.s2.views.front);
-  const analyzing = s3AnalysisPending > 0;
+  const viewCount = Object.keys(s3DirectViews).length;
+  const hasViews = viewCount > 0 || (state.s2.views.front);
   
-  if (analyzing) {
-    btn.textContent = 'ANALYZING...';
-    btn.disabled = true;
-  } else if (hasViews) {
-    btn.textContent = `RECONSTRUCT 3D (${Object.keys(s3DirectViews).length} VIEWS)`;
-    btn.disabled = false;
+  if (hasViews) {
+    btn.textContent = `RECONSTRUCT 3D (${viewCount || 4} VIEWS)`;
   } else {
     btn.textContent = 'RECONSTRUCT 3D';
-    btn.disabled = false;
   }
 }
 
