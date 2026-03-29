@@ -416,10 +416,9 @@ html, body {
   cursor: pointer;
 }
 
-.view-cell[data-view="front"] { grid-column: 3; grid-row: 1; }
-.view-cell[data-view="back"]  { grid-column: 4; grid-row: 1; border-right: none; }
-.view-cell[data-view="top"]   { grid-column: 3; grid-row: 2; border-bottom: none; }
-.view-cell[data-view="bottom"]{ grid-column: 4; grid-row: 2; border-right: none; border-bottom: none; }
+.view-cell[data-view="front"] { border-right: none; }
+.view-cell[data-view="top"]   { border-bottom: none; }
+.view-cell[data-view="bottom"]{ border-right: none; border-bottom: none; }
 
 .view-cell .cell-label {
   position: absolute;
@@ -1113,13 +1112,13 @@ html, body {
         <span class="analyzing-text">Analyzing product...</span>
       </div>
     </div>
-    <div class="view-cell" data-view="front">
-      <span class="cell-label">FRONT</span>
-      <div class="view-content" id="viewFront"></div>
-    </div>
     <div class="view-cell" data-view="back">
       <span class="cell-label">BACK</span>
       <div class="view-content" id="viewBack"></div>
+    </div>
+    <div class="view-cell" data-view="front">
+      <span class="cell-label">FRONT</span>
+      <div class="view-content" id="viewFront"></div>
     </div>
     <div class="view-cell" data-view="top">
       <span class="cell-label">TOP</span>
