@@ -900,6 +900,19 @@ html, body {
   overflow: hidden;
 }
 
+/* Full-width mode for Print Services and Cost Estimate tabs */
+.s4-produce-layout.s4-full-width {
+  grid-template-columns: 1fr;
+}
+
+.s4-produce-layout.s4-full-width .s4-summary {
+  display: none;
+}
+
+.s4-produce-layout.s4-full-width .s4-services {
+  grid-column: 1;
+}
+
 .s4-tab-bar {
   display: flex;
   border-bottom: 1px solid var(--border);
@@ -3355,6 +3368,11 @@ document.addEventListener('keydown', (e) => {
 function switchS4Tab(tab) {
   document.querySelectorAll('.s4-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
   document.querySelectorAll('.s4-tab-panel').forEach(p => p.classList.toggle('active', p.id === `s4Panel${tab.charAt(0).toUpperCase() + tab.slice(1)}`));
+  // Full-width for Print Services and Cost Estimate tabs
+  const layout = document.querySelector('.s4-produce-layout');
+  if (layout) {
+    layout.classList.toggle('s4-full-width', tab === 'printing' || tab === 'costs');
+  }
 }
 
 // ═══════════════════════════════════════════════════
