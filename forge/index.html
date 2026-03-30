@@ -1048,6 +1048,7 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  max-width: 100%;
 }
 
 .s4-cost-section {}
@@ -1089,6 +1090,218 @@ html, body {
   color: var(--text);
 }
 
+/* Selectable cards */
+.s4-modeler-card.s4-selected {
+  border-color: var(--accent-active);
+  border-width: 2px;
+  background: rgba(232, 56, 13, 0.02);
+}
+
+.s4-modeler-card .s4-select-indicator {
+  display: none;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-active);
+  padding: 2px 8px;
+  border: 1px solid var(--accent-active);
+}
+
+.s4-modeler-card.s4-selected .s4-select-indicator {
+  display: inline-block;
+}
+
+/* Grand total section */
+.s4-grand-total {
+  border: 2px solid var(--text);
+  padding: 20px;
+  background: var(--surface);
+}
+
+.s4-grand-total-header {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.s4-grand-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.s4-grand-row-label {
+  color: var(--text-dim);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+}
+
+.s4-grand-row-value {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.s4-grand-row-note {
+  font-size: 9px;
+  color: var(--text-label);
+  font-style: italic;
+}
+
+.s4-grand-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+.s4-grand-total-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0 0;
+  border-top: 2px solid var(--text);
+  margin-top: 8px;
+}
+
+.s4-grand-total-label {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.s4-grand-total-value {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--accent-active);
+}
+
+.s4-grand-empty {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-label);
+  text-align: center;
+  padding: 16px;
+  letter-spacing: 0.08em;
+}
+
+
+/* Selectable cards */
+.s4-modeler-card { cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+.s4-modeler-card.s4-selected {
+  border-color: var(--accent-active);
+  border-width: 2px;
+  background: rgba(232, 56, 13, 0.02);
+}
+
+.s4-modeler-card .s4-select-indicator {
+  display: none;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-active);
+  padding: 2px 8px;
+  border: 1px solid var(--accent-active);
+  flex-shrink: 0;
+}
+
+.s4-modeler-card.s4-selected .s4-select-indicator {
+  display: inline-block;
+}
+
+/* Grand total section */
+.s4-grand-total {
+  border: 2px solid var(--text);
+  padding: 20px;
+  background: var(--surface);
+}
+
+.s4-grand-total-header {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.s4-grand-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.s4-grand-row-label {
+  color: var(--text-dim);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+}
+
+.s4-grand-row-value {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.s4-grand-row-note {
+  font-size: 9px;
+  color: var(--text-label);
+  font-style: italic;
+}
+
+.s4-grand-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+.s4-grand-total-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0 0;
+  border-top: 2px solid var(--text);
+  margin-top: 8px;
+}
+
+.s4-grand-total-label {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.s4-grand-total-value {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--accent-active);
+}
+
+.s4-grand-empty {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-label);
+  text-align: center;
+  padding: 16px;
+  letter-spacing: 0.08em;
+}
 .s4-controls {
   grid-row: 2;
   grid-column: 1 / -1;
@@ -1629,10 +1842,10 @@ html, body {
       <div class="s4-tab-panel active" id="s4PanelModelers">
         <div class="s4-modeler-list">
 
-          <div class="s4-modeler-card">
+          <div class="s4-modeler-card" data-modeler="eliteshoe3d" onclick="selectModeler(this)">
             <div class="s4-modeler-header">
               <div class="s4-modeler-name">eliteshoe3d</div>
-              <div class="s4-modeler-platform">FIVERR</div>
+              <div style="display:flex;gap:6px;align-items:center"><span class="s4-select-indicator">SELECTED</span><div class="s4-modeler-platform">FIVERR</div></div>
             </div>
             <div class="s4-modeler-desc">Specializes in 3D shoe and footwear modeling. Slippers, boots, heels, sneakers. High-quality realistic rendering. Print-ready STL, OBJ, FBX output. Revisions included.</div>
             <div class="s4-modeler-meta">
@@ -1643,14 +1856,14 @@ html, body {
             <div class="s4-modeler-footer">
               <span class="s4-price">from $50</span>
               <span class="s4-delivery">3-7 day delivery</span>
-              <a class="s4-link" href="https://www.fiverr.com/eliteshoe3d" target="_blank" rel="noopener">View Profile</a>
+              <a class="s4-link" href="https://www.fiverr.com/eliteshoe3d" target="_blank" rel="noopener" onclick="event.stopPropagation()">View Profile</a>
             </div>
           </div>
 
-          <div class="s4-modeler-card">
+          <div class="s4-modeler-card" data-modeler="thomas3dshoes" onclick="selectModeler(this)">
             <div class="s4-modeler-header">
               <div class="s4-modeler-name">thomas3dshoes</div>
-              <div class="s4-modeler-platform">FIVERR</div>
+              <div style="display:flex;gap:6px;align-items:center"><span class="s4-select-indicator">SELECTED</span><div class="s4-modeler-platform">FIVERR</div></div>
             </div>
             <div class="s4-modeler-desc">Professional 3D printable shoe models. Custom sneaker concepts, sole designs, full footwear models for prototyping, branding, or manufacturing. Structured for smooth printing, proper scaling, and realistic form.</div>
             <div class="s4-modeler-meta">
@@ -1661,14 +1874,14 @@ html, body {
             <div class="s4-modeler-footer">
               <span class="s4-price">from $75</span>
               <span class="s4-delivery">3-5 day delivery</span>
-              <a class="s4-link" href="https://www.fiverr.com/thomas3dshoes" target="_blank" rel="noopener">View Profile</a>
+              <a class="s4-link" href="https://www.fiverr.com/thomas3dshoes" target="_blank" rel="noopener" onclick="event.stopPropagation()">View Profile</a>
             </div>
           </div>
 
-          <div class="s4-modeler-card">
+          <div class="s4-modeler-card" data-modeler="shoerealistic" onclick="selectModeler(this)">
             <div class="s4-modeler-header">
               <div class="s4-modeler-name">shoerealistic</div>
-              <div class="s4-modeler-platform">FIVERR</div>
+              <div style="display:flex;gap:6px;align-items:center"><span class="s4-select-indicator">SELECTED</span><div class="s4-modeler-platform">FIVERR</div></div>
             </div>
             <div class="s4-modeler-desc">3D printable shoe prototypes and STL files for footwear manufacturing. Years of experience in 3D footwear modeling. Accurate, detailed, and production-ready shoe prototypes for testing, pitching, or starting your own line.</div>
             <div class="s4-modeler-meta">
@@ -1679,14 +1892,14 @@ html, body {
             <div class="s4-modeler-footer">
               <span class="s4-price">from $100</span>
               <span class="s4-delivery">5-7 day delivery</span>
-              <a class="s4-link" href="https://www.fiverr.com/shoerealistic" target="_blank" rel="noopener">View Profile</a>
+              <a class="s4-link" href="https://www.fiverr.com/shoerealistic" target="_blank" rel="noopener" onclick="event.stopPropagation()">View Profile</a>
             </div>
           </div>
 
-          <div class="s4-modeler-card">
+          <div class="s4-modeler-card" data-modeler="starry_3d" onclick="selectModeler(this)">
             <div class="s4-modeler-header">
               <div class="s4-modeler-name">starry_3d</div>
-              <div class="s4-modeler-platform">FIVERR</div>
+              <div style="display:flex;gap:6px;align-items:center"><span class="s4-select-indicator">SELECTED</span><div class="s4-modeler-platform">FIVERR</div></div>
             </div>
             <div class="s4-modeler-desc">Custom 3D shoe modeling, footwear design, sneaker design. All models optimized for perfect 3D printing results. Boots, slippers, heels, and more.</div>
             <div class="s4-modeler-meta">
@@ -1697,14 +1910,14 @@ html, body {
             <div class="s4-modeler-footer">
               <span class="s4-price">from $60</span>
               <span class="s4-delivery">3-7 day delivery</span>
-              <a class="s4-link" href="https://www.fiverr.com/starry_3d" target="_blank" rel="noopener">View Profile</a>
+              <a class="s4-link" href="https://www.fiverr.com/starry_3d" target="_blank" rel="noopener" onclick="event.stopPropagation()">View Profile</a>
             </div>
           </div>
 
-          <div class="s4-modeler-card">
+          <div class="s4-modeler-card" data-modeler="ethan3dstudio" onclick="selectModeler(this)">
             <div class="s4-modeler-header">
               <div class="s4-modeler-name">ethan3dstudio</div>
-              <div class="s4-modeler-platform">FIVERR</div>
+              <div style="display:flex;gap:6px;align-items:center"><span class="s4-select-indicator">SELECTED</span><div class="s4-modeler-platform">FIVERR</div></div>
             </div>
             <div class="s4-modeler-desc">Custom 3D shoe printing and footwear modeling. High-quality, print-ready designs. Trendy sneakers, stylish heels, futuristic concepts, ergonomic slides. Attention to detail and creative precision.</div>
             <div class="s4-modeler-meta">
@@ -1715,14 +1928,14 @@ html, body {
             <div class="s4-modeler-footer">
               <span class="s4-price">from $65</span>
               <span class="s4-delivery">3-5 day delivery</span>
-              <a class="s4-link" href="https://www.fiverr.com/ethan3dstudio" target="_blank" rel="noopener">View Profile</a>
+              <a class="s4-link" href="https://www.fiverr.com/ethan3dstudio" target="_blank" rel="noopener" onclick="event.stopPropagation()">View Profile</a>
             </div>
           </div>
 
-          <div class="s4-modeler-card s4-card-alt">
+          <div class="s4-modeler-card s4-card-alt" data-modeler="rph" onclick="selectModeler(this)">
             <div class="s4-modeler-header">
               <div class="s4-modeler-name">RPH Footwear</div>
-              <div class="s4-modeler-platform">STUDIO</div>
+              <div style="display:flex;gap:6px;align-items:center"><span class="s4-select-indicator">SELECTED</span><div class="s4-modeler-platform">STUDIO</div></div>
             </div>
             <div class="s4-modeler-desc">Production-grade CAD footwear designers. Training in digital fabrication and manufacturing. Full prototype-to-production pipeline. Higher price, higher fidelity.</div>
             <div class="s4-modeler-meta">
@@ -1733,14 +1946,14 @@ html, body {
             <div class="s4-modeler-footer">
               <span class="s4-price">from $200</span>
               <span class="s4-delivery">7-14 day delivery</span>
-              <a class="s4-link" href="https://rphfootwear.com" target="_blank" rel="noopener">View Site</a>
+              <a class="s4-link" href="https://rphfootwear.com" target="_blank" rel="noopener" onclick="event.stopPropagation()">View Site</a>
             </div>
           </div>
 
-          <div class="s4-modeler-card s4-card-alt">
+          <div class="s4-modeler-card s4-card-alt" data-modeler="zellerfeld" onclick="selectModeler(this)">
             <div class="s4-modeler-header">
               <div class="s4-modeler-name">Zellerfeld</div>
-              <div class="s4-modeler-platform">MANUFACTURER</div>
+              <div style="display:flex;gap:6px;align-items:center"><span class="s4-select-indicator">SELECTED</span><div class="s4-modeler-platform">MANUFACTURER</div></div>
             </div>
             <div class="s4-modeler-desc">Fully 3D printed shoes (TPU). End-to-end manufacturing from digital file to wearable product. Made Nike Air Max 1000 collab. Premium, but they handle everything from model cleanup to final production.</div>
             <div class="s4-modeler-meta">
@@ -1751,7 +1964,7 @@ html, body {
             <div class="s4-modeler-footer">
               <span class="s4-price">Custom Quote</span>
               <span class="s4-delivery">2-4 weeks</span>
-              <a class="s4-link" href="https://zellerfeld.com" target="_blank" rel="noopener">View Site</a>
+              <a class="s4-link" href="https://zellerfeld.com" target="_blank" rel="noopener" onclick="event.stopPropagation()">View Site</a>
             </div>
           </div>
 
@@ -1762,28 +1975,28 @@ html, body {
       <div class="s4-tab-panel" id="s4PanelPrinting">
         <div class="s4-modeler-list">
 
-          <div class="s4-modeler-card">
+          <div class="s4-modeler-card" data-printer="shapeways" onclick="selectPrinter(this)">
             <div class="s4-modeler-header">
               <div class="s4-modeler-name">Shapeways</div>
-              <div class="s4-modeler-platform">ON-DEMAND</div>
+              <div style="display:flex;gap:6px;align-items:center"><span class="s4-select-indicator">SELECTED</span><div class="s4-modeler-platform">ON-DEMAND</div></div>
             </div>
-            <div class="s4-modeler-desc">Industrial-scale on-demand 3D printing. Plastics and metals. Upload STL, get instant quote. Prototype to production at 1 to 10,000+ parts. Global shipping.</div>
+            <div class="s4-modeler-desc">Industrial-scale on-demand 3D printing. Plastics and metals. Upload STL, get instant quote. Prototype to production at 1 to 10,000+ parts. Global shipping. (Recently relaunched under new ownership — site may be intermittent.)</div>
             <div class="s4-modeler-meta">
               <span class="s4-tag">SLS / MJF / SLA</span>
               <span class="s4-tag">Nylon / Resin / Metal</span>
               <span class="s4-tag">Instant Quote</span>
             </div>
             <div class="s4-modeler-footer">
-              <span class="s4-price">Upload for quote</span>
+              <span class="s4-price">$150 - $500/shoe</span>
               <span class="s4-delivery">3-10 business days</span>
-              <a class="s4-link" href="https://www.shapeways.com" target="_blank" rel="noopener">Get Quote</a>
+              <a class="s4-link" href="https://www.shapeways.com" target="_blank" rel="noopener" onclick="event.stopPropagation()">Get Quote</a>
             </div>
           </div>
 
-          <div class="s4-modeler-card">
+          <div class="s4-modeler-card" data-printer="sculpteo" onclick="selectPrinter(this)">
             <div class="s4-modeler-header">
               <div class="s4-modeler-name">Sculpteo</div>
-              <div class="s4-modeler-platform">ON-DEMAND</div>
+              <div style="display:flex;gap:6px;align-items:center"><span class="s4-select-indicator">SELECTED</span><div class="s4-modeler-platform">ON-DEMAND</div></div>
             </div>
             <div class="s4-modeler-desc">Professional online 3D printing. Upload, select material and finish, instant quote. Wide material library including nylon, resin, and flexible polymers.</div>
             <div class="s4-modeler-meta">
@@ -1792,16 +2005,16 @@ html, body {
               <span class="s4-tag">Pro Finishing</span>
             </div>
             <div class="s4-modeler-footer">
-              <span class="s4-price">Upload for quote</span>
+              <span class="s4-price">$120 - $400/shoe</span>
               <span class="s4-delivery">3-7 business days</span>
-              <a class="s4-link" href="https://www.sculpteo.com" target="_blank" rel="noopener">Get Quote</a>
+              <a class="s4-link" href="https://www.sculpteo.com" target="_blank" rel="noopener" onclick="event.stopPropagation()">Get Quote</a>
             </div>
           </div>
 
-          <div class="s4-modeler-card">
+          <div class="s4-modeler-card" data-printer="jlc3dp" onclick="selectPrinter(this)">
             <div class="s4-modeler-header">
               <div class="s4-modeler-name">JLC3DP</div>
-              <div class="s4-modeler-platform">ON-DEMAND</div>
+              <div style="display:flex;gap:6px;align-items:center"><span class="s4-select-indicator">SELECTED</span><div class="s4-modeler-platform">ON-DEMAND</div></div>
             </div>
             <div class="s4-modeler-desc">Custom 3D printed shoes from design to wearable reality. Wide material selection including TPU, PA12, resin. Competitive pricing, especially for shoe-sized prints.</div>
             <div class="s4-modeler-meta">
@@ -1810,16 +2023,16 @@ html, body {
               <span class="s4-tag">Competitive Price</span>
             </div>
             <div class="s4-modeler-footer">
-              <span class="s4-price">Upload for quote</span>
+              <span class="s4-price">$60 - $250/shoe</span>
               <span class="s4-delivery">5-10 business days</span>
-              <a class="s4-link" href="https://jlc3dp.com" target="_blank" rel="noopener">Get Quote</a>
+              <a class="s4-link" href="https://jlc3dp.com" target="_blank" rel="noopener" onclick="event.stopPropagation()">Get Quote</a>
             </div>
           </div>
 
-          <div class="s4-modeler-card">
+          <div class="s4-modeler-card" data-printer="protolabs" onclick="selectPrinter(this)">
             <div class="s4-modeler-header">
               <div class="s4-modeler-name">Protolabs</div>
-              <div class="s4-modeler-platform">INDUSTRIAL</div>
+              <div style="display:flex;gap:6px;align-items:center"><span class="s4-select-indicator">SELECTED</span><div class="s4-modeler-platform">INDUSTRIAL</div></div>
             </div>
             <div class="s4-modeler-desc">Industrial SLA/SLS printing with smooth surface finishes and fine features. Enterprise-grade prototyping with DFM analysis. Higher price, highest reliability.</div>
             <div class="s4-modeler-meta">
@@ -1828,16 +2041,16 @@ html, body {
               <span class="s4-tag">DFM Analysis</span>
             </div>
             <div class="s4-modeler-footer">
-              <span class="s4-price">Upload for quote</span>
+              <span class="s4-price">$250 - $700/shoe</span>
               <span class="s4-delivery">1-7 business days</span>
-              <a class="s4-link" href="https://www.protolabs.com" target="_blank" rel="noopener">Get Quote</a>
+              <a class="s4-link" href="https://www.protolabs.com" target="_blank" rel="noopener" onclick="event.stopPropagation()">Get Quote</a>
             </div>
           </div>
 
-          <div class="s4-modeler-card">
+          <div class="s4-modeler-card" data-printer="raymankind" onclick="selectPrinter(this)">
             <div class="s4-modeler-header">
               <div class="s4-modeler-name">Raymankind</div>
-              <div class="s4-modeler-platform">FOOTWEAR</div>
+              <div style="display:flex;gap:6px;align-items:center"><span class="s4-select-indicator">SELECTED</span><div class="s4-modeler-platform">FOOTWEAR</div></div>
             </div>
             <div class="s4-modeler-desc">Specializes in 3D printing shoes, insoles, outsoles, parts and accessories. Cutting-edge solutions for footwear designs and production processes.</div>
             <div class="s4-modeler-meta">
@@ -1848,7 +2061,7 @@ html, body {
             <div class="s4-modeler-footer">
               <span class="s4-price">Custom Quote</span>
               <span class="s4-delivery">Varies</span>
-              <a class="s4-link" href="https://raymankind.com/applications/3d-printed-shoes/" target="_blank" rel="noopener">View Site</a>
+              <a class="s4-link" href="https://raymankind.com/applications/3d-printed-shoes/" target="_blank" rel="noopener" onclick="event.stopPropagation()">View Site</a>
             </div>
           </div>
 
@@ -1894,6 +2107,13 @@ html, body {
               <div class="s4-cost-row"><span>Mid (Fiverr Pro + SLS Nylon)</span><span>$340 - $800</span></div>
               <div class="s4-cost-row"><span>Premium (Studio + SLA Resin)</span><span>$480 - $900</span></div>
               <div class="s4-cost-row"><span>Production (Zellerfeld TPU)</span><span>$1000+</span></div>
+            </div>
+          </div>
+
+          <div class="s4-grand-total" id="s4GrandTotal">
+            <div class="s4-grand-total-header">Your Estimate</div>
+            <div id="s4GrandContent">
+              <div class="s4-grand-empty">Select a modeler and print service to see your estimate</div>
             </div>
           </div>
 
@@ -3136,6 +3356,198 @@ function switchS4Tab(tab) {
   document.querySelectorAll('.s4-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
   document.querySelectorAll('.s4-tab-panel').forEach(p => p.classList.toggle('active', p.id === `s4Panel${tab.charAt(0).toUpperCase() + tab.slice(1)}`));
 }
+
+// ═══════════════════════════════════════════════════
+// PRICING DATA & SELECTION
+// ═══════════════════════════════════════════════════
+const modelerPricing = {
+  eliteshoe3d: { name: 'eliteshoe3d', min: 50, max: 100, delivery: '3-7 days' },
+  thomas3dshoes: { name: 'thomas3dshoes', min: 75, max: 150, delivery: '3-5 days' },
+  shoerealistic: { name: 'shoerealistic', min: 100, max: 200, delivery: '5-7 days' },
+  starry_3d: { name: 'starry_3d', min: 60, max: 120, delivery: '3-7 days' },
+  ethan3dstudio: { name: 'ethan3dstudio', min: 65, max: 130, delivery: '3-5 days' },
+  rph: { name: 'RPH Footwear', min: 200, max: 500, delivery: '7-14 days' },
+  zellerfeld: { name: 'Zellerfeld', min: 500, max: 1500, delivery: '2-4 weeks' },
+};
+
+// Per-shoe estimates by material key
+const printerPricing = {
+  shapeways: {
+    name: 'Shapeways',
+    materials: {
+      'resin-sla': { min: 200, max: 500 },
+      'nylon-sls': { min: 150, max: 350 },
+      'tpu-fdm': { min: 100, max: 250 },
+      'resin-dlp': { min: 200, max: 500 },
+      'metal-slm': { min: 500, max: 1200 },
+    },
+    default: { min: 150, max: 500 },
+  },
+  sculpteo: {
+    name: 'Sculpteo',
+    materials: {
+      'resin-sla': { min: 180, max: 400 },
+      'nylon-sls': { min: 120, max: 300 },
+      'tpu-fdm': { min: 90, max: 200 },
+      'resin-dlp': { min: 180, max: 400 },
+      'metal-slm': { min: 450, max: 1100 },
+    },
+    default: { min: 120, max: 400 },
+  },
+  jlc3dp: {
+    name: 'JLC3DP',
+    materials: {
+      'resin-sla': { min: 80, max: 200 },
+      'nylon-sls': { min: 100, max: 250 },
+      'tpu-fdm': { min: 60, max: 150 },
+      'resin-dlp': { min: 100, max: 250 },
+      'metal-slm': { min: 300, max: 800 },
+    },
+    default: { min: 60, max: 250 },
+  },
+  protolabs: {
+    name: 'Protolabs',
+    materials: {
+      'resin-sla': { min: 250, max: 600 },
+      'nylon-sls': { min: 300, max: 700 },
+      'tpu-fdm': { min: 200, max: 450 },
+      'resin-dlp': { min: 250, max: 600 },
+      'metal-slm': { min: 600, max: 1500 },
+    },
+    default: { min: 250, max: 700 },
+  },
+  raymankind: {
+    name: 'Raymankind',
+    materials: {},
+    default: null, // Custom quote
+  },
+};
+
+const s4Selection = {
+  modeler: null,
+  printer: null,
+};
+
+function selectModeler(el) {
+  const id = el.dataset.modeler;
+  const panel = document.getElementById('s4PanelModelers');
+  
+  // Toggle selection
+  if (s4Selection.modeler === id) {
+    s4Selection.modeler = null;
+    el.classList.remove('s4-selected');
+  } else {
+    s4Selection.modeler = id;
+    panel.querySelectorAll('.s4-modeler-card').forEach(c => c.classList.remove('s4-selected'));
+    el.classList.add('s4-selected');
+  }
+  
+  updateGrandTotal();
+}
+
+function selectPrinter(el) {
+  const id = el.dataset.printer;
+  const panel = document.getElementById('s4PanelPrinting');
+  
+  // Toggle selection
+  if (s4Selection.printer === id) {
+    s4Selection.printer = null;
+    el.classList.remove('s4-selected');
+  } else {
+    s4Selection.printer = id;
+    panel.querySelectorAll('.s4-modeler-card').forEach(c => c.classList.remove('s4-selected'));
+    el.classList.add('s4-selected');
+  }
+  
+  updateGrandTotal();
+}
+
+function updateGrandTotal() {
+  const container = document.getElementById('s4GrandContent');
+  const modeler = s4Selection.modeler;
+  const printer = s4Selection.printer;
+  
+  if (!modeler && !printer) {
+    container.innerHTML = '<div class="s4-grand-empty">Select a modeler and print service to see your estimate</div>';
+    return;
+  }
+  
+  const material = document.getElementById('s4Material')?.value || 'nylon-sls';
+  const materialSelect = document.getElementById('s4Material');
+  const materialName = materialSelect ? materialSelect.options[materialSelect.selectedIndex].text : 'Nylon PA12 (SLS)';
+  
+  let html = '';
+  let totalMin = 0;
+  let totalMax = 0;
+  let hasCustom = false;
+  
+  // Modeler row
+  if (modeler && modelerPricing[modeler]) {
+    const m = modelerPricing[modeler];
+    html += `<div class="s4-grand-row">
+      <span class="s4-grand-row-label">Modeler: ${m.name}</span>
+      <span class="s4-grand-row-value">$${m.min} - $${m.max}</span>
+    </div>`;
+    totalMin += m.min;
+    totalMax += m.max;
+  }
+  
+  // Printer row (x2 for pair)
+  if (printer && printerPricing[printer]) {
+    const p = printerPricing[printer];
+    const matPricing = p.materials[material] || p.default;
+    
+    if (matPricing) {
+      const pairMin = matPricing.min * 2;
+      const pairMax = matPricing.max * 2;
+      html += `<div class="s4-grand-row">
+        <span class="s4-grand-row-label">Print: ${p.name} (x2 shoes)</span>
+        <span class="s4-grand-row-value">$${pairMin} - $${pairMax}</span>
+      </div>`;
+      html += `<div class="s4-grand-row">
+        <span class="s4-grand-row-note">Material: ${materialName}</span>
+        <span class="s4-grand-row-note">$${matPricing.min} - $${matPricing.max} per shoe</span>
+      </div>`;
+      totalMin += pairMin;
+      totalMax += pairMax;
+    } else {
+      html += `<div class="s4-grand-row">
+        <span class="s4-grand-row-label">Print: ${p.name}</span>
+        <span class="s4-grand-row-value" style="color:var(--text-label)">Custom Quote</span>
+      </div>`;
+      hasCustom = true;
+    }
+  }
+  
+  // Divider and total
+  if (html) {
+    html += '<div class="s4-grand-divider"></div>';
+    
+    if (hasCustom) {
+      html += `<div class="s4-grand-total-line">
+        <span class="s4-grand-total-label">Grand Total</span>
+        <span class="s4-grand-total-value">$${totalMin}+ (requires quote)</span>
+      </div>`;
+    } else if (totalMin > 0) {
+      html += `<div class="s4-grand-total-line">
+        <span class="s4-grand-total-label">Grand Total</span>
+        <span class="s4-grand-total-value">$${totalMin.toLocaleString()} - $${totalMax.toLocaleString()}</span>
+      </div>`;
+    }
+    
+    // Add context note
+    if (!modeler || !printer) {
+      const missing = !modeler ? 'modeler' : 'print service';
+      html += `<div class="s4-grand-row-note" style="margin-top:8px;text-align:center">Select a ${missing} to see the full estimate</div>`;
+    }
+  }
+  
+  container.innerHTML = html;
+}
+
+// Update grand total when material changes
+document.getElementById('s4Material')?.addEventListener('change', updateGrandTotal);
+
 
 // Update Step 4 summary when switching to it
 function updateS4Summary() {
