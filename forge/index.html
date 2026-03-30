@@ -3167,6 +3167,7 @@ async function startTraining() {
   
   const styleName = document.getElementById('s0StyleName').value.trim() || 'mystyle';
   const steps = parseInt(document.getElementById('s0Steps').value) || 800;
+  const sessionId = 'train_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
   
   setStatus('generating', 'RUNNING');
   document.getElementById('s0TrainBtn').textContent = 'TRAINING...';
@@ -3180,36 +3181,68 @@ async function startTraining() {
   phaseText.style.display = 'block';
   progressFill.style.width = '0%';
   
-  const phases = [
-    'UPLOADING IMAGES',
-    'PREPARING DATASET',
-    'LOADING BASE MODEL',
-    'TRAINING — EPOCH 1',
-    'TRAINING — EPOCH 2',
-    'TRAINING — LEARNING STYLE',
-    'TRAINING — REFINING WEIGHTS',
-    'SAVING LORA WEIGHTS',
-  ];
-  let progress = 0;
-  let phaseIdx = 0;
-  phaseText.textContent = phases[0];
-  
-  const progressInterval = setInterval(() => {
-    progress = Math.min(progress + 0.8, 92);
-    progressFill.style.width = progress + '%';
-    const newPhaseIdx = Math.min(Math.floor(progress / 12), phases.length - 1);
-    if (newPhaseIdx !== phaseIdx) {
-      phaseIdx = newPhaseIdx;
-      phaseText.textContent = phases[phaseIdx];
-    }
-  }, 1000);
-  
   try {
+    // ── Phase 1: Upload images in batches of 10 ──
+    const BATCH_SIZE = 10;
+    const totalBatches = Math.ceil(s0Images.length / BATCH_SIZE);
+    let uploadedCount = 0;
+    
+    for (let batchIdx = 0; batchIdx < totalBatches; batchIdx++) {
+      const batchImages = s0Images.slice(batchIdx * BATCH_SIZE, (batchIdx + 1) * BATCH_SIZE);
+      const uploadProgress = Math.round(((batchIdx + 1) / totalBatches) * 20);
+      progressFill.style.width = uploadProgress + '%';
+      phaseText.textContent = `UPLOADING BATCH ${batchIdx + 1}/${totalBatches} (${uploadedCount + batchImages.length}/${s0Images.length} images)`;
+      
+      const batchRes = await fetchWithRetry(API.train.start + '/upload-batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          session_id: sessionId,
+          images: batchImages.map(img => img.data),
+          style_name: styleName,
+          batch_index: batchIdx,
+        }),
+      });
+      
+      const batchData = await batchRes.json();
+      if (batchData.status !== 'ok') {
+        throw new Error(batchData.error || `Batch ${batchIdx + 1} upload failed`);
+      }
+      uploadedCount = batchData.total_images;
+    }
+    
+    phaseText.textContent = `UPLOADED ${uploadedCount} IMAGES — STARTING TRAINING`;
+    progressFill.style.width = '22%';
+    
+    // ── Phase 2: Start training (no images in payload, they're already uploaded) ──
+    const phases = [
+      'PREPARING DATASET',
+      'LOADING BASE MODEL',
+      'TRAINING — EPOCH 1',
+      'TRAINING — EPOCH 2',
+      'TRAINING — LEARNING STYLE',
+      'TRAINING — REFINING WEIGHTS',
+      'SAVING LORA WEIGHTS',
+    ];
+    let progress = 22;
+    let phaseIdx = 0;
+    
+    const progressInterval = setInterval(() => {
+      progress = Math.min(progress + 0.6, 92);
+      progressFill.style.width = progress + '%';
+      const newPhaseIdx = Math.min(Math.floor((progress - 22) / 10), phases.length - 1);
+      if (newPhaseIdx !== phaseIdx) {
+        phaseIdx = newPhaseIdx;
+        phaseText.textContent = phases[phaseIdx];
+      }
+    }, 1000);
+    
     const res = await fetch(API.train.start, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        images: s0Images.map(img => img.data),
+        images: [],
+        session_id: sessionId,
         style_name: styleName,
         steps: steps,
         trigger_word: styleName,
@@ -3241,7 +3274,6 @@ async function startTraining() {
       setStatus('error', 'ERROR');
     }
   } catch (err) {
-    clearInterval(progressInterval);
     progressFill.style.width = '0%';
     phaseText.textContent = 'ERROR';
     toast('Error: ' + err.message);
