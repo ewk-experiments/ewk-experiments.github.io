@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat / The Index</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#FAFAFA;--bg-warm:#F2F0ED;--vermillion:#E8380D;
+  --text:#1A1A1A;--text-secondary:#6B6B6B;--border:#E0DEDA;
+  --font-sans:'Inter',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+html,body{height:100%;font-family:var(--font-sans);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+
+/* PASSWORD SCREEN */
+#gate{display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:24px;animation:fadeIn .4s ease}
+#gate h1{font-size:14px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary)}
+#gate .input-row{display:flex;gap:8px}
+#gate input{
+  font-family:var(--font-mono);font-size:14px;padding:10px 16px;
+  border:1.5px solid var(--border);background:white;border-radius:2px;
+  outline:none;width:220px;transition:border-color .2s;
+}
+#gate input:focus{border-color:var(--vermillion)}
+#gate button{
+  font-family:var(--font-mono);font-size:13px;font-weight:500;
+  padding:10px 20px;background:var(--text);color:white;border:none;
+  border-radius:2px;cursor:pointer;letter-spacing:.04em;
+  text-transform:uppercase;transition:background .15s;
+}
+#gate button:hover{background:var(--vermillion)}
+#gate .error{font-size:12px;color:var(--vermillion);font-family:var(--font-mono);height:16px}
+
+/* CHAT SCREEN */
+#chat{display:none;flex-direction:column;height:100%;max-width:640px;margin:0 auto;animation:fadeIn .4s ease}
+#chat-header{
+  padding:20px 24px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+#chat-header h2{font-size:13px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary)}
+#chat-header .status{font-size:11px;font-family:var(--font-mono);color:var(--text-secondary)}
+#messages{
+  flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:12px;
+}
+#messages::-webkit-scrollbar{width:4px}
+#messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.msg{max-width:75%;padding:12px 16px;font-size:14px;line-height:1.55;border-radius:2px;animation:msgIn .25s ease}
+.msg-visitor{align-self:flex-end;background:var(--text);color:white}
+.msg-kim{align-self:flex-start;background:var(--bg-warm);border:1px solid var(--border)}
+.msg .meta{font-size:10px;font-family:var(--font-mono);color:var(--text-secondary);margin-top:6px}
+.msg-visitor .meta{color:rgba(255,255,255,.5)}
+.msg-system{align-self:center;font-size:12px;font-family:var(--font-mono);color:var(--text-secondary);padding:8px 0}
+
+#input-area{
+  padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;
+  background:white;
+}
+#input-area textarea{
+  flex:1;font-family:var(--font-sans);font-size:14px;padding:10px 14px;
+  border:1.5px solid var(--border);border-radius:2px;resize:none;
+  outline:none;min-height:42px;max-height:120px;line-height:1.4;
+  transition:border-color .2s;
+}
+#input-area textarea:focus{border-color:var(--vermillion)}
+#input-area button{
+  font-family:var(--font-mono);font-size:12px;font-weight:500;
+  padding:10px 18px;background:var(--text);color:white;border:none;
+  border-radius:2px;cursor:pointer;letter-spacing:.04em;
+  text-transform:uppercase;transition:all .15s;align-self:flex-end;
+}
+#input-area button:hover{background:var(--vermillion)}
+#input-area button:disabled{opacity:.4;cursor:default;background:var(--text)}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes msgIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:480px){
+  #chat{max-width:100%}
+  #messages{padding:16px}
+  #input-area{padding:12px 16px}
+  .msg{max-width:85%}
+}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1>Private Channel</h1>
+  <div class="input-row">
+    <input type="password" id="pw" placeholder="Password" autocomplete="off">
+    <button onclick="tryAuth()">Enter</button>
+  </div>
+  <div class="error" id="gate-error"></div>
+</div>
+
+<div id="chat">
+  <div id="chat-header">
+    <h2>Kim / The Index</h2>
+    <span class="status" id="status">connected</span>
+  </div>
+  <div id="messages">
+    <div class="msg-system">Messages are delivered via AgentMail. Kim will reply when available.</div>
+  </div>
+  <div id="input-area">
+    <textarea id="msg-input" placeholder="Type a message..." rows="1"></textarea>
+    <button id="send-btn" onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
+<script>
+const API = 'https://api.agentmail.to/v0';
+const KEY = 'am_us_a54973e44a3028eceb8baaf3da39c5d43dafa973486e32c8576bc0691bc72172';
+const VISITOR_INBOX = 'chat-visitor@agentmail.to';
+const KIM_INBOX = 'heyitskim@agentmail.to';
+const SUBJECT = 'Chat from ewklabs.xyz';
+
+let threadId = localStorage.getItem('ewk_chat_thread');
+let knownMsgIds = new Set();
+let pollTimer = null;
+
+function headers(json) {
+  const h = { 'Authorization': 'Bearer ' + KEY };
+  if (json) h['Content-Type'] = 'application/json';
+  return h;
+}
+
+// AUTH
+function tryAuth() {
+  const pw = document.getElementById('pw').value;
+  if (pw === 'alissa2026') {
+    localStorage.setItem('ewk_chat_auth', '1');
+    enterChat();
+  } else {
+    document.getElementById('gate-error').textContent = 'Invalid password';
+    document.getElementById('pw').value = '';
+  }
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('gate').style.display !== 'none') tryAuth();
+});
+
+if (localStorage.getItem('ewk_chat_auth') === '1') enterChat();
+
+function enterChat() {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('chat').style.display = 'flex';
+  loadThread();
+  startPolling();
+  document.getElementById('msg-input').focus();
+}
+
+// AUTO-RESIZE TEXTAREA
+const ta = document.getElementById('msg-input');
+ta.addEventListener('input', () => { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; });
+ta.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+
+// SEND
+async function sendMessage() {
+  const input = document.getElementById('msg-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const btn = document.getElementById('send-btn');
+  btn.disabled = true;
+  input.value = '';
+  input.style.height = 'auto';
+
+  appendMsg(text, 'visitor', new Date());
+
+  try {
+    const body = { to: KIM_INBOX, subject: SUBJECT, text };
+    if (threadId) body.reply_to_message_id = localStorage.getItem('ewk_chat_last_msg_id');
+
+    const res = await fetch(API + '/inboxes/' + VISITOR_INBOX + '/messages/send', {
+      method: 'POST', headers: headers(true), body: JSON.stringify(body)
+    });
+    const data = await res.json();
+
+    if (data.thread_id) {
+      threadId = data.thread_id;
+      localStorage.setItem('ewk_chat_thread', threadId);
+    }
+    if (data.message_id) {
+      knownMsgIds.add(data.message_id);
+      localStorage.setItem('ewk_chat_last_msg_id', data.message_id);
+    }
+  } catch (err) {
+    appendSystem('Failed to send. Try again.');
+  }
+  btn.disabled = false;
+  input.focus();
+}
+
+// LOAD THREAD
+async function loadThread() {
+  if (!threadId) return;
+  try {
+    const res = await fetch(API + '/threads/' + threadId, { headers: headers() });
+    if (!res.ok) { threadId = null; localStorage.removeItem('ewk_chat_thread'); return; }
+    const data = await res.json();
+    if (data.messages && data.messages.length) {
+      data.messages.forEach(m => {
+        if (knownMsgIds.has(m.message_id)) return;
+        knownMsgIds.add(m.message_id);
+        const isVisitor = m.from && m.from.includes(VISITOR_INBOX);
+        const text = m.text || m.preview || '';
+        appendMsg(text, isVisitor ? 'visitor' : 'kim', new Date(m.timestamp));
+      });
+    }
+  } catch (e) {}
+}
+
+// POLL FOR NEW MESSAGES
+function startPolling() {
+  pollTimer = setInterval(async () => {
+    if (!threadId) return;
+    try {
+      const res = await fetch(API + '/threads/' + threadId, { headers: headers() });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!data.messages) return;
+      data.messages.forEach(m => {
+        if (knownMsgIds.has(m.message_id)) return;
+        knownMsgIds.add(m.message_id);
+        const isVisitor = m.from && m.from.includes(VISITOR_INBOX);
+        const text = m.text || m.preview || '';
+        appendMsg(text, isVisitor ? 'visitor' : 'kim', new Date(m.timestamp));
+      });
+    } catch (e) {}
+  }, 5000);
+}
+
+// DOM
+function appendMsg(text, who, date) {
+  const el = document.createElement('div');
+  el.className = 'msg msg-' + who;
+  el.innerHTML = escHtml(text) + '<div class="meta">' + formatTime(date) + '</div>';
+  document.getElementById('messages').appendChild(el);
+  scrollDown();
+}
+
+function appendSystem(text) {
+  const el = document.createElement('div');
+  el.className = 'msg-system';
+  el.textContent = text;
+  document.getElementById('messages').appendChild(el);
+  scrollDown();
+}
+
+function scrollDown() {
+  const m = document.getElementById('messages');
+  m.scrollTop = m.scrollHeight;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function formatTime(d) {
+  if (!d || isNaN(d)) return '';
+  const now = new Date();
+  const diff = now - d;
+  if (diff < 86400000 && d.getDate() === now.getDate()) {
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  return d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+</script>
+</body>
+</html>
