@@ -11,10 +11,10 @@
 
 :root {
   --bg: #FAFAFA;
-  --outline: rgba(0,0,0,0.10);
-  --outline-dim: rgba(0,0,0,0.04);
+  --outline: rgba(0,0,0,0.12);
+  --outline-dim: rgba(0,0,0,0.06);
   --outline-hover: rgba(59, 130, 246, 0.5);
-  --fill-hover: rgba(59, 130, 246, 0.035);
+  --fill-hover: rgba(59, 130, 246, 0.04);
   --fill-active: rgba(59, 130, 246, 0.06);
   --accent: #3B82F6;
   --text: #18181B;
@@ -22,6 +22,8 @@
   --text-dim: #A1A1AA;
   --font-sans: 'Instrument Sans', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
+  --speed: 350ms;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body {
@@ -34,7 +36,6 @@ body {
   grid-template-columns: 1fr 340px;
 }
 
-/* Left side */
 .plan-side {
   display: flex;
   flex-direction: column;
@@ -42,9 +43,6 @@ body {
 }
 
 .top-bar {
-  display: flex;
-  align-items: center;
-  gap: 16px;
   margin-bottom: 20px;
 }
 
@@ -56,16 +54,11 @@ body {
   font-size: 11px;
   color: var(--text-dim);
 }
-
-.breadcrumb span {
-  cursor: pointer;
-  transition: color 150ms ease;
-}
+.breadcrumb span { cursor: pointer; transition: color 150ms ease; }
 .breadcrumb span:hover { color: var(--accent); }
 .breadcrumb span.current { color: var(--text-muted); cursor: default; }
 .breadcrumb .sep { cursor: default; opacity: 0.3; }
 
-/* Floor plan */
 .plan-view {
   flex: 1;
   display: flex;
@@ -73,40 +66,59 @@ body {
   justify-content: center;
 }
 
-/* The VS Code shell — always visible */
+/* The frame uses CSS Grid for animated zone sizing */
 .vscode-frame {
   width: 100%;
   max-width: 760px;
-  aspect-ratio: 1.6 / 1;
+  aspect-ratio: 1.55 / 1;
+  display: grid;
+  border: 1px solid var(--outline);
+  overflow: hidden;
+  /* Default: VS Code proportions */
+  grid-template-columns: 3.5% 20% 1fr 35%;
+  grid-template-rows: 5% 1fr 4%;
+  transition: grid-template-columns var(--speed) var(--ease), grid-template-rows var(--speed) var(--ease);
+}
+
+/* When chat panel is active, expand it */
+.vscode-frame.drill-chat {
+  grid-template-columns: 3.5% 10% 15% 1fr;
+}
+
+/* Grid cells */
+.cell {
+  border: 1px solid var(--outline);
   position: relative;
-  border: 1px solid var(--outline);
-}
-
-/* Zone: a hoverable/clickable region */
-.zone {
-  position: absolute;
-  border: 1px solid var(--outline);
   cursor: pointer;
-  transition: border-color 200ms ease, background 200ms ease, opacity 300ms ease;
+  transition: border-color 200ms ease, background 200ms ease, opacity var(--speed) ease;
+  overflow: hidden;
+  margin: -0.5px;
 }
 
-.zone:hover {
+.cell:hover {
   border-color: var(--outline-hover);
   background: var(--fill-hover);
 }
 
-.zone.active {
+.cell.active {
   border-color: var(--accent);
   background: var(--fill-active);
+  cursor: default;
 }
 
-.zone.dimmed {
-  opacity: 0.3;
-  pointer-events: none;
+.cell.dimmed {
+  opacity: 0.4;
+  border-color: var(--outline-dim);
 }
 
-/* Whisper label */
-.whisper {
+.cell.dimmed:hover {
+  opacity: 0.7;
+  border-color: var(--outline);
+  background: none;
+}
+
+/* Whisper */
+.cell .whisper {
   position: absolute;
   inset: 0;
   display: flex;
@@ -115,43 +127,128 @@ body {
   font-family: var(--font-mono);
   font-size: 9px;
   color: var(--text-dim);
+  opacity: 0.08;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+}
+.cell:hover .whisper { opacity: 0.3; }
+.cell.dimmed .whisper { opacity: 0.04; }
+
+/* Activity bar */
+.cell-activitybar { grid-row: 1 / 3; grid-column: 1; }
+/* Sidebar */
+.cell-sidebar { grid-row: 1 / 3; grid-column: 2; }
+/* Editor */
+.cell-editor { grid-row: 1 / 3; grid-column: 3; }
+/* Chat panel */
+.cell-chat { grid-row: 1 / 3; grid-column: 4; }
+/* Status bar */
+.cell-status { grid-row: 3; grid-column: 1 / -1; }
+
+/* --- Chat Panel Internal Grid --- */
+.chat-grid {
+  display: none;
+  position: absolute;
+  inset: 0;
+  grid-template-columns: 1fr;
+  grid-template-rows: 7% 1fr 28%;
+  transition: grid-template-rows var(--speed) var(--ease);
+}
+
+.cell-chat.active .chat-grid {
+  display: grid;
+}
+
+.chat-grid.drill-input {
+  grid-template-rows: 5% 20% 1fr;
+}
+
+.chat-cell {
+  border: 1px solid var(--outline);
+  position: relative;
+  cursor: pointer;
+  margin: -0.5px;
+  transition: border-color 200ms ease, background 200ms ease, opacity var(--speed) ease;
+  overflow: hidden;
+}
+.chat-cell:hover { border-color: var(--outline-hover); background: var(--fill-hover); }
+.chat-cell.active { border-color: var(--accent); background: var(--fill-active); cursor: default; }
+.chat-cell.dimmed { opacity: 0.4; border-color: var(--outline-dim); }
+.chat-cell.dimmed:hover { opacity: 0.7; border-color: var(--outline); background: none; }
+
+.chat-cell .whisper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-dim);
+  opacity: 0.08;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+}
+.chat-cell:hover .whisper { opacity: 0.3; }
+
+/* --- Agent Input Internal Grid --- */
+.input-grid {
+  display: none;
+  position: absolute;
+  inset: 0;
+  grid-template-columns: 1fr;
+  grid-template-rows: 50% 1fr 14%;
+  gap: 0;
+}
+
+.chat-cell.cell-input.active .input-grid {
+  display: grid;
+}
+
+.input-row {
+  display: grid;
+  border: 1px solid var(--outline);
+  margin: -0.5px;
+  overflow: hidden;
+}
+
+.input-row-msg {
+  grid-template-columns: 1fr;
+}
+
+.input-row-toolbar {
+  grid-template-columns: 1fr 1fr 1fr 0.6fr 0.5fr;
+}
+
+.input-row-bottom {
+  grid-template-columns: 1.5fr 1fr;
+}
+
+.input-cell {
+  border: 1px solid var(--outline);
+  position: relative;
+  cursor: pointer;
+  margin: -0.5px;
+  transition: border-color 200ms ease, background 200ms ease;
+  overflow: hidden;
+  min-height: 0;
+}
+.input-cell:hover { border-color: var(--outline-hover); background: var(--fill-hover); }
+
+.input-cell .whisper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--text-dim);
   opacity: 0.06;
   pointer-events: none;
   transition: opacity 200ms ease;
-  text-align: center;
-  padding: 4px;
 }
-
-.zone:hover .whisper { opacity: 0.3; }
-
-/* Children container — revealed inside active zone */
-.children {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 250ms ease;
-}
-
-.children.revealed {
-  opacity: 1;
-  pointer-events: all;
-}
-
-/* Drillable dot */
-.zone.drillable::after {
-  content: '';
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: var(--accent);
-  opacity: 0;
-  transition: opacity 200ms ease;
-}
-.zone.drillable:hover::after { opacity: 0.5; }
+.input-cell:hover .whisper { opacity: 0.35; }
 
 /* Right panel */
 .docs-side {
@@ -168,7 +265,6 @@ body {
   align-items: center;
   justify-content: center;
 }
-
 .empty-state p {
   font-family: var(--font-mono);
   font-size: 11px;
@@ -177,10 +273,7 @@ body {
   text-align: center;
 }
 
-.docs-content {
-  display: none;
-}
-
+.docs-content { display: none; }
 .docs-content.visible {
   display: block;
   animation: fadeIn 180ms ease forwards;
@@ -199,42 +292,20 @@ body {
   color: var(--text-dim);
   margin-bottom: 10px;
 }
+.docs-title { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+.docs-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; }
 
-.docs-title {
-  font-size: 17px;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.docs-desc {
-  font-size: 13px;
-  color: var(--text-muted);
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-
-.doc-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
+.doc-list { display: flex; flex-direction: column; gap: 6px; }
 .doc-item {
   padding: 11px 13px;
   border: 1px solid var(--outline);
   cursor: pointer;
   transition: border-color 150ms ease, background 150ms ease;
 }
-
-.doc-item:hover {
-  border-color: var(--outline-hover);
-  background: var(--fill-hover);
-}
-
+.doc-item:hover { border-color: var(--outline-hover); background: var(--fill-hover); }
 .doc-item h3 { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
 .doc-item p { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); font-weight: 300; }
 
-/* Tooltip */
 .tooltip {
   position: fixed;
   background: var(--text);
@@ -259,110 +330,73 @@ body {
       <span class="current">VS Code</span>
     </div>
   </div>
-
   <div class="plan-view">
     <div class="vscode-frame" id="vscode-frame">
-
-      <!-- Title Bar -->
-      <div class="zone" data-name="Title Bar" data-id="titlebar" style="left:0;top:0;width:100%;height:4.5%;">
-        <span class="whisper">Title Bar</span>
-      </div>
-
-      <!-- Activity Bar — narrow left strip -->
-      <div class="zone" data-name="Activity Bar" data-id="activitybar" style="left:0;top:4.5%;width:3.8%;height:91%;">
+      <!-- Activity Bar -->
+      <div class="cell cell-activitybar" data-name="Activity Bar" id="cell-activitybar">
         <span class="whisper">Activity Bar</span>
       </div>
-
-      <!-- Primary Sidebar -->
-      <div class="zone" data-name="Primary Sidebar" data-id="sidebar" style="left:3.8%;top:4.5%;width:19%;height:91%;">
+      <!-- Sidebar -->
+      <div class="cell cell-sidebar" data-name="Primary Sidebar" id="cell-sidebar">
         <span class="whisper">Sidebar</span>
       </div>
-
       <!-- Editor -->
-      <div class="zone" data-name="Editor" data-id="editor" style="left:22.8%;top:4.5%;width:40.2%;height:91%;">
+      <div class="cell cell-editor" data-name="Editor" id="cell-editor">
         <span class="whisper">Editor</span>
       </div>
-
-      <!-- Chat Panel — drillable -->
-      <div class="zone drillable" data-name="Chat Panel" data-id="chatpanel" data-drills="chatpanel" style="left:63%;top:4.5%;width:37%;height:91%;">
+      <!-- Chat Panel -->
+      <div class="cell cell-chat" data-name="Chat Panel" data-drillable="true" id="cell-chat">
         <span class="whisper">Chat Panel</span>
-
-        <!-- Level 1 children: inside chat panel bounds -->
-        <div class="children" id="children-chatpanel">
-          <div class="zone" data-name="Chat Header" data-id="chatheader" style="left:0;top:0;width:100%;height:8%;">
+        <!-- Chat internals -->
+        <div class="chat-grid" id="chat-grid">
+          <div class="chat-cell cell-header" data-name="Chat Header">
             <span class="whisper">Header</span>
           </div>
-          <div class="zone" data-name="Conversation Area" data-id="conversation" style="left:0;top:8.5%;width:100%;height:65%;">
+          <div class="chat-cell cell-conversation" data-name="Conversation Area">
             <span class="whisper">Conversation</span>
           </div>
-          <div class="zone drillable" data-name="Agent Input" data-id="agentinput" data-drills="agentinput" style="left:0;top:74%;width:100%;height:26%;">
+          <div class="chat-cell cell-input" data-name="Agent Input" data-drillable="true" id="cell-input">
             <span class="whisper">Agent Input</span>
-
-            <!-- Level 2 children: inside agent input bounds -->
-            <div class="children" id="children-agentinput">
-              <div class="zone" data-name="Message Input" data-id="msginput" style="left:0;top:0;width:100%;height:48%;">
-                <span class="whisper">Message Input</span>
-              </div>
-              <div class="zone drillable" data-name="Agent Mode" data-id="agentmode" data-drills="agentmode" style="left:0;top:50%;width:25%;height:22%;">
-                <span class="whisper">Mode</span>
-
-                <!-- Level 3 children: inside agent mode -->
-                <div class="children" id="children-agentmode">
-                  <div class="zone" data-name="Ask Mode" style="left:0;top:0;width:33%;height:100%;">
-                    <span class="whisper">Ask</span>
-                  </div>
-                  <div class="zone" data-name="Agent Mode Detail" style="left:34%;top:0;width:33%;height:100%;">
-                    <span class="whisper">Agent</span>
-                  </div>
-                  <div class="zone" data-name="Edit Mode" style="left:67%;top:0;width:33%;height:100%;">
-                    <span class="whisper">Edit</span>
-                  </div>
+            <!-- Input internals -->
+            <div class="input-grid" id="input-grid">
+              <div class="input-row input-row-msg">
+                <div class="input-cell" data-name="Message Input">
+                  <span class="whisper">Message Input</span>
                 </div>
               </div>
-              <div class="zone drillable" data-name="Model Picker" data-id="modelpicker" data-drills="modelpicker" style="left:26%;top:50%;width:25%;height:22%;">
-                <span class="whisper">Model</span>
-
-                <!-- Level 3 children: inside model picker -->
-                <div class="children" id="children-modelpicker">
-                  <div class="zone" data-name="Model Selection" style="left:0;top:0;width:100%;height:50%;">
-                    <span class="whisper">Select</span>
-                  </div>
-                  <div class="zone" data-name="Vision Toggle" style="left:0;top:52%;width:50%;height:48%;">
-                    <span class="whisper">Vision</span>
-                  </div>
-                  <div class="zone" data-name="Max Tokens" style="left:52%;top:52%;width:48%;height:48%;">
-                    <span class="whisper">Tokens</span>
-                  </div>
+              <div class="input-row input-row-toolbar">
+                <div class="input-cell" data-name="Agent Mode">
+                  <span class="whisper">Mode</span>
+                </div>
+                <div class="input-cell" data-name="Model Picker">
+                  <span class="whisper">Model</span>
+                </div>
+                <div class="input-cell" data-name="Attach Context">
+                  <span class="whisper">Attach</span>
+                </div>
+                <div class="input-cell" data-name="Tools">
+                  <span class="whisper">Tools</span>
+                </div>
+                <div class="input-cell" data-name="Send">
+                  <span class="whisper">Send</span>
                 </div>
               </div>
-              <div class="zone" data-name="Attach Context" data-id="attach" style="left:52%;top:50%;width:22%;height:22%;">
-                <span class="whisper">Attach</span>
-              </div>
-              <div class="zone" data-name="Tools" data-id="tools" style="left:75%;top:50%;width:12%;height:22%;">
-                <span class="whisper">Tools</span>
-              </div>
-              <div class="zone" data-name="Send" data-id="send" style="left:88%;top:50%;width:12%;height:22%;">
-                <span class="whisper">Send</span>
-              </div>
-              <div class="zone" data-name="Context Chips" data-id="chips" style="left:0;top:74%;width:60%;height:14%;">
-                <span class="whisper">Context Chips</span>
-              </div>
-              <div class="zone" data-name="Instructions" data-id="instructions" style="left:61%;top:74%;width:39%;height:14%;">
-                <span class="whisper">Instructions</span>
-              </div>
-              <div class="zone" data-name="Participants" data-id="participants" style="left:0;top:90%;width:100%;height:10%;">
-                <span class="whisper">Participants</span>
+              <div class="input-row input-row-bottom">
+                <div class="input-cell" data-name="Context Chips">
+                  <span class="whisper">Context</span>
+                </div>
+                <div class="input-cell" data-name="Instructions">
+                  <span class="whisper">Instructions</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
       <!-- Status Bar -->
-      <div class="zone" data-name="Status Bar" data-id="statusbar" style="left:0;top:95.5%;width:100%;height:4.5%;">
+      <div class="cell cell-status" data-name="Status Bar" id="cell-status">
         <span class="whisper">Status Bar</span>
       </div>
-
     </div>
   </div>
 </div>
@@ -378,175 +412,200 @@ body {
 
 <script>
 const docsData = {
-  'Title Bar': { desc: 'The top bar with window controls, menu, and command center.', docs: [{ title: 'Command Center', desc: 'Quick access to commands and navigation' }, { title: 'Menu Bar', desc: 'File, Edit, View, and extension menus' }] },
   'Activity Bar': { desc: 'Vertical icon strip for switching between views.', docs: [{ title: 'Customizing the Activity Bar', desc: 'Reorder, hide, or add icons' }, { title: 'View Containers', desc: 'How extensions register views' }, { title: 'Badges & Indicators', desc: 'Notification counts and status' }] },
-  'Primary Sidebar': { desc: 'Explorer, Search, Source Control, and extension panels.', docs: [{ title: 'Explorer', desc: 'File tree, open editors, workspace' }, { title: 'Search & Replace', desc: 'Full-text search across workspace' }, { title: 'Source Control', desc: 'Git integration and branch management' }, { title: 'Extensions Panel', desc: 'Browse, install, and manage extensions' }] },
-  'Editor': { desc: 'The central code editing area with tabs, split views, and diff.', docs: [{ title: 'Basic Editing', desc: 'Multi-cursor, snippets, folding' }, { title: 'IntelliSense', desc: 'Completions, parameter info, quick info' }, { title: 'Debugging', desc: 'Breakpoints, watch, call stacks' }, { title: 'Editor Groups', desc: 'Split editing and grid layout' }] },
-  'Status Bar': { desc: 'Bottom bar showing git branch, errors, encoding, quick actions.', docs: [{ title: 'Status Bar Items', desc: 'Indicators and quick actions' }, { title: 'Extension Contributions', desc: 'How extensions add items' }] },
-  'Chat Panel': { desc: 'Secondary side panel for AI chat, assistance, and agent interactions.', docs: [{ title: 'Copilot Chat Overview', desc: 'Getting started with AI chat' }, { title: 'Chat Participants', desc: '@workspace, @terminal, extensions' }, { title: 'Chat History', desc: 'Managing sessions and context' }, { title: 'Panel Configuration', desc: 'Position, size, layout' }] },
-  'Chat Header': { desc: 'Top bar with tabs for multiple conversations and panel actions.', docs: [{ title: 'Chat Tabs', desc: 'Multiple simultaneous conversations' }, { title: 'Chat Actions', desc: 'New chat, history, options' }] },
-  'Conversation Area': { desc: 'Scrollable thread displaying the AI conversation.', docs: [{ title: 'Response Rendering', desc: 'Markdown, code blocks, interactive elements' }, { title: 'Code Actions', desc: 'Apply, copy, insert, diff from responses' }, { title: 'Follow-ups', desc: 'Multi-turn context continuation' }, { title: 'Terminal Commands', desc: 'Running suggested commands' }] },
+  'Primary Sidebar': { desc: 'Explorer, Search, Source Control, and extension panels.', docs: [{ title: 'Explorer', desc: 'File tree, open editors, workspace' }, { title: 'Search & Replace', desc: 'Full-text search across workspace' }, { title: 'Source Control', desc: 'Git integration and branch management' }, { title: 'Extensions Panel', desc: 'Browse, install, manage extensions' }] },
+  'Editor': { desc: 'Central code editing area with tabs, split views, and diff.', docs: [{ title: 'Basic Editing', desc: 'Multi-cursor, snippets, folding' }, { title: 'IntelliSense', desc: 'Completions, parameter info, quick info' }, { title: 'Debugging', desc: 'Breakpoints, watch, call stacks' }, { title: 'Editor Groups', desc: 'Split editing and grid layout' }] },
+  'Status Bar': { desc: 'Bottom bar showing branch, errors, encoding, quick actions.', docs: [{ title: 'Status Bar Items', desc: 'Indicators and quick actions' }, { title: 'Extension Contributions', desc: 'How extensions add items' }] },
+  'Chat Panel': { desc: 'Secondary side panel for AI chat and agent interactions.', docs: [{ title: 'Copilot Chat Overview', desc: 'Getting started with AI chat' }, { title: 'Chat Participants', desc: '@workspace, @terminal, extensions' }, { title: 'Chat History', desc: 'Managing sessions and context' }, { title: 'Panel Configuration', desc: 'Position, size, layout' }] },
+  'Chat Header': { desc: 'Tabs for conversations and panel actions.', docs: [{ title: 'Chat Tabs', desc: 'Multiple simultaneous conversations' }, { title: 'Chat Actions', desc: 'New chat, history, options' }] },
+  'Conversation Area': { desc: 'Scrollable thread displaying the AI conversation.', docs: [{ title: 'Response Rendering', desc: 'Markdown, code blocks, interactive elements' }, { title: 'Code Actions', desc: 'Apply, copy, insert, diff from responses' }, { title: 'Follow-ups', desc: 'Multi-turn context continuation' }] },
   'Agent Input': { desc: 'Compose prompts, select modes, attach context, configure tools.', docs: [{ title: 'Prompt Crafting', desc: 'Writing effective prompts' }, { title: 'Agent Modes', desc: 'Ask vs Agent vs Edit' }, { title: 'Model Selection', desc: 'Choosing between AI models' }, { title: 'Context Attachment', desc: 'Files, selections, references' }] },
-  'Message Input': { desc: 'Multi-line text area for composing prompts.', docs: [{ title: 'Multi-line Input', desc: 'Shift+Enter, formatting support' }, { title: 'Slash Commands', desc: '/fix, /explain, /tests' }, { title: 'Variables', desc: '#file, #selection, #editor' }] },
+  'Message Input': { desc: 'Multi-line text area for composing prompts.', docs: [{ title: 'Multi-line Input', desc: 'Shift+Enter, formatting support' }, { title: 'Slash Commands', desc: '/fix, /explain, /tests' }, { title: 'Variables', desc: '#file, #selection, #editor references' }] },
   'Agent Mode': { desc: 'Switch between Ask, Agent, and Edit interaction modes.', docs: [{ title: 'Ask Mode', desc: 'Q&A without file modification' }, { title: 'Agent Mode', desc: 'Autonomous multi-step with tools' }, { title: 'Edit Mode', desc: 'Inline changes with diff preview' }] },
   'Model Picker': { desc: 'Select which AI model processes your request.', docs: [{ title: 'Available Models', desc: 'GPT-4o, Claude, Gemini, and more' }, { title: 'Capabilities', desc: 'Vision, context window, speed' }, { title: 'Custom Models', desc: 'Configuring additional endpoints' }] },
-  'Attach Context': { desc: 'Add files, folders, URLs, or selections as prompt context.', docs: [{ title: 'File Attachment', desc: 'Adding specific files' }, { title: 'Folder Context', desc: 'Including directories' }, { title: 'URL References', desc: 'Fetching web content' }] },
+  'Attach Context': { desc: 'Add files, folders, URLs, or selections as context.', docs: [{ title: 'File Attachment', desc: 'Adding specific files' }, { title: 'Folder Context', desc: 'Including directories' }, { title: 'URL References', desc: 'Fetching web content' }] },
   'Tools': { desc: 'Configure which tools the agent can use.', docs: [{ title: 'Built-in Tools', desc: 'File editing, terminal, search, browser' }, { title: 'Extension Tools', desc: 'Third-party tool providers' }, { title: 'Permissions', desc: 'Auto-approve vs manual confirm' }] },
   'Send': { desc: 'Submit your prompt to the selected model.', docs: [{ title: 'Keyboard Shortcuts', desc: 'Enter to send, Shift+Enter for newline' }, { title: 'Cancel & Regenerate', desc: 'Stop and retry responses' }] },
   'Context Chips': { desc: 'Visual indicators of attached context items.', docs: [{ title: 'Managing Context', desc: 'Add, remove, preview items' }, { title: 'Implicit Context', desc: 'Auto-attached from active editor' }] },
   'Instructions': { desc: 'Custom system instructions that shape AI behavior.', docs: [{ title: 'Custom Instructions', desc: 'Persistent behavior guidelines' }, { title: 'copilot-instructions.md', desc: 'Project-level instructions' }] },
-  'Participants': { desc: 'Built-in and extension participants invokable in chat.', docs: [{ title: '@workspace', desc: 'Codebase-aware responses' }, { title: '@terminal', desc: 'Terminal context and commands' }, { title: 'Extension Participants', desc: 'Third-party participants' }] },
-  'Ask Mode': { desc: 'Q&A mode — AI answers without modifying files.', docs: [{ title: 'When to Use Ask', desc: 'Explanations, debugging, learning' }, { title: 'Limitations', desc: 'No file edits or terminal access' }] },
-  'Agent Mode Detail': { desc: 'Autonomous mode — reads/writes files, runs commands, iterates.', docs: [{ title: 'Capabilities', desc: 'File ops, terminal, multi-step plans' }, { title: 'Approval Flow', desc: 'Reviewing actions before execution' }, { title: 'Agent Tools', desc: 'Available tools and configuration' }] },
-  'Edit Mode': { desc: 'Inline editing — targeted code changes with diff preview.', docs: [{ title: 'Edit Workflow', desc: 'Select, describe, review diffs' }, { title: 'Multi-file Edits', desc: 'Changes across multiple files' }] },
-  'Model Selection': { desc: 'Dropdown for choosing between available models.', docs: [{ title: 'Model Comparison', desc: 'Speed, quality, context tradeoffs' }, { title: 'Default Model', desc: 'Setting preferred per mode' }, { title: 'Bring Your Own Key', desc: 'Custom API endpoints' }] },
-  'Vision Toggle': { desc: 'Enable image understanding for supported models.', docs: [{ title: 'Vision Capabilities', desc: 'Which models support images' }, { title: 'Attaching Images', desc: 'Drag-drop, paste, screenshots' }] },
-  'Max Tokens': { desc: 'Configure maximum response length.', docs: [{ title: 'Token Limits', desc: 'Input and output budgets' }, { title: 'Truncation', desc: 'Context exceeding the window' }] },
 };
 
 const tooltip = document.getElementById('tooltip');
-const breadcrumbNames = ['VS Code'];
-let activePath = []; // track which zones are drilled into
+const frame = document.getElementById('vscode-frame');
+const chatGrid = document.getElementById('chat-grid');
+let drillState = { level: 0 }; // 0=top, 1=chat, 2=input
 
 function init() {
-  bindAllZones();
-}
+  // Top-level cells
+  document.querySelectorAll('.cell').forEach(cell => {
+    cell.addEventListener('mouseenter', onEnter);
+    cell.addEventListener('mousemove', onMove);
+    cell.addEventListener('mouseleave', onLeave);
+    cell.addEventListener('click', onCellClick);
+  });
 
-function bindAllZones() {
-  document.querySelectorAll('.zone').forEach(zone => {
-    zone.onmouseenter = (e) => {
-      e.stopPropagation();
-      const name = zone.dataset.name;
-      tooltip.textContent = name;
-      tooltip.classList.add('visible');
-      showDocs(name);
-    };
-    zone.onmousemove = (e) => {
-      tooltip.style.left = e.clientX + 14 + 'px';
-      tooltip.style.top = e.clientY - 26 + 'px';
-    };
-    zone.onmouseleave = (e) => {
-      tooltip.classList.remove('visible');
-    };
-    zone.onclick = (e) => {
-      e.stopPropagation();
-      const name = zone.dataset.name;
-      const drills = zone.dataset.drills;
-      
-      showDocs(name);
+  // Chat-level cells
+  document.querySelectorAll('.chat-cell').forEach(cell => {
+    cell.addEventListener('mouseenter', onEnter);
+    cell.addEventListener('mousemove', onMove);
+    cell.addEventListener('mouseleave', onLeave);
+    cell.addEventListener('click', onChatCellClick);
+  });
 
-      if (drills) {
-        toggleDrill(zone, drills);
-      }
-    };
+  // Input-level cells
+  document.querySelectorAll('.input-cell').forEach(cell => {
+    cell.addEventListener('mouseenter', onEnter);
+    cell.addEventListener('mousemove', onMove);
+    cell.addEventListener('mouseleave', onLeave);
+    cell.addEventListener('click', (e) => { e.stopPropagation(); showDocs(cell.dataset.name); });
   });
 }
 
-function toggleDrill(zone, drillId) {
-  const children = document.getElementById(`children-${drillId}`);
-  if (!children) return;
+function onEnter(e) {
+  e.stopPropagation();
+  const name = e.currentTarget.dataset.name;
+  if (!name) return;
+  tooltip.textContent = name;
+  tooltip.classList.add('visible');
+  showDocs(name);
+}
 
-  const isRevealed = children.classList.contains('revealed');
+function onMove(e) {
+  tooltip.style.left = e.clientX + 14 + 'px';
+  tooltip.style.top = e.clientY - 26 + 'px';
+}
 
-  if (isRevealed) {
-    // Collapse: hide children, un-dim siblings, deactivate
-    children.classList.remove('revealed');
-    zone.classList.remove('active');
-    undimSiblings(zone);
-    
-    // Remove from path
-    const idx = activePath.indexOf(drillId);
-    if (idx > -1) activePath.splice(idx);
-    
-    // Also collapse any nested children
-    children.querySelectorAll('.children.revealed').forEach(c => c.classList.remove('revealed'));
-    children.querySelectorAll('.zone.active').forEach(z => z.classList.remove('active'));
-    zone.parentElement.querySelectorAll('.zone.dimmed').forEach(z => z.classList.remove('dimmed'));
+function onLeave() {
+  tooltip.classList.remove('visible');
+}
+
+function onCellClick(e) {
+  e.stopPropagation();
+  const cell = e.currentTarget;
+  const name = cell.dataset.name;
+
+  if (cell.dataset.drillable === 'true' && !cell.classList.contains('active')) {
+    // Drill into chat panel
+    drillChat();
+  } else if (cell.classList.contains('active')) {
+    // Click active = collapse
+    collapseToTop();
   } else {
-    // Expand: show children, dim siblings, activate
-    children.classList.add('revealed');
-    zone.classList.add('active');
-    dimSiblings(zone);
-    activePath.push(drillId);
+    showDocs(name);
   }
+}
 
+function onChatCellClick(e) {
+  e.stopPropagation();
+  const cell = e.currentTarget;
+  const name = cell.dataset.name;
+
+  if (cell.dataset.drillable === 'true' && !cell.classList.contains('active')) {
+    drillInput();
+  } else if (cell.classList.contains('active')) {
+    collapseToChat();
+  } else {
+    showDocs(name);
+  }
+}
+
+function drillChat() {
+  drillState.level = 1;
+  
+  // Expand chat column
+  frame.classList.add('drill-chat');
+  
+  // Dim siblings
+  document.getElementById('cell-activitybar').classList.add('dimmed');
+  document.getElementById('cell-sidebar').classList.add('dimmed');
+  document.getElementById('cell-editor').classList.add('dimmed');
+  document.getElementById('cell-status').classList.add('dimmed');
+  
+  // Activate chat
+  const chat = document.getElementById('cell-chat');
+  chat.classList.add('active');
+  
   updateBreadcrumb();
 }
 
-function dimSiblings(zone) {
-  const parent = zone.parentElement;
-  parent.querySelectorAll(':scope > .zone').forEach(sibling => {
-    if (sibling !== zone) {
-      sibling.classList.add('dimmed');
-    }
-  });
+function drillInput() {
+  drillState.level = 2;
+  
+  // Expand input row
+  chatGrid.classList.add('drill-input');
+  
+  // Dim siblings
+  document.querySelector('.cell-header').classList.add('dimmed');
+  document.querySelector('.cell-conversation').classList.add('dimmed');
+  
+  // Activate input
+  document.getElementById('cell-input').classList.add('active');
+  
+  updateBreadcrumb();
 }
 
-function undimSiblings(zone) {
-  const parent = zone.parentElement;
-  parent.querySelectorAll(':scope > .zone.dimmed').forEach(sibling => {
-    sibling.classList.remove('dimmed');
-  });
+function collapseToChat() {
+  drillState.level = 1;
+  
+  chatGrid.classList.remove('drill-input');
+  document.querySelector('.cell-header').classList.remove('dimmed');
+  document.querySelector('.cell-conversation').classList.remove('dimmed');
+  document.getElementById('cell-input').classList.remove('active');
+  
+  updateBreadcrumb();
+  hideDocs();
+}
+
+function collapseToTop() {
+  drillState.level = 0;
+  
+  frame.classList.remove('drill-chat');
+  chatGrid.classList.remove('drill-input');
+  
+  document.getElementById('cell-activitybar').classList.remove('dimmed');
+  document.getElementById('cell-sidebar').classList.remove('dimmed');
+  document.getElementById('cell-editor').classList.remove('dimmed');
+  document.getElementById('cell-status').classList.remove('dimmed');
+  
+  document.getElementById('cell-chat').classList.remove('active');
+  document.getElementById('cell-input').classList.remove('active');
+  document.querySelector('.cell-header').classList.remove('dimmed');
+  document.querySelector('.cell-conversation').classList.remove('dimmed');
+  
+  updateBreadcrumb();
+  hideDocs();
+}
+
+function navigateTo(level) {
+  if (level === 0) collapseToTop();
+  else if (level === 1) collapseToChat();
 }
 
 function updateBreadcrumb() {
   const names = ['VS Code'];
-  activePath.forEach(id => {
-    const el = document.querySelector(`[data-drills="${id}"]`);
-    if (el) names.push(el.dataset.name);
-  });
+  if (drillState.level >= 1) names.push('Chat Panel');
+  if (drillState.level >= 2) names.push('Agent Input');
   
   const bc = document.getElementById('breadcrumb');
   bc.innerHTML = names.map((name, i) => {
-    if (i === names.length - 1) {
-      return `<span class="current">${name}</span>`;
-    }
-    return `<span onclick="collapseToLevel(${i})">${name}</span><span class="sep">/</span>`;
+    if (i === names.length - 1) return `<span class="current">${name}</span>`;
+    return `<span onclick="navigateTo(${i})">${name}</span><span class="sep">/</span>`;
   }).join('');
-}
-
-function collapseToLevel(level) {
-  // Collapse everything after this level
-  while (activePath.length > level) {
-    const drillId = activePath[activePath.length - 1];
-    const zone = document.querySelector(`[data-drills="${drillId}"]`);
-    const children = document.getElementById(`children-${drillId}`);
-    if (children) {
-      children.classList.remove('revealed');
-      children.querySelectorAll('.children.revealed').forEach(c => c.classList.remove('revealed'));
-      children.querySelectorAll('.zone.active').forEach(z => z.classList.remove('active'));
-    }
-    if (zone) {
-      zone.classList.remove('active');
-      undimSiblings(zone);
-    }
-    activePath.pop();
-  }
-  updateBreadcrumb();
-  hideDocs();
 }
 
 function showDocs(name) {
   const data = docsData[name];
   if (!data) return;
-
   document.getElementById('empty-state').style.display = 'none';
   const content = document.getElementById('docs-content');
-
   content.innerHTML = `
     <div class="docs-label">Documentation</div>
     <div class="docs-title">${name}</div>
     <p class="docs-desc">${data.desc}</p>
     <div class="doc-list">
-      ${data.docs.map(d => `
-        <div class="doc-item">
-          <h3>${d.title}</h3>
-          <p>${d.desc}</p>
-        </div>
-      `).join('')}
+      ${data.docs.map(d => `<div class="doc-item"><h3>${d.title}</h3><p>${d.desc}</p></div>`).join('')}
     </div>
   `;
-
   content.classList.remove('visible');
   void content.offsetWidth;
   content.classList.add('visible');
