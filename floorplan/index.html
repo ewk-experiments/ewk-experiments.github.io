@@ -7,18 +7,14 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600;700&display=swap');
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
   --bg: #FAFAFA;
-  --outline: rgba(0,0,0,0.12);
-  --outline-hover: rgba(59, 130, 246, 0.6);
-  --fill-active: rgba(59, 130, 246, 0.1);
+  --outline: rgba(0,0,0,0.10);
+  --outline-hover: rgba(59, 130, 246, 0.5);
   --fill-hover: rgba(59, 130, 246, 0.04);
+  --fill-selected: rgba(59, 130, 246, 0.08);
   --accent: #3B82F6;
   --text: #18181B;
   --text-muted: #71717A;
@@ -34,23 +30,22 @@ body {
   height: 100vh;
   overflow: hidden;
   display: grid;
-  grid-template-columns: 1fr 380px;
+  grid-template-columns: 1fr 360px;
 }
 
-/* Left: Floor Plan */
+/* Left side */
 .plan-side {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
+  padding: 32px 40px;
   position: relative;
 }
 
 .plan-header {
-  position: absolute;
-  top: 32px;
-  left: 40px;
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .plan-header h1 {
@@ -64,9 +59,6 @@ body {
 
 /* Breadcrumb */
 .breadcrumb {
-  position: absolute;
-  top: 56px;
-  left: 40px;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -81,185 +73,143 @@ body {
 }
 
 .breadcrumb span:hover { color: var(--accent); }
-.breadcrumb span.current { color: var(--text); cursor: default; }
-.breadcrumb .sep { cursor: default; }
+.breadcrumb span.current { color: var(--text-muted); cursor: default; }
+.breadcrumb .sep { cursor: default; opacity: 0.4; }
 
-/* Axonometric container */
-.axon-container {
+/* Floor plan area */
+.plan-view {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.plan-frame {
+  width: 100%;
+  max-width: 680px;
+  aspect-ratio: 16 / 10;
   position: relative;
-  width: 600px;
-  height: 500px;
-  perspective: 1200px;
 }
 
-.axon-layer {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  transition: transform 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 400ms ease;
-  transform-style: preserve-3d;
-}
-
-/* Exploded axonometric offsets */
-.axon-layer[data-depth="0"] {
-  transform: rotateX(12deg) rotateY(-8deg) rotateZ(2deg) translateZ(0px);
-}
-
-.axon-layer[data-depth="1"] {
-  transform: rotateX(12deg) rotateY(-8deg) rotateZ(2deg) translateZ(60px) translateX(10px) translateY(-10px);
-}
-
-.axon-layer[data-depth="2"] {
-  transform: rotateX(12deg) rotateY(-8deg) rotateZ(2deg) translateZ(120px) translateX(20px) translateY(-20px);
-}
-
-.axon-layer[data-depth="3"] {
-  transform: rotateX(12deg) rotateY(-8deg) rotateZ(2deg) translateZ(180px) translateX(30px) translateY(-30px);
-}
-
-.axon-layer.hidden {
-  opacity: 0.15;
-  pointer-events: none;
-}
-
-.axon-layer.inactive {
-  opacity: 0.35;
-  pointer-events: none;
-}
-
-/* SVG styles */
-.floor-svg {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
+/* Zones */
 .zone {
-  fill: transparent;
-  stroke: var(--outline);
-  stroke-width: 0.75;
+  position: absolute;
+  border: 1px solid var(--outline);
   cursor: pointer;
-  transition: fill 150ms ease, stroke 150ms ease;
+  transition: border-color 180ms ease, background 180ms ease;
 }
 
 .zone:hover {
-  fill: var(--fill-hover);
-  stroke: var(--outline-hover);
+  border-color: var(--outline-hover);
+  background: var(--fill-hover);
 }
 
 .zone.selected {
-  fill: var(--fill-active);
-  stroke: var(--accent);
-  stroke-width: 1;
+  border-color: var(--accent);
+  background: var(--fill-selected);
 }
 
-.zone-label {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  fill: var(--text-dim);
+.zone.drillable::after {
+  content: '';
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  width: 4px;
+  height: 4px;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+.zone.drillable:hover::after {
+  opacity: 0.6;
+}
+
+/* Level views */
+.level-view {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
   pointer-events: none;
-  transition: fill 150ms ease;
+  transition: opacity 250ms ease;
 }
 
-.zone:hover ~ .zone-label,
-.zone.selected ~ .zone-label {
-  fill: var(--accent);
+.level-view.active {
+  opacity: 1;
+  pointer-events: all;
 }
 
-.zone-static {
-  fill: none;
-  stroke: var(--outline);
-  stroke-width: 0.5;
-  stroke-dasharray: 2 2;
-  pointer-events: none;
-}
-
-/* Right: Docs panel */
+/* Right panel */
 .docs-side {
   border-left: 1px solid var(--outline);
-  padding: 40px 32px;
+  padding: 32px 28px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
 
-.docs-side .empty-state {
+.empty-state {
+  flex: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  text-align: center;
 }
 
-.docs-side .empty-state p {
+.empty-state p {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-dim);
-  line-height: 1.8;
+  line-height: 2;
+  text-align: center;
 }
 
 .docs-content {
   display: none;
-  animation: fadeIn 250ms ease forwards;
 }
 
 .docs-content.visible {
   display: block;
+  animation: fadeIn 200ms ease forwards;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.docs-section {
-  margin-bottom: 32px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--outline);
-}
-
-.docs-section:last-child {
-  border-bottom: none;
-}
-
-.docs-section .section-label {
+.docs-label {
   font-family: var(--font-mono);
   font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--text-dim);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
-.docs-section h2 {
-  font-size: 16px;
+.docs-title {
+  font-size: 18px;
   font-weight: 600;
   margin-bottom: 6px;
 }
 
-.docs-section .desc {
+.docs-desc {
   font-size: 13px;
   color: var(--text-muted);
   line-height: 1.6;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 }
 
 .doc-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .doc-item {
   padding: 12px 14px;
   border: 1px solid var(--outline);
   cursor: pointer;
-  transition: all 150ms ease;
+  transition: border-color 150ms ease, background 150ms ease;
 }
 
 .doc-item:hover {
@@ -280,28 +230,6 @@ body {
   font-weight: 300;
 }
 
-/* Layer indicator */
-.layer-stack {
-  position: absolute;
-  bottom: 32px;
-  left: 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.layer-dot {
-  width: 20px;
-  height: 3px;
-  background: var(--outline);
-  transition: background 200ms ease, width 200ms ease;
-}
-
-.layer-dot.active {
-  background: var(--accent);
-  width: 28px;
-}
-
 /* Tooltip */
 .tooltip {
   position: fixed;
@@ -312,7 +240,7 @@ body {
   font-size: 10px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 120ms ease;
+  transition: opacity 100ms ease;
   z-index: 1000;
   white-space: nowrap;
 }
@@ -325,121 +253,63 @@ body {
 <div class="plan-side">
   <div class="plan-header">
     <h1>VS Code Docs</h1>
-  </div>
-  
-  <div class="breadcrumb" id="breadcrumb">
-    <span class="current">VS Code</span>
-  </div>
-
-  <div class="axon-container" id="axon-container">
-    <!-- Layer 0: Full VS Code -->
-    <div class="axon-layer" data-depth="0" id="layer-0">
-      <svg class="floor-svg" viewBox="0 0 600 400" fill="none">
-        <!-- Activity Bar -->
-        <rect class="zone" data-name="Activity Bar" x="0" y="0" width="32" height="380"/>
-        <text class="zone-label" x="16" y="195" text-anchor="middle" transform="rotate(-90 16 195)">Activity Bar</text>
-        
-        <!-- Sidebar -->
-        <rect class="zone" data-name="Primary Sidebar" x="33" y="0" width="140" height="380"/>
-        <text class="zone-label" x="103" y="195" text-anchor="middle">Sidebar</text>
-        
-        <!-- Editor -->
-        <rect class="zone" data-name="Editor" x="174" y="0" width="220" height="380"/>
-        <text class="zone-label" x="284" y="195" text-anchor="middle">Editor</text>
-        
-        <!-- Chat Panel -->
-        <rect class="zone" data-name="Chat Panel" data-drills="1" x="395" y="0" width="205" height="380"/>
-        <text class="zone-label" x="497" y="188" text-anchor="middle">Chat</text>
-        <text class="zone-label" x="497" y="202" text-anchor="middle">Panel</text>
-        
-        <!-- Status Bar -->
-        <rect class="zone" data-name="Status Bar" x="0" y="382" width="600" height="18"/>
-        <text class="zone-label" x="300" y="394" text-anchor="middle">Status Bar</text>
-      </svg>
-    </div>
-
-    <!-- Layer 1: Chat Panel -->
-    <div class="axon-layer hidden" data-depth="1" id="layer-1">
-      <svg class="floor-svg" viewBox="0 0 600 400" fill="none">
-        <!-- Scoped to chat panel area -->
-        <!-- Header -->
-        <rect class="zone" data-name="Chat Header" x="395" y="0" width="205" height="32"/>
-        <text class="zone-label" x="497" y="20" text-anchor="middle">Header</text>
-        
-        <!-- Conversation -->
-        <rect class="zone" data-name="Conversation Area" x="395" y="33" width="205" height="260"/>
-        <text class="zone-label" x="497" y="165" text-anchor="middle">Conversation</text>
-        
-        <!-- Agent Input -->
-        <rect class="zone" data-name="Agent Input" data-drills="2" x="395" y="294" width="205" height="86"/>
-        <text class="zone-label" x="497" y="340" text-anchor="middle">Agent Input</text>
-      </svg>
-    </div>
-
-    <!-- Layer 2: Agent Input -->
-    <div class="axon-layer hidden" data-depth="2" id="layer-2">
-      <svg class="floor-svg" viewBox="0 0 600 400" fill="none">
-        <!-- Text input -->
-        <rect class="zone" data-name="Message Input" x="395" y="294" width="205" height="44"/>
-        <text class="zone-label" x="497" y="320" text-anchor="middle">Message Input</text>
-        
-        <!-- Bottom toolbar items -->
-        <rect class="zone" data-name="Agent Mode" data-drills="3" x="395" y="340" width="52" height="20"/>
-        <text class="zone-label" x="421" y="354" text-anchor="middle" font-size="7">Mode</text>
-        
-        <rect class="zone" data-name="Model Picker" data-drills="3" x="448" y="340" width="52" height="20"/>
-        <text class="zone-label" x="474" y="354" text-anchor="middle" font-size="7">Model</text>
-        
-        <rect class="zone" data-name="Attach Context" x="501" y="340" width="48" height="20"/>
-        <text class="zone-label" x="525" y="354" text-anchor="middle" font-size="7">Attach</text>
-        
-        <rect class="zone" data-name="Tools" x="550" y="340" width="50" height="20"/>
-        <text class="zone-label" x="575" y="354" text-anchor="middle" font-size="7">Tools</text>
-        
-        <!-- Context chips -->
-        <rect class="zone" data-name="Context Chips" x="395" y="362" width="120" height="18"/>
-        <text class="zone-label" x="455" y="374" text-anchor="middle" font-size="7">Context Chips</text>
-        
-        <rect class="zone" data-name="Instructions" x="517" y="362" width="83" height="18"/>
-        <text class="zone-label" x="558" y="374" text-anchor="middle" font-size="7">Instructions</text>
-      </svg>
-    </div>
-
-    <!-- Layer 3: Mode / Model detail -->
-    <div class="axon-layer hidden" data-depth="3" id="layer-3">
-      <svg class="floor-svg" viewBox="0 0 600 400" fill="none">
-        <!-- Mode tabs -->
-        <rect class="zone" data-name="Ask Mode" x="395" y="340" width="34" height="20"/>
-        <text class="zone-label" x="412" y="354" text-anchor="middle" font-size="6">Ask</text>
-        
-        <rect class="zone" data-name="Agent Mode Detail" x="430" y="340" width="34" height="20"/>
-        <text class="zone-label" x="447" y="354" text-anchor="middle" font-size="6">Agent</text>
-        
-        <rect class="zone" data-name="Edit Mode" x="465" y="340" width="34" height="20"/>
-        <text class="zone-label" x="482" y="354" text-anchor="middle" font-size="6">Edit</text>
-        
-        <!-- Model details -->
-        <rect class="zone" data-name="Model Selection" x="395" y="362" width="100" height="18"/>
-        <text class="zone-label" x="445" y="374" text-anchor="middle" font-size="7">Model Select</text>
-        
-        <rect class="zone" data-name="Participants" x="497" y="362" width="103" height="18"/>
-        <text class="zone-label" x="548" y="374" text-anchor="middle" font-size="7">Participants</text>
-      </svg>
+    <div class="breadcrumb" id="breadcrumb">
+      <span class="current">VS Code</span>
     </div>
   </div>
 
-  <div class="layer-stack" id="layer-stack">
-    <div class="layer-dot active" data-layer="0"></div>
-    <div class="layer-dot" data-layer="1"></div>
-    <div class="layer-dot" data-layer="2"></div>
-    <div class="layer-dot" data-layer="3"></div>
+  <div class="plan-view">
+    <div class="plan-frame" id="plan-frame">
+
+      <!-- Level 0: Full VS Code -->
+      <div class="level-view active" id="level-0">
+        <div class="zone" data-name="Activity Bar" style="left:0; top:0; width:5%; height:95%;"></div>
+        <div class="zone" data-name="Primary Sidebar" style="left:5.5%; top:0; width:22%; height:95%;"></div>
+        <div class="zone" data-name="Editor" style="left:28%; top:0; width:37%; height:95%;"></div>
+        <div class="zone drillable" data-name="Chat Panel" data-drills="1" style="left:65.5%; top:0; width:34.5%; height:95%;"></div>
+        <div class="zone" data-name="Status Bar" style="left:0; top:96%; width:100%; height:4%;"></div>
+      </div>
+
+      <!-- Level 1: Chat Panel expanded -->
+      <div class="level-view" id="level-1">
+        <div class="zone" data-name="Chat Header" style="left:0; top:0; width:100%; height:8%;"></div>
+        <div class="zone" data-name="Conversation Area" style="left:0; top:9%; width:100%; height:66%;"></div>
+        <div class="zone drillable" data-name="Agent Input" data-drills="2" style="left:0; top:76%; width:100%; height:24%;"></div>
+      </div>
+
+      <!-- Level 2: Agent Input expanded -->
+      <div class="level-view" id="level-2">
+        <div class="zone" data-name="Message Input" style="left:0; top:0; width:100%; height:55%;"></div>
+        <div class="zone drillable" data-name="Agent Mode" data-drills="3" style="left:0; top:57%; width:24%; height:18%;"></div>
+        <div class="zone drillable" data-name="Model Picker" data-drills="3" style="left:25%; top:57%; width:24%; height:18%;"></div>
+        <div class="zone" data-name="Attach Context" style="left:50%; top:57%; width:24%; height:18%;"></div>
+        <div class="zone" data-name="Tools" style="left:75%; top:57%; width:12.5%; height:18%;"></div>
+        <div class="zone" data-name="Send" style="left:88%; top:57%; width:12%; height:18%;"></div>
+        <div class="zone" data-name="Context Chips" style="left:0; top:77%; width:60%; height:12%;"></div>
+        <div class="zone" data-name="Instructions" style="left:61%; top:77%; width:39%; height:12%;"></div>
+        <div class="zone" data-name="History" style="left:0; top:91%; width:100%; height:9%;"></div>
+      </div>
+
+      <!-- Level 3: Mode / Model detail -->
+      <div class="level-view" id="level-3">
+        <div class="zone" data-name="Ask Mode" style="left:0; top:0; width:33%; height:30%;"></div>
+        <div class="zone" data-name="Agent Mode Detail" style="left:34%; top:0; width:33%; height:30%;"></div>
+        <div class="zone" data-name="Edit Mode" style="left:67.5%; top:0; width:32.5%; height:30%;"></div>
+        <div class="zone" data-name="Model Selection" style="left:0; top:32%; width:60%; height:30%;"></div>
+        <div class="zone" data-name="Vision Toggle" style="left:61%; top:32%; width:39%; height:30%;"></div>
+        <div class="zone" data-name="Participants" style="left:0; top:64%; width:100%; height:18%;"></div>
+        <div class="zone" data-name="Max Tokens" style="left:0; top:83.5%; width:50%; height:16.5%;"></div>
+        <div class="zone" data-name="Temperature" style="left:51%; top:83.5%; width:49%; height:16.5%;"></div>
+      </div>
+
+    </div>
   </div>
 </div>
 
 <!-- Right panel -->
 <div class="docs-side">
   <div class="empty-state" id="empty-state">
-    <p>Hover to explore<br/>Click to drill deeper<br/>Docs appear here</p>
+    <p>Hover to identify<br/>Click to drill deeper</p>
   </div>
   <div class="docs-content" id="docs-content"></div>
 </div>
@@ -453,7 +323,7 @@ const docsData = {
     docs: [
       { title: 'Customizing the Activity Bar', desc: 'Reorder, hide, or add icons' },
       { title: 'View Containers', desc: 'How extensions register views' },
-      { title: 'Badges & Indicators', desc: 'Notification counts and status indicators' }
+      { title: 'Badges & Indicators', desc: 'Notification counts and status' }
     ]
   },
   'Primary Sidebar': {
@@ -478,16 +348,16 @@ const docsData = {
     desc: 'Bottom bar showing git branch, errors, encoding, and quick actions.',
     docs: [
       { title: 'Status Bar Items', desc: 'Indicators and quick actions' },
-      { title: 'Extension Status', desc: 'How extensions contribute items' }
+      { title: 'Extension Contributions', desc: 'How extensions add items' }
     ]
   },
   'Chat Panel': {
     desc: 'Secondary side panel for AI chat, inline assistance, and agent interactions.',
     docs: [
       { title: 'Copilot Chat Overview', desc: 'Getting started with AI chat' },
-      { title: 'Chat Participants', desc: '@workspace, @terminal, and extensions' },
+      { title: 'Chat Participants', desc: '@workspace, @terminal, extensions' },
       { title: 'Chat History', desc: 'Managing sessions and context' },
-      { title: 'Panel Configuration', desc: 'Position, size, and layout' }
+      { title: 'Panel Configuration', desc: 'Position, size, layout' }
     ]
   },
   'Chat Header': {
@@ -498,7 +368,7 @@ const docsData = {
     ]
   },
   'Conversation Area': {
-    desc: 'Scrollable area displaying the AI conversation thread.',
+    desc: 'Scrollable thread displaying the AI conversation.',
     docs: [
       { title: 'Response Rendering', desc: 'Markdown, code blocks, interactive elements' },
       { title: 'Code Actions', desc: 'Apply, copy, insert, diff from responses' },
@@ -507,7 +377,7 @@ const docsData = {
     ]
   },
   'Agent Input': {
-    desc: 'Compose prompts, select modes, attach context, and configure tools.',
+    desc: 'Compose prompts, select modes, attach context, configure tools.',
     docs: [
       { title: 'Prompt Crafting', desc: 'Writing effective prompts' },
       { title: 'Agent Modes', desc: 'Ask vs Agent vs Edit' },
@@ -518,13 +388,13 @@ const docsData = {
   'Message Input': {
     desc: 'Multi-line text area for composing prompts.',
     docs: [
-      { title: 'Multi-line Input', desc: 'Shift+Enter, formatting' },
+      { title: 'Multi-line Input', desc: 'Shift+Enter, formatting support' },
       { title: 'Slash Commands', desc: '/fix, /explain, /tests' },
       { title: 'Variables', desc: '#file, #selection, #editor' }
     ]
   },
   'Agent Mode': {
-    desc: 'Switch between Ask, Agent, and Edit modes.',
+    desc: 'Switch between Ask, Agent, and Edit interaction modes.',
     docs: [
       { title: 'Ask Mode', desc: 'Q&A without file modification' },
       { title: 'Agent Mode', desc: 'Autonomous multi-step with tools' },
@@ -535,7 +405,7 @@ const docsData = {
     desc: 'Select which AI model processes your request.',
     docs: [
       { title: 'Available Models', desc: 'GPT-4o, Claude, Gemini, and more' },
-      { title: 'Capabilities', desc: 'Vision, context window, speed tradeoffs' },
+      { title: 'Capabilities', desc: 'Vision, context window, speed' },
       { title: 'Custom Models', desc: 'Configuring additional endpoints' }
     ]
   },
@@ -548,11 +418,18 @@ const docsData = {
     ]
   },
   'Tools': {
-    desc: 'Configure which tools the agent can use.',
+    desc: 'Configure which tools the agent can use during execution.',
     docs: [
       { title: 'Built-in Tools', desc: 'File editing, terminal, search, browser' },
       { title: 'Extension Tools', desc: 'Third-party tool providers' },
       { title: 'Permissions', desc: 'Auto-approve vs manual confirm' }
+    ]
+  },
+  'Send': {
+    desc: 'Submit your prompt to the selected model.',
+    docs: [
+      { title: 'Keyboard Shortcuts', desc: 'Enter to send, Shift+Enter for newline' },
+      { title: 'Cancel & Regenerate', desc: 'Stop and retry responses' }
     ]
   },
   'Context Chips': {
@@ -566,7 +443,14 @@ const docsData = {
     desc: 'Custom system instructions that shape AI behavior.',
     docs: [
       { title: 'Custom Instructions', desc: 'Persistent behavior guidelines' },
-      { title: 'copilot-instructions.md', desc: 'Project-level instruction files' }
+      { title: 'copilot-instructions.md', desc: 'Project-level instructions' }
+    ]
+  },
+  'History': {
+    desc: 'Access previous chat sessions and conversation threads.',
+    docs: [
+      { title: 'Session History', desc: 'Browsing past conversations' },
+      { title: 'Restoring Context', desc: 'Resuming previous threads' }
     ]
   },
   'Ask Mode': {
@@ -592,11 +476,18 @@ const docsData = {
     ]
   },
   'Model Selection': {
-    desc: 'Dropdown for selecting between language models.',
+    desc: 'Dropdown for choosing between available language models.',
     docs: [
       { title: 'Model Comparison', desc: 'Speed, quality, context tradeoffs' },
-      { title: 'Default Model', desc: 'Setting preferred model per mode' },
+      { title: 'Default Model', desc: 'Setting preferred per mode' },
       { title: 'Bring Your Own Key', desc: 'Custom API endpoints' }
+    ]
+  },
+  'Vision Toggle': {
+    desc: 'Enable image/screenshot understanding for supported models.',
+    docs: [
+      { title: 'Vision Capabilities', desc: 'Which models support images' },
+      { title: 'Attaching Images', desc: 'Drag-drop, paste, screenshots' }
     ]
   },
   'Participants': {
@@ -606,117 +497,95 @@ const docsData = {
       { title: '@terminal', desc: 'Terminal context and commands' },
       { title: 'Extension Participants', desc: 'Third-party participants' }
     ]
+  },
+  'Max Tokens': {
+    desc: 'Configure maximum response length.',
+    docs: [
+      { title: 'Token Limits', desc: 'Input and output budgets' },
+      { title: 'Truncation', desc: 'Context exceeding the window' }
+    ]
+  },
+  'Temperature': {
+    desc: 'Control response creativity and randomness.',
+    docs: [
+      { title: 'Temperature Settings', desc: 'Lower = deterministic, higher = creative' },
+      { title: 'Use Cases', desc: 'When to adjust temperature' }
+    ]
   }
 };
 
-let currentDepth = 0;
-const breadcrumbPath = ['VS Code'];
+let currentLevel = 0;
+const breadcrumbNames = ['VS Code'];
 const tooltip = document.getElementById('tooltip');
 
 function init() {
-  bindZones();
+  bindLevel();
 }
 
-function bindZones() {
-  document.querySelectorAll('.zone').forEach(zone => {
-    zone.addEventListener('mouseenter', onHover);
-    zone.addEventListener('mousemove', onMove);
-    zone.addEventListener('mouseleave', onLeave);
-    zone.addEventListener('click', onClick);
+function bindLevel() {
+  const activeLevel = document.querySelector('.level-view.active');
+  if (!activeLevel) return;
+
+  activeLevel.querySelectorAll('.zone').forEach(zone => {
+    zone.onmouseenter = (e) => {
+      tooltip.textContent = e.target.dataset.name;
+      tooltip.classList.add('visible');
+      showDocs(e.target.dataset.name);
+    };
+    zone.onmousemove = (e) => {
+      tooltip.style.left = e.clientX + 14 + 'px';
+      tooltip.style.top = e.clientY - 26 + 'px';
+    };
+    zone.onmouseleave = () => {
+      tooltip.classList.remove('visible');
+    };
+    zone.onclick = (e) => {
+      const z = e.currentTarget;
+      activeLevel.querySelectorAll('.zone.selected').forEach(s => s.classList.remove('selected'));
+      z.classList.add('selected');
+      showDocs(z.dataset.name);
+
+      if (z.dataset.drills) {
+        const depth = parseInt(z.dataset.drills);
+        drillTo(depth, z.dataset.name);
+      }
+    };
   });
 }
 
-function onHover(e) {
-  const name = e.target.dataset.name;
-  if (!name) return;
-  tooltip.textContent = name;
-  tooltip.classList.add('visible');
-  showDocs(name);
-}
+function drillTo(depth, name) {
+  document.querySelectorAll('.level-view').forEach(lv => lv.classList.remove('active'));
+  document.getElementById(`level-${depth}`).classList.add('active');
+  currentLevel = depth;
 
-function onMove(e) {
-  tooltip.style.left = e.clientX + 12 + 'px';
-  tooltip.style.top = e.clientY - 28 + 'px';
-}
-
-function onLeave() {
-  tooltip.classList.remove('visible');
-}
-
-function onClick(e) {
-  const zone = e.target;
-  const name = zone.dataset.name;
-  const drillLevel = zone.dataset.drills;
-
-  // Clear previous selections at same layer
-  document.querySelectorAll('.zone.selected').forEach(z => z.classList.remove('selected'));
-  zone.classList.add('selected');
-
-  showDocs(name);
-
-  if (drillLevel) {
-    const depth = parseInt(drillLevel);
-    revealLayer(depth);
-    breadcrumbPath[depth] = name;
-    breadcrumbPath.length = depth + 1;
-    updateBreadcrumb();
-  }
-}
-
-function revealLayer(depth) {
-  currentDepth = depth;
+  breadcrumbNames.length = depth;
+  breadcrumbNames.push(name);
+  updateBreadcrumb();
+  bindLevel();
   
-  for (let i = 0; i <= 3; i++) {
-    const layer = document.getElementById(`layer-${i}`);
-    if (i < depth) {
-      layer.classList.remove('hidden');
-      layer.classList.add('inactive');
-    } else if (i === depth) {
-      layer.classList.remove('hidden', 'inactive');
-    } else {
-      layer.classList.add('hidden');
-      layer.classList.remove('inactive');
-    }
-  }
-
-  // Update dots
-  document.querySelectorAll('.layer-dot').forEach(dot => {
-    dot.classList.toggle('active', parseInt(dot.dataset.layer) <= depth);
-  });
-
-  setTimeout(bindZones, 50);
+  // Clear docs on drill
+  hideDocs();
 }
 
 function navigateTo(depth) {
-  currentDepth = depth;
-  breadcrumbPath.length = depth + 1;
+  document.querySelectorAll('.level-view').forEach(lv => lv.classList.remove('active'));
+  document.getElementById(`level-${depth}`).classList.add('active');
+  currentLevel = depth;
+
+  breadcrumbNames.length = depth + 1;
   updateBreadcrumb();
+  bindLevel();
+  hideDocs();
+}
 
-  for (let i = 0; i <= 3; i++) {
-    const layer = document.getElementById(`layer-${i}`);
-    if (i < depth) {
-      layer.classList.remove('hidden');
-      layer.classList.add('inactive');
-    } else if (i === depth) {
-      layer.classList.remove('hidden', 'inactive');
-    } else {
-      layer.classList.add('hidden');
-      layer.classList.remove('inactive');
+function updateBreadcrumb() {
+  const bc = document.getElementById('breadcrumb');
+  bc.innerHTML = breadcrumbNames.map((name, i) => {
+    if (i === breadcrumbNames.length - 1) {
+      return `<span class="current">${name}</span>`;
     }
-  }
-
-  document.querySelectorAll('.layer-dot').forEach(dot => {
-    dot.classList.toggle('active', parseInt(dot.dataset.layer) <= depth);
-  });
-
-  // Clear docs
-  document.getElementById('docs-content').classList.remove('visible');
-  document.getElementById('empty-state').style.display = '';
-  
-  // Clear selections
-  document.querySelectorAll('.zone.selected').forEach(z => z.classList.remove('selected'));
-
-  setTimeout(bindZones, 50);
+    return `<span onclick="navigateTo(${i})">${name}</span><span class="sep">/</span>`;
+  }).join('');
 }
 
 function showDocs(name) {
@@ -725,20 +594,18 @@ function showDocs(name) {
 
   document.getElementById('empty-state').style.display = 'none';
   const content = document.getElementById('docs-content');
-  
+
   content.innerHTML = `
-    <div class="docs-section">
-      <div class="section-label">Selected Element</div>
-      <h2>${name}</h2>
-      <p class="desc">${data.desc}</p>
-      <div class="doc-list">
-        ${data.docs.map(d => `
-          <div class="doc-item">
-            <h3>${d.title}</h3>
-            <p>${d.desc}</p>
-          </div>
-        `).join('')}
-      </div>
+    <div class="docs-label">Documentation</div>
+    <div class="docs-title">${name}</div>
+    <p class="docs-desc">${data.desc}</p>
+    <div class="doc-list">
+      ${data.docs.map(d => `
+        <div class="doc-item">
+          <h3>${d.title}</h3>
+          <p>${d.desc}</p>
+        </div>
+      `).join('')}
     </div>
   `;
 
@@ -747,14 +614,9 @@ function showDocs(name) {
   content.classList.add('visible');
 }
 
-function updateBreadcrumb() {
-  const bc = document.getElementById('breadcrumb');
-  bc.innerHTML = breadcrumbPath.map((name, i) => {
-    if (i === breadcrumbPath.length - 1) {
-      return `<span class="current">${name}</span>`;
-    }
-    return `<span onclick="navigateTo(${i})">${name}</span><span class="sep">/</span>`;
-  }).join('');
+function hideDocs() {
+  document.getElementById('docs-content').classList.remove('visible');
+  document.getElementById('empty-state').style.display = '';
 }
 
 init();
