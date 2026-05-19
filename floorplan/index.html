@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VS Code Docs — Floor Plan Navigation</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #FCFCFC;
+  --outline: #D4D4D8;
+  --outline-hover: #3B82F6;
+  --fill-active: #3B82F6;
+  --fill-hover: rgba(59, 130, 246, 0.08);
+  --text: #18181B;
+  --text-muted: #71717A;
+  --text-dim: #A1A1AA;
+  --font-sans: 'Instrument Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --radius: 3px;
+  --transition: 180ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 40px;
+  overflow-x: hidden;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 48px;
+  opacity: 0;
+  animation: fadeUp 600ms ease forwards;
+}
+
+.header h1 {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+}
+
+.header p {
+  font-size: 13px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-weight: 300;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 32px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-dim);
+  opacity: 0;
+  animation: fadeUp 600ms 100ms ease forwards;
+}
+
+.breadcrumb span {
+  cursor: pointer;
+  transition: color var(--transition);
+}
+
+.breadcrumb span:hover {
+  color: var(--fill-active);
+}
+
+.breadcrumb span.current {
+  color: var(--text);
+  font-weight: 500;
+  cursor: default;
+}
+
+.breadcrumb .sep {
+  cursor: default;
+  user-select: none;
+}
+
+/* Main container */
+.floor-plan {
+  width: 100%;
+  max-width: 900px;
+  position: relative;
+  opacity: 0;
+  animation: fadeUp 600ms 200ms ease forwards;
+}
+
+/* Level containers */
+.level {
+  display: none;
+  width: 100%;
+}
+
+.level.active {
+  display: block;
+  animation: levelIn 400ms ease forwards;
+}
+
+@keyframes levelIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* SVG floor plans */
+.floor-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.floor-svg .zone {
+  fill: transparent;
+  stroke: var(--outline);
+  stroke-width: 1.5;
+  cursor: pointer;
+  transition: fill var(--transition), stroke var(--transition);
+}
+
+.floor-svg .zone:hover {
+  fill: var(--fill-hover);
+  stroke: var(--outline-hover);
+}
+
+.floor-svg .zone.highlighted {
+  fill: var(--fill-active);
+  stroke: var(--fill-active);
+}
+
+.floor-svg .zone-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  fill: var(--text-dim);
+  pointer-events: none;
+  transition: fill var(--transition);
+}
+
+.floor-svg .zone:hover + .zone-label,
+.floor-svg .zone:hover ~ .zone-label {
+  fill: var(--outline-hover);
+}
+
+/* Tooltip */
+.tooltip {
+  position: fixed;
+  background: var(--text);
+  color: white;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 150ms ease;
+  z-index: 1000;
+  white-space: nowrap;
+}
+
+.tooltip.visible {
+  opacity: 1;
+}
+
+/* Docs panel */
+.docs-panel {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid var(--outline);
+  display: none;
+}
+
+.docs-panel.visible {
+  display: block;
+  animation: fadeUp 300ms ease forwards;
+}
+
+.docs-panel h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.docs-panel .docs-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  font-family: var(--font-mono);
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+.docs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.doc-tile {
+  padding: 16px 18px;
+  border: 1px solid var(--outline);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.doc-tile:hover {
+  border-color: var(--outline-hover);
+  background: var(--fill-hover);
+  transform: translateY(-1px);
+}
+
+.doc-tile h3 {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.doc-tile p {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  font-family: var(--font-mono);
+  font-weight: 300;
+}
+
+/* Back button */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  margin-bottom: 24px;
+  padding: 6px 0;
+  border: none;
+  background: none;
+  transition: color var(--transition);
+}
+
+.back-btn:hover {
+  color: var(--fill-active);
+}
+
+.back-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Drill indicator */
+.drill-hint {
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+.drill-hint.visible {
+  opacity: 1;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>VS Code Docs</h1>
+  <p>Navigate by exploring the interface</p>
+</div>
+
+<div class="breadcrumb" id="breadcrumb">
+  <span class="current">VS Code</span>
+</div>
+
+<div class="floor-plan">
+  <!-- LEVEL 0: Full VS Code UI -->
+  <div class="level active" id="level-0">
+    <svg class="floor-svg" viewBox="0 0 800 500" fill="none">
+      <!-- Activity Bar -->
+      <rect class="zone" data-name="Activity Bar" data-level="activity-bar" x="1" y="1" width="40" height="468" rx="2"/>
+      <text class="zone-label" x="21" y="240" text-anchor="middle" transform="rotate(-90 21 240)" font-size="9">Activity Bar</text>
+      
+      <!-- Sidebar -->
+      <rect class="zone" data-name="Primary Sidebar" data-level="sidebar" x="42" y="1" width="180" height="468" rx="2"/>
+      <text class="zone-label" x="132" y="240" text-anchor="middle">Sidebar</text>
+      
+      <!-- Editor -->
+      <rect class="zone" data-name="Editor" data-level="editor" x="223" y="1" width="310" height="468" rx="2"/>
+      <text class="zone-label" x="378" y="240" text-anchor="middle">Editor</text>
+      
+      <!-- Title Bar -->
+      <rect class="zone" data-name="Title Bar" data-level="title-bar" x="1" y="470" width="798" height="28" rx="2"/>
+      <text class="zone-label" x="400" y="488" text-anchor="middle" font-size="9">Status Bar</text>
+      
+      <!-- Secondary Panel (Chat) -->
+      <rect class="zone" id="chat-panel-zone" data-name="Chat Panel" data-drills="1" x="534" y="1" width="265" height="468" rx="2"/>
+      <text class="zone-label" x="666" y="232" text-anchor="middle">Chat</text>
+      <text class="zone-label" x="666" y="248" text-anchor="middle">Panel</text>
+      
+      <!-- Input box hint -->
+      <rect class="zone-static" x="564" y="430" width="205" height="30" rx="2" fill="none" stroke="var(--outline)" stroke-width="1" stroke-dasharray="3 3"/>
+    </svg>
+  </div>
+
+  <!-- LEVEL 1: Chat Panel Detail -->
+  <div class="level" id="level-1">
+    <button class="back-btn" onclick="navigateTo(0)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to VS Code
+    </button>
+    <svg class="floor-svg" viewBox="0 0 400 560" fill="none">
+      <!-- Chat panel outline -->
+      <rect x="1" y="1" width="398" height="558" rx="2" fill="none" stroke="var(--outline)" stroke-width="1"/>
+      
+      <!-- Chat header -->
+      <rect class="zone" data-name="Chat Header" x="8" y="8" width="384" height="36" rx="2"/>
+      <text class="zone-label" x="200" y="30" text-anchor="middle" font-size="10">Header / Tabs</text>
+      
+      <!-- Chat history area -->
+      <rect class="zone" data-name="Conversation Area" x="8" y="50" width="384" height="380" rx="2"/>
+      <text class="zone-label" x="200" y="240" text-anchor="middle">Conversation</text>
+      <text class="zone-label" x="200" y="256" text-anchor="middle" font-size="9">Area</text>
+      
+      <!-- Agent input box -->
+      <rect class="zone" id="input-box-zone" data-name="Agent Input" data-drills="2" x="8" y="438" width="384" height="112" rx="2"/>
+      <text class="zone-label" x="200" y="494" text-anchor="middle">Agent Input</text>
+      
+      <!-- Input internals hint -->
+      <rect x="20" y="520" width="60" height="20" rx="2" fill="none" stroke="var(--outline)" stroke-width="1" stroke-dasharray="3 3"/>
+      <rect x="88" y="520" width="60" height="20" rx="2" fill="none" stroke="var(--outline)" stroke-width="1" stroke-dasharray="3 3"/>
+      <rect x="156" y="520" width="60" height="20" rx="2" fill="none" stroke="var(--outline)" stroke-width="1" stroke-dasharray="3 3"/>
+    </svg>
+  </div>
+
+  <!-- LEVEL 2: Agent Input Detail -->
+  <div class="level" id="level-2">
+    <button class="back-btn" onclick="navigateTo(1)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to Chat Panel
+    </button>
+    <svg class="floor-svg" viewBox="0 0 500 300" fill="none">
+      <!-- Input container outline -->
+      <rect x="1" y="1" width="498" height="298" rx="3" fill="none" stroke="var(--outline)" stroke-width="1"/>
+      
+      <!-- Text area -->
+      <rect class="zone" data-name="Message Input" x="12" y="12" width="476" height="180" rx="2"/>
+      <text class="zone-label" x="250" y="100" text-anchor="middle">Message Input</text>
+      <text class="zone-label" x="250" y="116" text-anchor="middle" font-size="9">Type your prompt here</text>
+      
+      <!-- Bottom toolbar -->
+      <rect x="12" y="204" width="476" height="84" rx="2" fill="none" stroke="var(--outline)" stroke-width="0.5" stroke-dasharray="2 2"/>
+      
+      <!-- Agent selector -->
+      <rect class="zone" id="agent-select-zone" data-name="Agent Mode" data-drills="3" x="16" y="212" width="110" height="32" rx="2"/>
+      <text class="zone-label" x="71" y="232" text-anchor="middle" font-size="9">Agent Mode</text>
+      
+      <!-- Model picker -->
+      <rect class="zone" data-name="Model Picker" data-drills="3" x="134" y="212" width="110" height="32" rx="2"/>
+      <text class="zone-label" x="189" y="232" text-anchor="middle" font-size="9">Model Picker</text>
+      
+      <!-- Context / Attach -->
+      <rect class="zone" data-name="Attach Context" x="252" y="212" width="110" height="32" rx="2"/>
+      <text class="zone-label" x="307" y="232" text-anchor="middle" font-size="9">Attach Context</text>
+      
+      <!-- Tools button -->
+      <rect class="zone" data-name="Tools" x="370" y="212" width="56" height="32" rx="2"/>
+      <text class="zone-label" x="398" y="232" text-anchor="middle" font-size="9">Tools</text>
+      
+      <!-- Send button -->
+      <rect class="zone" data-name="Send" x="434" y="212" width="50" height="32" rx="2"/>
+      <text class="zone-label" x="459" y="232" text-anchor="middle" font-size="9">Send</text>
+      
+      <!-- Context chips row -->
+      <rect class="zone" data-name="Context Chips" x="16" y="254" width="200" height="28" rx="2"/>
+      <text class="zone-label" x="116" y="272" text-anchor="middle" font-size="9">Context Chips</text>
+      
+      <!-- Instructions -->
+      <rect class="zone" data-name="Instructions" x="224" y="254" width="140" height="28" rx="2"/>
+      <text class="zone-label" x="294" y="272" text-anchor="middle" font-size="9">Instructions</text>
+    </svg>
+  </div>
+
+  <!-- LEVEL 3: Agent Mode / Model Picker Detail -->
+  <div class="level" id="level-3">
+    <button class="back-btn" onclick="navigateTo(2)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to Agent Input
+    </button>
+    <svg class="floor-svg" viewBox="0 0 500 200" fill="none">
+      <!-- Container -->
+      <rect x="1" y="1" width="498" height="198" rx="3" fill="none" stroke="var(--outline)" stroke-width="1"/>
+      
+      <!-- Agent type tabs -->
+      <rect class="zone" data-name="Ask Mode" x="16" y="16" width="72" height="40" rx="2"/>
+      <text class="zone-label" x="52" y="40" text-anchor="middle" font-size="9">Ask</text>
+      
+      <rect class="zone" data-name="Agent Mode" x="96" y="16" width="72" height="40" rx="2"/>
+      <text class="zone-label" x="132" y="40" text-anchor="middle" font-size="9">Agent</text>
+      
+      <rect class="zone" data-name="Edit Mode" x="176" y="16" width="72" height="40" rx="2"/>
+      <text class="zone-label" x="212" y="40" text-anchor="middle" font-size="9">Edit</text>
+
+      <!-- Divider -->
+      <line x1="16" y1="72" x2="484" y2="72" stroke="var(--outline)" stroke-width="0.5"/>
+      
+      <!-- Model selector -->
+      <rect class="zone" data-name="Model Dropdown" x="16" y="84" width="220" height="44" rx="2"/>
+      <text class="zone-label" x="126" y="108" text-anchor="middle" font-size="9">Model Selection</text>
+      <text class="zone-label" x="126" y="120" text-anchor="middle" font-size="8">GPT-4o / Claude / Gemini...</text>
+      
+      <!-- Vision toggle -->
+      <rect class="zone" data-name="Vision Toggle" x="248" y="84" width="100" height="44" rx="2"/>
+      <text class="zone-label" x="298" y="110" text-anchor="middle" font-size="9">Vision</text>
+      
+      <!-- Max tokens -->
+      <rect class="zone" data-name="Max Tokens" x="360" y="84" width="124" height="44" rx="2"/>
+      <text class="zone-label" x="422" y="110" text-anchor="middle" font-size="9">Max Tokens</text>
+
+      <!-- Participant list -->
+      <rect class="zone" data-name="Participants" x="16" y="142" width="468" height="44" rx="2"/>
+      <text class="zone-label" x="250" y="168" text-anchor="middle" font-size="9">Participants / Extensions</text>
+    </svg>
+  </div>
+
+  <div class="drill-hint" id="drill-hint">Click a highlighted zone to explore deeper</div>
+</div>
+
+<!-- Docs panels for each level -->
+<div class="docs-panel" id="docs-panel">
+  <h2 id="docs-title"></h2>
+  <p class="docs-desc" id="docs-desc"></p>
+  <div class="docs-grid" id="docs-grid"></div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const docsData = {
+  // Level 0
+  'Chat Panel': {
+    desc: 'The secondary side panel for AI-powered chat, inline assistance, and agent interactions.',
+    docs: [
+      { title: 'Copilot Chat Overview', desc: 'Getting started with the chat panel and basic interactions' },
+      { title: 'Chat Participants', desc: 'Using @workspace, @terminal, and extension participants' },
+      { title: 'Chat History', desc: 'Managing conversations, sessions, and chat context' },
+      { title: 'Panel Configuration', desc: 'Positioning, sizing, and layout preferences' }
+    ]
+  },
+  'Activity Bar': {
+    desc: 'The vertical icon strip on the far left for switching between views.',
+    docs: [
+      { title: 'Customizing the Activity Bar', desc: 'Reorder, hide, or add icons to the activity bar' },
+      { title: 'View Containers', desc: 'How extensions register views in the activity bar' }
+    ]
+  },
+  'Primary Sidebar': {
+    desc: 'The primary sidebar containing Explorer, Search, Source Control, and extensions.',
+    docs: [
+      { title: 'Explorer', desc: 'File tree navigation, open editors, and workspace management' },
+      { title: 'Search & Replace', desc: 'Full-text search across your workspace' },
+      { title: 'Source Control', desc: 'Git integration, staging, commits, and branch management' }
+    ]
+  },
+  'Editor': {
+    desc: 'The central code editing area with tabs, split views, and diff editor.',
+    docs: [
+      { title: 'Basic Editing', desc: 'Multi-cursor, snippets, formatting, and folding' },
+      { title: 'IntelliSense', desc: 'Code completion, parameter info, and quick info' },
+      { title: 'Debugging', desc: 'Breakpoints, watch expressions, and call stacks' },
+      { title: 'Editor Groups', desc: 'Split editing, grid layout, and tab management' }
+    ]
+  },
+  'Title Bar': {
+    desc: 'The status bar showing git branch, errors, notifications, and encoding.',
+    docs: [
+      { title: 'Status Bar Items', desc: 'Understanding indicators and quick actions' },
+      { title: 'Extension Status', desc: 'How extensions contribute to the status bar' }
+    ]
+  },
+  // Level 1
+  'Chat Header': {
+    desc: 'The top bar of the chat panel with tabs for multiple conversations.',
+    docs: [
+      { title: 'Chat Tabs', desc: 'Managing multiple simultaneous conversations' },
+      { title: 'Chat Actions', desc: 'New chat, history, and panel options' }
+    ]
+  },
+  'Conversation Area': {
+    desc: 'The scrollable area displaying the back-and-forth between you and the AI.',
+    docs: [
+      { title: 'Response Rendering', desc: 'Markdown, code blocks, and interactive elements' },
+      { title: 'Follow-up Questions', desc: 'Continuing context in multi-turn conversations' },
+      { title: 'Code Actions', desc: 'Apply, copy, insert, and diff code from responses' },
+      { title: 'Terminal Commands', desc: 'Running suggested commands in the integrated terminal' }
+    ]
+  },
+  'Agent Input': {
+    desc: 'The input area where you compose prompts, select modes, and attach context.',
+    docs: [
+      { title: 'Prompt Crafting', desc: 'Writing effective prompts for better AI responses' },
+      { title: 'Agent Modes', desc: 'Ask vs Agent vs Edit — choosing the right mode' },
+      { title: 'Model Selection', desc: 'Choosing between available AI models' },
+      { title: 'Context Attachment', desc: 'Adding files, selections, and references to your prompt' }
+    ]
+  },
+  // Level 2
+  'Message Input': {
+    desc: 'The text area for composing multi-line prompts with markdown support.',
+    docs: [
+      { title: 'Multi-line Input', desc: 'Shift+Enter for new lines, formatting support' },
+      { title: 'Slash Commands', desc: 'Quick actions like /fix, /explain, /tests' },
+      { title: 'Variables', desc: 'Using #file, #selection, #editor references inline' }
+    ]
+  },
+  'Agent Mode': {
+    desc: 'Switch between Ask (Q&A), Agent (autonomous), and Edit (inline changes) modes.',
+    docs: [
+      { title: 'Ask Mode', desc: 'Simple question and answer — no file modifications' },
+      { title: 'Agent Mode', desc: 'Autonomous multi-step operations with tool use' },
+      { title: 'Edit Mode', desc: 'Direct inline code modifications with diff preview' }
+    ]
+  },
+  'Model Picker': {
+    desc: 'Select which AI model processes your request.',
+    docs: [
+      { title: 'Available Models', desc: 'GPT-4o, Claude, Gemini, and more' },
+      { title: 'Model Capabilities', desc: 'Vision, extended context, speed vs quality tradeoffs' },
+      { title: 'Custom Models', desc: 'Configuring additional model endpoints' }
+    ]
+  },
+  'Attach Context': {
+    desc: 'Add files, folders, URLs, or selections as context for your prompt.',
+    docs: [
+      { title: 'File Attachment', desc: 'Adding specific files to the conversation context' },
+      { title: 'Folder Context', desc: 'Including entire directories for workspace-aware responses' },
+      { title: 'URL References', desc: 'Fetching and including web content' }
+    ]
+  },
+  'Tools': {
+    desc: 'Configure which tools the agent can use during execution.',
+    docs: [
+      { title: 'Built-in Tools', desc: 'File editing, terminal, search, and browser tools' },
+      { title: 'Extension Tools', desc: 'Tools provided by installed extensions' },
+      { title: 'Tool Permissions', desc: 'Auto-approve vs manual confirmation settings' }
+    ]
+  },
+  'Send': {
+    desc: 'Submit your prompt to the selected model.',
+    docs: [
+      { title: 'Keyboard Shortcuts', desc: 'Enter to send, Shift+Enter for new line' },
+      { title: 'Cancel & Regenerate', desc: 'Stopping in-progress responses and retrying' }
+    ]
+  },
+  'Context Chips': {
+    desc: 'Visual indicators of attached context — files, selections, and references.',
+    docs: [
+      { title: 'Managing Context', desc: 'Adding, removing, and previewing attached items' },
+      { title: 'Implicit Context', desc: 'Automatic context from active editor and selection' }
+    ]
+  },
+  'Instructions': {
+    desc: 'Custom system instructions that guide the AI behavior.',
+    docs: [
+      { title: 'Custom Instructions', desc: 'Setting persistent behavior guidelines for the AI' },
+      { title: '.github/copilot-instructions.md', desc: 'Project-level instruction files' }
+    ]
+  },
+  // Level 3
+  'Ask Mode': {
+    desc: 'Simple Q&A mode — the AI answers questions without modifying files.',
+    docs: [
+      { title: 'When to Use Ask', desc: 'Best for explanations, debugging help, and learning' },
+      { title: 'Ask Limitations', desc: 'No file editing, no terminal access in this mode' }
+    ]
+  },
+  'Agent Mode': {
+    desc: 'Autonomous mode — the AI can read/write files, run commands, and iterate.',
+    docs: [
+      { title: 'Agent Capabilities', desc: 'File operations, terminal commands, and multi-step plans' },
+      { title: 'Approval Flow', desc: 'Reviewing and approving agent actions before execution' },
+      { title: 'Agent Tools', desc: 'Available tools and how to configure them' }
+    ]
+  },
+  'Edit Mode': {
+    desc: 'Inline editing mode — the AI makes targeted code changes with diff preview.',
+    docs: [
+      { title: 'Edit Workflow', desc: 'Select code, describe changes, review diffs' },
+      { title: 'Multi-file Edits', desc: 'Applying changes across multiple files simultaneously' }
+    ]
+  },
+  'Model Dropdown': {
+    desc: 'The dropdown for selecting between available language models.',
+    docs: [
+      { title: 'Model Comparison', desc: 'Speed, quality, and context window tradeoffs' },
+      { title: 'Default Model', desc: 'Setting your preferred model for each mode' },
+      { title: 'Bring Your Own Key', desc: 'Configuring custom API endpoints and keys' }
+    ]
+  },
+  'Vision Toggle': {
+    desc: 'Enable or disable image/screenshot understanding for supported models.',
+    docs: [
+      { title: 'Vision Capabilities', desc: 'Which models support image input' },
+      { title: 'Attaching Images', desc: 'Drag-drop, paste, or reference screenshots' }
+    ]
+  },
+  'Max Tokens': {
+    desc: 'Configure the maximum response length for the model.',
+    docs: [
+      { title: 'Token Limits', desc: 'Understanding input and output token budgets' },
+      { title: 'Truncation', desc: 'What happens when context exceeds the window' }
+    ]
+  },
+  'Participants': {
+    desc: 'Extensions and built-in participants that can be invoked in chat.',
+    docs: [
+      { title: '@workspace', desc: 'Codebase-aware responses using workspace indexing' },
+      { title: '@terminal', desc: 'Terminal context and command suggestions' },
+      { title: 'Extension Participants', desc: 'Third-party participants from installed extensions' }
+    ]
+  }
+};
+
+let currentLevel = 0;
+const breadcrumbPath = ['VS Code'];
+const tooltip = document.getElementById('tooltip');
+const docsPanel = document.getElementById('docs-panel');
+
+// Initialize
+function init() {
+  document.querySelectorAll('.zone').forEach(zone => {
+    zone.addEventListener('mouseenter', showTooltip);
+    zone.addEventListener('mousemove', moveTooltip);
+    zone.addEventListener('mouseleave', hideTooltip);
+    zone.addEventListener('click', handleClick);
+  });
+}
+
+function showTooltip(e) {
+  const name = e.target.dataset.name;
+  if (!name) return;
+  tooltip.textContent = name + (e.target.dataset.drills ? ' →' : '');
+  tooltip.classList.add('visible');
+}
+
+function moveTooltip(e) {
+  tooltip.style.left = e.clientX + 12 + 'px';
+  tooltip.style.top = e.clientY - 32 + 'px';
+}
+
+function hideTooltip() {
+  tooltip.classList.remove('visible');
+}
+
+function handleClick(e) {
+  const zone = e.target;
+  const name = zone.dataset.name;
+  const drillLevel = zone.dataset.drills;
+
+  // Show docs
+  showDocs(name);
+
+  // Drill down if available
+  if (drillLevel) {
+    setTimeout(() => {
+      navigateTo(parseInt(drillLevel));
+      breadcrumbPath.length = parseInt(drillLevel) + 1;
+      breadcrumbPath[parseInt(drillLevel)] = name;
+      updateBreadcrumb();
+    }, 200);
+  }
+}
+
+function showDocs(name) {
+  const data = docsData[name];
+  if (!data) return;
+
+  document.getElementById('docs-title').textContent = name;
+  document.getElementById('docs-desc').textContent = data.desc;
+  
+  const grid = document.getElementById('docs-grid');
+  grid.innerHTML = data.docs.map(doc => `
+    <div class="doc-tile">
+      <h3>${doc.title}</h3>
+      <p>${doc.desc}</p>
+    </div>
+  `).join('');
+
+  docsPanel.classList.add('visible');
+}
+
+function navigateTo(level) {
+  document.querySelectorAll('.level').forEach(l => l.classList.remove('active'));
+  document.getElementById(`level-${level}`).classList.add('active');
+  currentLevel = level;
+  
+  // Update breadcrumb
+  breadcrumbPath.length = level + 1;
+  if (level === 0) breadcrumbPath[0] = 'VS Code';
+  updateBreadcrumb();
+
+  // Hide docs on navigation
+  docsPanel.classList.remove('visible');
+
+  // Re-bind events for new level
+  setTimeout(() => {
+    document.querySelectorAll('.level.active .zone').forEach(zone => {
+      zone.removeEventListener('mouseenter', showTooltip);
+      zone.removeEventListener('mousemove', moveTooltip);
+      zone.removeEventListener('mouseleave', hideTooltip);
+      zone.removeEventListener('click', handleClick);
+      zone.addEventListener('mouseenter', showTooltip);
+      zone.addEventListener('mousemove', moveTooltip);
+      zone.addEventListener('mouseleave', hideTooltip);
+      zone.addEventListener('click', handleClick);
+    });
+  }, 50);
+}
+
+function updateBreadcrumb() {
+  const bc = document.getElementById('breadcrumb');
+  bc.innerHTML = breadcrumbPath.map((name, i) => {
+    if (i === breadcrumbPath.length - 1) {
+      return `<span class="current">${name}</span>`;
+    }
+    return `<span onclick="navigateTo(${i})">${name}</span><span class="sep">/</span>`;
+  }).join('');
+}
+
+init();
+</script>
+</body>
+</html>
