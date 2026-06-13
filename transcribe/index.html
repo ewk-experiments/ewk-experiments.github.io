@@ -305,7 +305,7 @@
       <label>Model</label>
       <select id="modelSel">
         <option value="onnx-community/whisper-base">Base &middot; balanced</option>
-        <option value="onnx-community/whisper-tiny.en">Tiny &middot; fastest (EN)</option>
+        <option value="onnx-community/whisper-tiny.en" selected>Tiny &middot; fastest (EN)</option>
         <option value="onnx-community/whisper-small">Small &middot; most accurate</option>
       </select>
     </div>
@@ -449,7 +449,11 @@ async function ensureModel(modelId) {
   const fileProg = {};
   transcriber = await pipeline('automatic-speech-recognition', modelId, {
     device,
-    dtype: device === 'webgpu' ? 'fp16' : 'q8',
+    // q4 is the stable/recommended quantization for Whisper on WebGPU.
+    // fp16 on whisper-base can produce repetition/garbage output.
+    dtype: device === 'webgpu'
+      ? { encoder_model: 'fp32', decoder_model_merged: 'q4' }
+      : 'q8',
     progress_callback: (p) => {
       if (p.status === 'progress' && p.file) {
         fileProg[p.file] = (p.loaded / p.total) * 100 || 0;
@@ -507,19 +511,11 @@ async function run(file) {
     let fake = 0;
     const tick = setInterval(() => { fake = Math.min(fake + Math.random()*7, 92); progFill.style.width = fake + '%'; progPct.textContent = Math.round(fake)+'%'; }, 700);
 
-    // Only request timestamps when the user wants subtitles — forcing them on
-    // the multilingual model under WebGPU fp16 can trigger repetition loops.
+    // Only request timestamps when the user wants subtitles.
     const opts = {
       chunk_length_s: 30,
       stride_length_s: 5,
       return_timestamps: wantTs,
-      // anti-hallucination / anti-repetition decode controls
-      no_repeat_ngram_size: 3,
-      repetition_penalty: 1.2,
-      temperature: 0,
-      compression_ratio_threshold: 2.4,
-      logprob_threshold: -1.0,
-      no_speech_threshold: 0.6,
     };
     if (lang && !modelId.endsWith('.en')) opts.language = lang;
 
@@ -529,11 +525,6 @@ async function run(file) {
 
     lastChunks = out.chunks || null;
     lastText = (out.text || '').trim();
-    // Collapse any residual immediate word/phrase repetition (Whisper safety net).
-    lastText = lastText
-      .replace(/\b(\w+)(\s+\1\b){3,}/gi, '$1')
-      .replace(/(.{4,40}?)\1{3,}/g, '$1')
-      .trim();
     const elapsed = ((performance.now() - t0) / 1000).toFixed(1);
 
     transcript.textContent = lastText || '(no speech detected)';
