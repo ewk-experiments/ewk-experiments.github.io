@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>transcribe / ewk labs</title>
+<meta name="description" content="Drop in a video or audio file, get the text back. Runs entirely in your browser — nothing is uploaded.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAFA;
+    --surface: #F2F0ED;
+    --text: #0A0A0A;
+    --muted: #999999;
+    --line: #0A0A0A;
+    --accent: #E8380D;
+    --success: #1A7F3C;
+    --font: 'Inter', -apple-system, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 32px;
+    border-bottom: 1.5px solid var(--line);
+  }
+  .brand {
+    font-family: var(--mono);
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .brand .accent { color: var(--accent); }
+  .bar-right {
+    font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--muted);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); }
+  .dot.on { background: var(--success); }
+
+  main {
+    flex: 1;
+    width: 100%;
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .kicker {
+    font-family: var(--mono);
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  h1 {
+    font-size: clamp(40px, 8vw, 76px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  .lede {
+    font-size: 17px;
+    color: #444;
+    max-width: 540px;
+    line-height: 1.5;
+    margin-bottom: 40px;
+  }
+  .lede strong { color: var(--text); font-weight: 600; }
+
+  .drop {
+    border: 1.5px solid var(--line);
+    background: #fff;
+    padding: 56px 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+    position: relative;
+  }
+  .drop:hover { background: var(--surface); }
+  .drop.drag { background: var(--surface); border-color: var(--accent); }
+  .drop.busy { pointer-events: none; opacity: .55; }
+  .drop-icon {
+    width: 40px; height: 40px;
+    margin: 0 auto 20px;
+    border: 1.5px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .drop-icon svg { width: 20px; height: 20px; stroke: var(--text); stroke-width: 1.6; fill: none; }
+  .drop-title {
+    font-size: 18px; font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+  }
+  .drop-sub {
+    font-family: var(--mono);
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  input[type=file] { display: none; }
+
+  .opts {
+    display: flex; gap: 0;
+    margin-top: 18px;
+    border: 1.5px solid var(--line);
+    border-top: none;
+  }
+  .opt {
+    flex: 1;
+    padding: 14px 16px;
+    border-right: 1.5px solid var(--line);
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .opt:last-child { border-right: none; }
+  .opt label {
+    font-family: var(--mono);
+    font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .opt select {
+    font-family: var(--mono);
+    font-size: 12px; font-weight: 500;
+    border: none; background: transparent; color: var(--text);
+    cursor: pointer; outline: none;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+
+  .progress {
+    display: none;
+    margin-top: 28px;
+    border: 1.5px solid var(--line);
+    background: #fff;
+    padding: 24px;
+  }
+  .progress.show { display: block; }
+  .prog-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .prog-phase {
+    font-family: var(--mono);
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .prog-pct {
+    font-family: var(--mono);
+    font-size: 12px; color: var(--accent); font-weight: 600;
+  }
+  .track { height: 4px; background: var(--surface); overflow: hidden; }
+  .track-fill {
+    height: 100%; width: 0%;
+    background: var(--accent);
+    transition: width .3s ease;
+  }
+  .prog-note {
+    font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-top: 12px;
+    min-height: 14px;
+  }
+
+  .result { display: none; margin-top: 28px; }
+  .result.show { display: block; }
+  .result-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 14px;
+    border-bottom: 1.5px solid var(--line);
+  }
+  .result-title {
+    font-family: var(--mono);
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .result-meta {
+    font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .transcript {
+    border: 1.5px solid var(--line);
+    border-top: none;
+    background: #fff;
+    padding: 28px;
+    font-size: 16px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+  .actions {
+    display: flex; gap: 0;
+    border: 1.5px solid var(--line);
+    border-top: none;
+  }
+  .act {
+    flex: 1;
+    padding: 16px;
+    border: none;
+    border-right: 1.5px solid var(--line);
+    background: #fff;
+    font-family: var(--mono);
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text);
+    cursor: pointer;
+    transition: background .12s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .act:last-child { border-right: none; }
+  .act:hover { background: var(--surface); }
+  .act.primary { background: var(--text); color: var(--bg); }
+  .act.primary:hover { background: var(--accent); }
+  .act svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 1.7; fill: none; }
+
+  .note {
+    margin-top: 40px;
+    font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.08em;
+    color: var(--muted);
+    line-height: 1.7;
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+  }
+  .note .accent { color: var(--accent); }
+
+  .err {
+    display: none;
+    margin-top: 20px;
+    border: 1.5px solid var(--accent);
+    background: #fff;
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 12px; color: var(--accent);
+    line-height: 1.5;
+  }
+  .err.show { display: block; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 36px;
+    transform: translateX(-50%) translateY(16px);
+    background: var(--text); color: var(--bg);
+    font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 13px 22px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .25s, transform .25s;
+    z-index: 100;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 600px) {
+    .bar { padding: 18px 20px; }
+    main { padding: 32px 20px 60px; }
+    .opts { flex-direction: column; }
+    .opt { border-right: none; border-bottom: 1.5px solid var(--line); }
+    .opt:last-child { border-bottom: none; }
+    .actions { flex-wrap: wrap; }
+    .act { flex: 1 1 50%; border-bottom: 1.5px solid var(--line); }
+  }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="brand">ewk labs<span class="accent">/</span>transcribe</div>
+  <div class="bar-right"><span class="dot" id="engineDot"></span><span id="engineLabel">checking engine</span></div>
+</div>
+
+<main>
+  <div class="kicker">Speech &rarr; Text</div>
+  <h1>Drop a video.<br>Get the text.</h1>
+  <p class="lede">
+    Local, private transcription powered by Whisper. <strong>Your file never leaves this page</strong> &mdash; it's processed entirely in your browser. No upload, no account, no server.
+  </p>
+
+  <label class="drop" id="drop" for="fileInput">
+    <div class="drop-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
+    </div>
+    <div class="drop-title">Drop a video or audio file</div>
+    <div class="drop-sub">or click to browse &middot; mp4 &middot; mov &middot; mp3 &middot; wav &middot; m4a</div>
+    <input type="file" id="fileInput" accept="video/*,audio/*">
+  </label>
+
+  <div class="opts">
+    <div class="opt">
+      <label>Model</label>
+      <select id="modelSel">
+        <option value="onnx-community/whisper-base">Base &middot; balanced</option>
+        <option value="onnx-community/whisper-tiny.en">Tiny &middot; fastest (EN)</option>
+        <option value="onnx-community/whisper-small">Small &middot; most accurate</option>
+      </select>
+    </div>
+    <div class="opt">
+      <label>Language</label>
+      <select id="langSel">
+        <option value="">Auto-detect</option>
+        <option value="en">English</option>
+        <option value="es">Spanish</option>
+        <option value="fr">French</option>
+        <option value="de">German</option>
+        <option value="ja">Japanese</option>
+        <option value="zh">Chinese</option>
+      </select>
+    </div>
+    <div class="opt">
+      <label>Timestamps</label>
+      <select id="tsSel">
+        <option value="0">Off &middot; clean text</option>
+        <option value="1">On &middot; for subtitles</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="err" id="err"></div>
+
+  <div class="progress" id="progress">
+    <div class="prog-head">
+      <span class="prog-phase" id="progPhase">Loading model</span>
+      <span class="prog-pct" id="progPct">0%</span>
+    </div>
+    <div class="track"><div class="track-fill" id="progFill"></div></div>
+    <div class="prog-note" id="progNote">First run downloads the model (cached after). Hang tight.</div>
+  </div>
+
+  <div class="result" id="result">
+    <div class="result-head">
+      <span class="result-title">Transcript</span>
+      <span class="result-meta" id="resultMeta"></span>
+    </div>
+    <div class="transcript" id="transcript"></div>
+    <div class="actions">
+      <button class="act primary" id="copyBtn">
+        <svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11"/><path d="M5 15V5a2 2 0 012-2h8"/></svg>
+        Copy
+      </button>
+      <button class="act" id="txtBtn">
+        <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
+        .txt
+      </button>
+      <button class="act" id="srtBtn">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14"/><path d="M7 10h2M7 14h6"/></svg>
+        .srt
+      </button>
+      <button class="act" id="againBtn">
+        <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 109-9M3 12l3-3M3 12l3 3"/></svg>
+        New
+      </button>
+    </div>
+  </div>
+
+  <div class="note">
+    Runs <span class="accent">100% on-device</span> via Transformers.js + Whisper (WebGPU when available, WASM fallback).
+    Audio is decoded locally with the Web Audio API. Nothing is sent anywhere.
+    <br>For best speed use a Chromium browser with WebGPU. Long files are split into 30-second chunks automatically.
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.2.0';
+
+env.allowLocalModels = false;
+
+const $ = id => document.getElementById(id);
+const drop = $('drop'), fileInput = $('fileInput');
+const progress = $('progress'), progPhase = $('progPhase'), progPct = $('progPct'), progFill = $('progFill'), progNote = $('progNote');
+const result = $('result'), transcript = $('transcript'), resultMeta = $('resultMeta');
+const errBox = $('err');
+const engineDot = $('engineDot'), engineLabel = $('engineLabel');
+
+let transcriber = null;
+let loadedKey = null;
+let device = 'wasm';
+let lastChunks = null;
+let lastText = '';
+let lastFileName = 'transcript';
+
+(async () => {
+  if (navigator.gpu) {
+    try { const a = await navigator.gpu.requestAdapter(); if (a) device = 'webgpu'; } catch {}
+  }
+  engineDot.classList.add('on');
+  engineLabel.textContent = device === 'webgpu' ? 'webgpu · fast' : 'wasm · cpu';
+})();
+
+function showErr(msg) { errBox.textContent = msg; errBox.classList.add('show'); }
+function clearErr() { errBox.classList.remove('show'); }
+function setProg(phase, pct, note) {
+  progPhase.textContent = phase;
+  if (pct != null) { progPct.textContent = Math.round(pct) + '%'; progFill.style.width = pct + '%'; }
+  if (note != null) progNote.textContent = note;
+}
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+async function fileToAudio(file) {
+  const buf = await file.arrayBuffer();
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  const ctx = new AudioCtx({ sampleRate: 16000 });
+  let decoded;
+  try {
+    decoded = await ctx.decodeAudioData(buf);
+  } catch (e) {
+    await ctx.close();
+    throw new Error('Could not decode audio from this file. Try MP4, MOV, MP3, WAV, or M4A.');
+  }
+  let audio;
+  if (decoded.numberOfChannels === 1) {
+    audio = decoded.getChannelData(0);
+  } else {
+    const L = decoded.getChannelData(0), R = decoded.getChannelData(1);
+    audio = new Float32Array(L.length);
+    for (let i = 0; i < L.length; i++) audio[i] = (L[i] + R[i]) / 2;
+  }
+  const seconds = decoded.duration;
+  await ctx.close();
+  return { audio, seconds };
+}
+
+async function ensureModel(modelId) {
+  const key = modelId + '|' + device;
+  if (transcriber && loadedKey === key) return;
+  transcriber = null; loadedKey = null;
+  setProg('Loading model', 0, 'First run downloads the model (cached after). Hang tight.');
+  progress.classList.add('show');
+
+  const fileProg = {};
+  transcriber = await pipeline('automatic-speech-recognition', modelId, {
+    device,
+    dtype: device === 'webgpu' ? 'fp16' : 'q8',
+    progress_callback: (p) => {
+      if (p.status === 'progress' && p.file) {
+        fileProg[p.file] = (p.loaded / p.total) * 100 || 0;
+        const vals = Object.values(fileProg);
+        const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+        setProg('Loading model', avg, `Downloading ${p.file.split('/').pop()} · ${(p.loaded/1e6).toFixed(1)}MB`);
+      } else if (p.status === 'ready') {
+        setProg('Loading model', 100, 'Model ready.');
+      }
+    }
+  });
+  loadedKey = key;
+}
+
+function fmtTime(s) {
+  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = Math.floor(s%60), ms = Math.round((s%1)*1000);
+  const pad = (n,l=2)=>String(n).padStart(l,'0');
+  return `${pad(h)}:${pad(m)}:${pad(sec)},${pad(ms,3)}`;
+}
+function chunksToSRT(chunks) {
+  if (!chunks || !chunks.length) return '';
+  return chunks.map((c, i) => {
+    const start = c.timestamp[0] ?? 0;
+    const end = c.timestamp[1] ?? (start + 2);
+    return `${i+1}\n${fmtTime(start)} --> ${fmtTime(end)}\n${c.text.trim()}\n`;
+  }).join('\n');
+}
+
+function download(name, content, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+async function run(file) {
+  clearErr();
+  result.classList.remove('show');
+  drop.classList.add('busy');
+  lastFileName = file.name.replace(/\.[^.]+$/, '') || 'transcript';
+  const modelId = $('modelSel').value;
+  const lang = $('langSel').value;
+  const wantTs = $('tsSel').value === '1';
+  const t0 = performance.now();
+
+  try {
+    await ensureModel(modelId);
+
+    setProg('Reading audio', 100, `Decoding ${file.name}…`);
+    const { audio, seconds } = await fileToAudio(file);
+
+    setProg('Transcribing', 0, `${seconds.toFixed(0)}s of audio · ${device === 'webgpu' ? 'GPU' : 'CPU'} · scales with length`);
+    let fake = 0;
+    const tick = setInterval(() => { fake = Math.min(fake + Math.random()*7, 92); progFill.style.width = fake + '%'; progPct.textContent = Math.round(fake)+'%'; }, 700);
+
+    const opts = { chunk_length_s: 30, stride_length_s: 5, return_timestamps: true };
+    if (lang && !modelId.endsWith('.en')) opts.language = lang;
+
+    const out = await transcriber(audio, opts);
+    clearInterval(tick);
+    setProg('Transcribing', 100, 'Done.');
+
+    lastChunks = out.chunks || null;
+    lastText = (out.text || '').trim();
+    const elapsed = ((performance.now() - t0) / 1000).toFixed(1);
+
+    transcript.textContent = lastText || '(no speech detected)';
+    resultMeta.textContent = `${seconds.toFixed(0)}s audio · ${elapsed}s · ${device}`;
+    progress.classList.remove('show');
+    result.classList.add('show');
+    result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    $('srtBtn').style.display = lastChunks ? 'flex' : 'none';
+  } catch (e) {
+    console.error(e);
+    progress.classList.remove('show');
+    showErr('Error: ' + (e.message || e) + (device==='webgpu' ? '  · try reloading; WebGPU can be flaky on first load.' : ''));
+  } finally {
+    drop.classList.remove('busy');
+  }
+}
+
+fileInput.addEventListener('change', e => { if (e.target.files[0]) run(e.target.files[0]); });
+drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('drag'));
+drop.addEventListener('drop', e => {
+  e.preventDefault(); drop.classList.remove('drag');
+  const f = e.dataTransfer.files[0];
+  if (f) run(f);
+});
+
+$('copyBtn').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(lastText); toast('Copied to clipboard'); }
+  catch { toast('Copy failed'); }
+});
+$('txtBtn').addEventListener('click', () => { download(lastFileName + '.txt', lastText, 'text/plain'); toast('Saved .txt'); });
+$('srtBtn').addEventListener('click', () => {
+  const srt = chunksToSRT(lastChunks);
+  if (!srt) { toast('No timestamps available'); return; }
+  download(lastFileName + '.srt', srt, 'text/plain');
+  toast('Saved .srt');
+});
+$('againBtn').addEventListener('click', () => {
+  result.classList.remove('show');
+  fileInput.value = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+</script>
+</body>
+</html>
